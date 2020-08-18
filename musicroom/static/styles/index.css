@@ -1,0 +1,43 @@
+#s1{
+    padding: 2rem 1rem;
+}
+#s1 #emailSec{
+    padding-top: 5rem;
+}
+#emailButt{
+    padding: 0rem 0.7rem;
+    height: 2.6rem;
+    background-color: rgb(192, 0, 0);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+#emailButt:hover{
+    background-color: rgb(255, 0, 0);
+}
+#emailBox{
+    padding: 0.5rem 0.7rem;
+    font-size: 1rem;
+    width: 14rem;
+    max-width: 85vw;
+    height: 2.6rem;
+    background-color: rgb(255 255 255 / 90%);
+    color: #353535;
+    border: none;
+}
+#msg{
+    display: none;
+    padding: 1rem 0rem;
+}
+#emailForm{
+    border: none;
+}
+#formSubmit{
+    opacity: 0;
+    position: absolute;
+    top:0px;
+    left: 0px;
+    height: 0px;
+    width: 0px;
+}

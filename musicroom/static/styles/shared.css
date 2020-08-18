@@ -1,0 +1,37 @@
+.mr_underline {
+  border-bottom: solid 5px rgb(192, 0, 0);
+}
+#bg {
+  height: 100%;
+  min-height: 100vh;
+  width: 100%;
+}
+.input {
+  padding: 0.5rem 0.7rem;
+  font-size: 1rem;
+  width: 17rem;
+  max-width: 85vw;
+  height: 2.6rem;
+  background-color: rgb(255 255 255 / 90%);
+  color: #353535;
+  border: none;
+  border-radius: 0;
+  margin: 0.3rem 0.3rem;
+}
+.redButt {
+  margin-top: 0.6rem;
+  padding: 0rem 0.7rem;
+  height: 2.6rem;
+  background-color: rgb(192, 0, 0);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  width: 17rem;
+  -webkit-user-select: none; 
+  user-select: none;
+}
+.redButt:hover {
+  background-color: rgb(255, 0, 0);
+  box-shadow: 0px 0px 15px 9px rgb(206 0 0 / 69%)
+}

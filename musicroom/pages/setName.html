@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="/static/styles/forms.css" />
+<div class="container">
+    <div class="ink-white size-xxl base-m center" id="greet">
+        Give yourself a name
+    </div>
+    <div id="sec" class="center">
+        <div class="center-col">
+            <div id="form" class="center-col">
+                <input placeholder="Name" name="name" type="text" id="nameBox" class="input">
+                <div id="msg"></div>
+                <div id="saveButt" class="center redButt">Save</div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+<script>
+    var api = new window.Api();
+
+    function showMsg(txt) {
+        $("#msg").css("display", "block")
+        $("#msg").text(txt);
+    }
+
+    function hideMsg() {
+        $("#msg").css("display", "none")
+    }
+    $("#nameBox").on("input", () => {
+        hideMsg()
+    })
+    $("#saveButt").on("click", () => {
+        hideMsg()
+        var data = {
+            name: $("#nameBox").val().trim(),
+        }
+        if (data.name.length) {
+            api.post('set/name', data, (code, res) => {
+                if (code == 200) {
+                    console.log("success")
+                    window.location.href = "/rooms"
+                } else if (code == 400) {
+                    showFull();
+                    showMsg(res.msg);
+                } else if (code == 300) {
+                    window.location.href = "/"
+                }
+            })
+        } else {
+            showMsg("Name cannot be empty")
+        }
+    })
+</script>
+{% endblock %}

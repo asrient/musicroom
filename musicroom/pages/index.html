@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="/static/styles/index.css" />
+<div class="container" id="s1">
+    <div id="s1_title" class="ink-white size-xxl base-m">
+        Welcome <br />
+        to the <span class="mr_underline">house</span>
+    </div>
+    <div id="emailSec" class="center-col">
+        <form class="center" id="emailForm" action="/emailpref" method="POST">
+            {% csrf_token %}
+         <input placeholder="Email" name="email" type="email" value="{{ prefer_email }}" id="emailBox">
+        <div id="emailButt" class="center">Next</div>
+        <button type="submit" id="formSubmit"></button>   
+        </form>
+        <div id="msg">Please enter a valid email</div>
+    </div>
+</div>
+<script>
+    $("#emailButt").on("click", () => {
+        var email=$("#emailBox").val().trim();
+        var isValid=isEmail(email);
+        if(!isValid){
+            $("#msg").css("display","block")
+        }
+        else{
+            $("#msg").css("display","none")
+            $("#formSubmit").click();
+        }
+    })
+    $("#emailBox").on("input",()=>{
+        $("#msg").css("display","none")
+    })
+</script>
+{% endblock %}

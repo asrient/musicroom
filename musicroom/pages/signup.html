@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="/static/styles/forms.css" />
+<div class="container">
+    <div class="ink-white size-xxl base-m center" id="greet">
+        Let's get started
+    </div>
+    {% if prefer_email %}
+    <div class="center" id="emailPreviewContainer">
+        <div id="emailPreview">{{ prefer_email }}</div>
+    </div>
+    {% endif %}
+    <div id="sec" class="center">
+        <div class="center-col">
+            <div id="loginForm" class="center-col">
+                <input placeholder="Email" name="email" type="email" value="{{ prefer_email }}" id="emailBox"
+                    class="input">
+                <input placeholder="Set password" name="password" type="password" id="passwordBox" class="input">
+                <div id="msg"></div>
+                <div id="loginButt" class="center redButt">Create account</div>
+            </div>
+        </div>
+    </div>
+    <div class="center">Have an account? &nbsp; <a href="/login">Log In ></a></div>
+    <br/>
+    <br/>
+</div>
+{% if prefer_email %}
+<style>
+    #emailBox {
+        display: none;
+    }
+</style>
+{% endif %}
+<script>
+    var api = new window.Api();
+    function showFull(){
+        $("#emailPreview").css('display', 'none')
+        $("#emailBox").css('display', 'block')
+    }
+    function showMsg(txt){
+        $("#msg").css("display","block")
+                $("#msg").text(txt);
+    }
+    function hideMsg(){
+        $("#msg").css("display","none")
+    }
+    $("#emailPreview").on("click", () => {
+        showFull()
+    })
+    $("#passwordBox").on("input", () => {
+        hideMsg()
+    })
+    $("#loginButt").on("click", () => {
+        hideMsg()
+        var data = {
+            email: $("#emailBox").val().trim(),
+            password: $("#passwordBox").val().trim()
+        }
+        if(isEmail(data.email)){
+            api.post('register', data, (code, res) => {
+            if(code==200){
+                console.log("success")
+                window.location.href="/setName"
+            }
+            else if(code==400){
+                showFull();
+                showMsg(res.msg);
+            }
+            else if(code==300){
+                window.location.href="/"
+            }
+        })
+        }
+        else{
+            showMsg("Invalid email")
+        }
+    })
+</script>
+{% endblock %}
