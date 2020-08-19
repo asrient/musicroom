@@ -10,6 +10,18 @@ from musicroom.api.friendsList import main as friendsList
 from musicroom.api.friendRequests import main as friendRequests
 from musicroom.api.addFriend import main as addFriend
 from musicroom.api.removeFriend import main as removeFriend
+from musicroom.api.getMyRoom import main as getMyRoom
+from musicroom.api.createRoom import main as createRoom
+from musicroom.api.joinRoom import main as joinRoom
+from musicroom.api.leaveRoom import main as leaveRoom
+from musicroom.api.membersList import main as membersList
+from musicroom.api.getAccessUsers import main as getAccessUsers
+from musicroom.api.getRoomTracks import main as getRoomTracks
+from musicroom.api.grantAccess import main as grantAccess
+from musicroom.api.revokeAccess import main as revokeAccess
+from musicroom.api.addTracks import main as addTracks
+from musicroom.api.removeTracks import main as removeTracks
+
 
 urlpatterns = [
     path('auth', auth, name='api.auth'),
@@ -22,4 +34,15 @@ urlpatterns = [
     path('friends/requests', friendRequests, name='api.friend_requests'),
     path('friends/add', addFriend, name='api.add_friend'),
     path('friends/remove', removeFriend, name='api.remove_friend'),
+    path('room', getMyRoom, name='api.getMyRoom'),
+    path('room/create', createRoom, name='api.createRoom'),
+    path('room/join', joinRoom),
+    path('room/leave', leaveRoom),
+    path('room/members', membersList),
+    path('room/access/users', getAccessUsers),
+    path('room/tracks', getRoomTracks),
+    path('room/access/grant', grantAccess),
+    path('room/access/revoke', revokeAccess),
+    path('room/tracks/add', addTracks),
+    path('room/tracks/remove', removeTracks),
 ]
