@@ -9,9 +9,9 @@ from musicroom.models import User
 @require_http_methods(["POST"])
 def main(request):
     if request.user.is_authenticated:
-        if "id" in request.POST:
+        if "user_id" in request.POST:
             try: 
-                target_user=User.get_by_id(request.POST["id"])
+                target_user=User.get_by_id(request.POST["user_id"])
             except:
                 return apiRespond(400, msg="User does not exists")
             else:

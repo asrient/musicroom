@@ -121,10 +121,10 @@ class User(AbstractUser):
             return (0, None)
 
     def get_profile_min(self):
-        return {'id': self.id, 'name': self.name}
+        return {'user_id': self.id, 'name': self.name}
 
     def get_profile(self, ref_user):
-        profile = {'id': self.id, 'name': self.name}
+        profile = {'user_id': self.id, 'name': self.name}
         if self != ref_user:
             friend_status, friend_obj = self.friendship_status(ref_user)
             profile['friendship_status'] = friend_status
@@ -140,17 +140,23 @@ class User(AbstractUser):
         room = Room.create(tracks)
         room.grant_access(self)
         self.join_room(room)
+        return room
 
     def join_room(self, room):
         self.leave_room()
         if room.can_user_access(self):
             self.room = room
+            self.save()
+            return room
             # emit events
+        else:
+            raise ValueError("User does not have access")
 
     def leave_room(self):
         if self.room != None:
             room = self.room
             self.room = None
+            self.save()
             # emit events
             if room.members.count() == 0:
                 room.delete()
@@ -214,6 +220,28 @@ class Room(models.Model):
     no_tracks = models.IntegerField(default=0)
     current_roomtrack = models.ForeignKey(
         "RoomTrack", on_delete=models.PROTECT, related_name="+")
+
+    def get_state_obj(self):
+        state = {
+            'room_id': self.id,
+            'members_count': self.members.count(),
+            'is_paused': self.is_paused,
+            'current_track': self.current_roomtrack.track.get_obj(),
+            'play_start_time': self.play_start_time,
+            'duration_to_complete': self.duration_to_complete
+        }
+        return state
+
+    def get_title_obj(self, user):
+        members = self.get_members()
+        friends_found = []
+        count = self.members.count()
+        for member in members:
+            if member.friendship_status(user) == 3:
+                friends_found.append(member.get_profile_min())
+                if len(friends_found) > 2:
+                    break
+        return {'room_id': self.id, 'members_count': count, 'member_friends': friends_found}
 
     def get_tracks(self):
         rt = self.current_roomtrack
@@ -360,7 +388,7 @@ class Track(models.Model):
 
     def get_obj(self):
         playback_url = STORAGE_URLS[self.storage_bucket]+self.playback_path
-        obj = {'title': self.title, 'duration': self.duration,
+        obj = {'track_id':self.id,'title': self.title, 'duration': self.duration,
                'artists': self.artists, 'playback_url': playback_url}
 
     @classmethod
