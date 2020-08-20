@@ -124,8 +124,9 @@ class User(AbstractUser):
         return {'user_id': self.id, 'name': self.name}
 
     def get_profile(self, ref_user):
-        profile = {'user_id': self.id, 'name': self.name}
+        profile = {'user_id': self.id, 'name': self.name, 'is_self': True}
         if self != ref_user:
+            profile['is_self'] = False
             friend_status, friend_obj = self.friendship_status(ref_user)
             profile['friendship_status'] = friend_status
             if friend_status == 3:
