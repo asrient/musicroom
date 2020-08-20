@@ -132,6 +132,8 @@ class User(AbstractUser):
                 profile['friends_since'] = friend_obj.accepted_on
                 profile['score'] = friend_obj.score
                 profile['common_time'] = friend_obj.common_time
+                if self.room != None:
+                    profile['room'] = self.room.get_title_obj(ref_user)
         else:
             profile['email'] = self.email
         return profile
@@ -237,7 +239,8 @@ class Room(models.Model):
         friends_found = []
         count = self.members.count()
         for member in members:
-            if member.friendship_status(user) == 3:
+            friend_status, friend_obj = member.friendship_status(user)
+            if friend_status == 3:
                 friends_found.append(member.get_profile_min())
                 if len(friends_found) > 2:
                     break
@@ -399,9 +402,9 @@ class Track(models.Model):
         return cls.objects.get(id=pk)
 
     @classmethod
-    def create(cls,**values):
-        track = cls(added_on=timezone.now(),**values)
-        track.no_plays=0
+    def create(cls, **values):
+        track = cls(added_on=timezone.now(), **values)
+        track.no_plays = 0
         track.save()
         return track
 
