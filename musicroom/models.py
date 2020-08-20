@@ -5,6 +5,7 @@ from django.contrib.auth.base_user import BaseUserManager
 import datetime
 from django.utils import timezone
 from musicroom.settings import STORAGE_URLS
+from musicroom.common import makecode
 
 
 class UserManager(BaseUserManager):
@@ -221,6 +222,7 @@ class Room(models.Model):
     duration_to_complete = models.TimeField()
     play_start_time = models.DateTimeField()
     no_tracks = models.IntegerField(default=0)
+    code = models.CharField(max_length=50, default=None, null=True)
     current_roomtrack = models.ForeignKey(
         "RoomTrack", on_delete=models.CASCADE, related_name="+")
 
@@ -351,6 +353,7 @@ class Room(models.Model):
                    is_paused=False, paused_on=None, no_tracks=0)
         room.current_roomtrack = RoomTrack.create(tracks[0])
         room.no_tracks = 1
+        room.code = makecode()
         room.play_start_time = timezone.now()
         room.duration_to_complete = room.current_roomtrack.track.duration
         room.save()

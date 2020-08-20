@@ -21,6 +21,7 @@ from musicroom.api.grantAccess import main as grantAccess
 from musicroom.api.revokeAccess import main as revokeAccess
 from musicroom.api.addTracks import main as addTracks
 from musicroom.api.removeTracks import main as removeTracks
+from musicroom.api.getRoomCode import main as getRoomCode
 
 
 urlpatterns = [
@@ -45,4 +46,5 @@ urlpatterns = [
     path('room/access/revoke', revokeAccess),
     path('room/tracks/add', addTracks),
     path('room/tracks/remove', removeTracks),
+    path('room/access/code', getRoomCode),
 ]
