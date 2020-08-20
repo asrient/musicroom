@@ -12,14 +12,15 @@ def main(request):
     if request.user.is_authenticated:
         if "track_ids" in request.POST:
             tracks=[]
-            for track_id in request.POST["track_ids"]:
+            track_ids=request.POST.getlist('track_ids')
+            for track_id in track_ids:
                 try:
                     track=Track.get_by_id(track_id)
                 except:
                     pass
                 else:
                     tracks.append(track)
-            if len(track):
+            if len(tracks):
                 room=request.user.create_room(tracks)
                 return apiRespond(201, **room.get_state_obj())
             else:

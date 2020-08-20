@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from musicroom.startup import init
 from musicroom.paths.index import main as index
 from musicroom.paths.emailPref import main as emailPref
 from musicroom.paths.login import main as login
@@ -36,3 +37,4 @@ urlpatterns = [
 
 handler404 = 'musicroom.paths.errors.page404'
 
+init()

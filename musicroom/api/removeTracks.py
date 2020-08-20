@@ -12,22 +12,16 @@ def main(request):
     if request.user.is_authenticated:
         if request.user.room != None:
             room = request.user.room
-            if 'track_ids' in request.POST:
-                if hasattr(request.POST['track_ids'], '__iter__'):
-                    affected_tracks=[]
-                    for track_id in request.POST['track_ids']:
-                        try:
-                            track=Track.get_by_id(track_id)
-                        except:
-                            pass
-                        else:
-                            affected_tracks.append(track_id)
-                            room.remove_track(track)
-                    return apiRespond(201, affected_tracks=affected_tracks)
-                else:
-                     return apiRespond(400, msg='track_ids format invalid')
+            if 'track_indexes' in request.POST:
+                indexes=request.POST.getlist('track_indexes')
+                affected_tracks = []
+                for track_index in indexes:
+                    track_index = int(track_index)
+                    affected_tracks.append(track_index)
+                    room.remove_track(track_index)
+                return apiRespond(201, affected_track_indexes=affected_tracks)
             else:
-                return apiRespond(400, msg='track_ids missing')
+                return apiRespond(400, msg='track_indexes missing')
         else:
             return apiRespond(400, msg='Not a member of any room')
     else:

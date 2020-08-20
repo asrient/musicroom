@@ -13,9 +13,10 @@ def main(request):
         if request.user.room != None:
             room = request.user.room
             if 'user_ids' in request.POST:
-                if hasattr(request.POST['user_ids'], '__iter__'):
+                user_ids=request.POST.getlist('user_ids')
+                if len(user_ids):
                     affected_users=[]
-                    for user_id in request.POST['user_ids']:
+                    for user_id in user_ids:
                         try:
                             user=User.get_by_id(user_id)
                         except:

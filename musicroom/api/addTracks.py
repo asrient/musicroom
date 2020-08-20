@@ -13,9 +13,10 @@ def main(request):
         if request.user.room != None:
             room = request.user.room
             if 'track_ids' in request.POST:
-                if hasattr(request.POST['track_ids'], '__iter__'):
+                track_ids=request.POST.getlist('track_ids')
+                if len(track_ids):
                     affected_tracks=[]
-                    for track_id in request.POST['track_ids']:
+                    for track_id in track_ids:
                         try:
                             track=Track.get_by_id(track_id)
                         except:
@@ -23,7 +24,7 @@ def main(request):
                         else:
                             affected_tracks.append(track_id)
                             room.add_track(track)
-                    return apiRespond(201, affected_tracks=affected_tracks)
+                    return apiRespond(201, affected_track_ids=affected_tracks)
                 else:
                      return apiRespond(400, msg='track_ids format invalid')
             else:

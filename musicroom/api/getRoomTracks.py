@@ -7,7 +7,7 @@ from musicroom.common import apiRespond
 from musicroom.models import User, Track
 
 
-@require_http_methods(["POST"])
+@require_http_methods(["GET"])
 def main(request):
     if request.user.is_authenticated:
         if request.user.room != None:

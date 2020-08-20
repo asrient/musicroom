@@ -219,7 +219,7 @@ class Room(models.Model):
     play_start_time = models.DateTimeField()
     no_tracks = models.IntegerField(default=0)
     current_roomtrack = models.ForeignKey(
-        "RoomTrack", on_delete=models.PROTECT, related_name="+")
+        "RoomTrack", on_delete=models.CASCADE, related_name="+")
 
     def get_state_obj(self):
         state = {
@@ -308,6 +308,7 @@ class Room(models.Model):
             curr = self.get_roomtrack_by_index(index)
         curr_last = curr.previous_roomtrack
         curr_last.next_roomtrack = None
+        curr_last.save()
         rt = RoomTrack.create(track, next_track=curr, room=self)
         curr_last.next_roomtrack = rt
         curr_last.save()
@@ -347,10 +348,10 @@ class Room(models.Model):
         room.current_roomtrack = RoomTrack.create(tracks[0])
         room.no_tracks = 1
         room.play_start_time = timezone.now()
-        room.duration_to_complete = rt.track.duration
+        room.duration_to_complete = room.current_roomtrack.track.duration
         room.save()
         room.current_roomtrack.room = room
-        room.current_roomtrack()
+        room.current_roomtrack.save()
         tracks.pop(0)
         for track in tracks:
             room.add_track(track)
@@ -370,9 +371,10 @@ class RoomTrack(models.Model):
     def create(cls, track, next_track=None, room=None):
         rt = cls(track=track, added_on=timezone.now(),
                  next_roomtrack=next_track, room=room)
+        rt.save()
         if rt.next_roomtrack == None:
             rt.next_roomtrack = rt
-        rt.save()
+            rt.save()
         return rt
 
 
@@ -388,12 +390,20 @@ class Track(models.Model):
 
     def get_obj(self):
         playback_url = STORAGE_URLS[self.storage_bucket]+self.playback_path
-        obj = {'track_id':self.id,'title': self.title, 'duration': self.duration,
+        obj = {'track_id': self.id, 'title': self.title, 'duration': self.duration,
                'artists': self.artists, 'playback_url': playback_url}
+        return obj
 
     @classmethod
     def get_by_id(cls, pk):
         return cls.objects.get(id=pk)
+
+    @classmethod
+    def create(cls,**values):
+        track = cls(added_on=timezone.now(),**values)
+        track.no_plays=0
+        track.save()
+        return track
 
 
 class Artist(models.Model):
