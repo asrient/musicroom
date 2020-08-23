@@ -34,5 +34,6 @@ def live_event(group, msg_type, **data):
     async_to_sync(channel_layer.group_send)(
         group, {"type": msg_type, **data})
 
+
 def to_json(data):
     return json.dumps(data, cls=DateTimeEncoder)

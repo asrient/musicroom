@@ -166,10 +166,22 @@ class User(AbstractUser):
             room = self.room
             self.room = None
             self.save()
-            live_event('user-'+str(self.id), 'room.disconnect', room_id=room.id)
+            live_event('user-'+str(self.id),
+                       'room.disconnect', room_id=room.id)
             room.broadcast('update.members.remove')
             if room.members.count() == 0:
                 room.delete()
+
+    def get_rooms(self):
+        max_rooms = 10
+        rooms = []
+        friends = self.get_friends()
+        for friend in friends:
+            if friend.room != None:
+                rooms.append(friend.room)
+                if len(rooms) >= max_rooms:
+                    break
+        return rooms
 
     def __str__(self):
         return self.email
