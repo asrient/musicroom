@@ -30,7 +30,7 @@ def makecode(length=20):
     return get_random_string(length=length)
 
 
-def broadcast(group, msg_type, **data):
+def live_event(group, msg_type, **data):
     async_to_sync(channel_layer.group_send)(
         group, {"type": msg_type, **data})
 

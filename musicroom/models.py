@@ -5,7 +5,7 @@ from django.contrib.auth.base_user import BaseUserManager
 import datetime
 from django.utils import timezone
 from musicroom.settings import STORAGE_URLS
-from musicroom.common import makecode, broadcast
+from musicroom.common import makecode, live_event
 
 
 class UserManager(BaseUserManager):
@@ -64,7 +64,7 @@ class User(AbstractUser):
 
     def broadcast(self, msg_type, **data):
         grp_id = 'user-'+str(self.id)
-        broadcast(group=grp_id, msg_type=msg_type, **data)
+        live_event(group=grp_id, msg_type=msg_type, **data)
 
     def seen_now(self, save=True):
         self.last_seen = timezone.now()
@@ -155,8 +155,9 @@ class User(AbstractUser):
         if room.can_user_access(self):
             self.room = room
             self.save()
+            live_event('user-'+str(self.id), 'room.connect', room_id=room.id)
+            room.broadcast('update.members.add')
             return room
-            # emit events
         else:
             raise ValueError("User does not have access")
 
@@ -165,7 +166,8 @@ class User(AbstractUser):
             room = self.room
             self.room = None
             self.save()
-            # emit events
+            live_event('user-'+str(self.id), 'room.disconnect', room_id=room.id)
+            room.broadcast('update.members.remove')
             if room.members.count() == 0:
                 room.delete()
 
@@ -232,7 +234,7 @@ class Room(models.Model):
 
     def broadcast(self, msg_type, **data):
         grp_id = 'room-'+str(self.id)
-        broadcast(group=grp_id, msg_type=msg_type, **data)
+        live_event(group=grp_id, msg_type=msg_type, **data)
 
     def get_state_obj(self):
         state = {
@@ -298,6 +300,7 @@ class Room(models.Model):
         self.is_paused = True
         self.paused_on = timezone.now()
         self.save()
+        self.broadcast('update.playback.pause')
 
     def skip_to(self, index=0, duration=None):
         rt = self.get_roomtrack_by_index(index)
@@ -311,7 +314,7 @@ class Room(models.Model):
             self.duration_to_complete = rt.track.duration
         self.save()
         # schedule next skip_to
-        # emit event
+        self.broadcast('update.playback.skipto')
 
     def add_track(self, track, index=None):
         # index of curr
@@ -328,7 +331,7 @@ class Room(models.Model):
         curr_last.save()
         self.no_tracks = self.no_tracks+1
         self.save()
-        # emit event
+        self.broadcast('update.tracks.add')
 
     def remove_track(self, index):
         # removes a track or index starting from current track
@@ -343,7 +346,7 @@ class Room(models.Model):
                 rt.delete()
                 prev.save()
                 self.save()
-                # emit event
+                self.broadcast('update.tracks.add')
 
     def get_roomtrack_by_index(self, index):
         rt = self.current_roomtrack
