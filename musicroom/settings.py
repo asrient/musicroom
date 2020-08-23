@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*','localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -129,6 +130,17 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STORAGE_URLS={
 'home':'',
 'heroku1':'https://gth.fgh.com'
+}
+
+ASGI_APPLICATION = 'musicroom.routing.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+        },
+    },
 }
 
 STATICFILES_DIRS = [

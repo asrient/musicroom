@@ -5,7 +5,7 @@ from django.contrib.auth.base_user import BaseUserManager
 import datetime
 from django.utils import timezone
 from musicroom.settings import STORAGE_URLS
-from musicroom.common import makecode
+from musicroom.common import makecode, broadcast
 
 
 class UserManager(BaseUserManager):
@@ -61,6 +61,10 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+    def broadcast(self, msg_type, **data):
+        grp_id = 'user-'+str(self.id)
+        broadcast(group=grp_id, msg_type=msg_type, **data)
 
     def seen_now(self, save=True):
         self.last_seen = timezone.now()
@@ -225,6 +229,10 @@ class Room(models.Model):
     code = models.CharField(max_length=50, default=None, null=True)
     current_roomtrack = models.ForeignKey(
         "RoomTrack", on_delete=models.CASCADE, related_name="+")
+
+    def broadcast(self, msg_type, **data):
+        grp_id = 'room-'+str(self.id)
+        broadcast(group=grp_id, msg_type=msg_type, **data)
 
     def get_state_obj(self):
         state = {

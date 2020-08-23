@@ -1,1 +1,1 @@
-web: gunicorn musicroom.wsgi
+web: uvicorn musicroom.asgi:application --port $PORT

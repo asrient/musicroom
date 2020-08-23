@@ -3,6 +3,11 @@ import json
 from json import JSONEncoder
 import datetime
 from django.utils.crypto import get_random_string
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+
+channel_layer = get_channel_layer()
 
 
 class DateTimeEncoder(JSONEncoder):
@@ -20,5 +25,14 @@ def apiRespond(code, **data):
     res.status_code = code
     return res
 
+
 def makecode(length=20):
     return get_random_string(length=length)
+
+
+def broadcast(group, msg_type, **data):
+    async_to_sync(channel_layer.group_send)(
+        group, {"type": msg_type, **data})
+
+def to_json(data):
+    return json.dumps(data, cls=DateTimeEncoder)
