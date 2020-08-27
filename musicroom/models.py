@@ -253,7 +253,7 @@ class Room(models.Model):
             'room_id': self.id,
             'members_count': self.members.count(),
             'is_paused': self.is_paused,
-            'current_track': self.current_roomtrack.track.get_obj(),
+            'current_track': self.current_roomtrack.get_obj(),
             'play_start_time': self.play_start_time,
             'duration_to_complete': self.duration_to_complete
         }
@@ -271,12 +271,12 @@ class Room(models.Model):
                     break
         return {'room_id': self.id, 'members_count': count, 'member_friends': friends_found}
 
-    def get_tracks(self):
+    def get_roomtracks(self):
         rt = self.current_roomtrack
-        List = [rt.track]
+        List = [rt]
         for i in range(self.no_tracks-1):
             rt = rt.next_roomtrack
-            List.append(rt.track)
+            List.append(rt)
         return List
 
     def get_members(self):
@@ -306,7 +306,7 @@ class Room(models.Model):
             self.save()
 
     def play(self):
-        self.skip_to(0, self.duration_to_complete)
+        self.skip_to(self.current_roomtrack, self.duration_to_complete)
 
     def pause(self):
         self.is_paused = True
@@ -314,8 +314,8 @@ class Room(models.Model):
         self.save()
         self.broadcast('update.playback.pause')
 
-    def skip_to(self, index=0, duration=None):
-        rt = self.get_roomtrack_by_index(index)
+    def skip_to(self, roomtrack, duration=None):
+        rt = roomtrack
         self.current_roomtrack = rt
         self.is_paused = False
         self.paused_on = None
@@ -329,13 +329,9 @@ class Room(models.Model):
         roomtask('schedule', room_id=self.id)
         self.broadcast('update.playback.skipto')
 
-    def add_track(self, track, index=None):
-        # index of curr
+    def add_track(self, track):
         # insert track between curr_last and curr
-        # INDEX 0 ie will be added at the last of the queue
         curr = self.current_roomtrack
-        if index != None:
-            curr = self.get_roomtrack_by_index(index)
         curr_last = curr.previous_roomtrack
         curr_last.next_roomtrack = None
         curr_last.save()
@@ -345,21 +341,26 @@ class Room(models.Model):
         self.no_tracks = self.no_tracks+1
         self.save()
         self.broadcast('update.tracks.add')
+        return rt
 
-    def remove_track(self, index):
-        # removes a track or index starting from current track
+    def remove_roomtrack(self, roomtrack):
+        # removes a roomtrack
         if self.no_tracks > 1:
-            rt = self.get_roomtrack_by_index(index)
-            if index > 0:
-                prev = rt.previous_roomtrack
-                nxt = rt.next_roomtrack
-                rt.next_roomtrack = None
+            if self.current_roomtrack.id != roomtask.id:
+                prev = roomtrack.previous_roomtrack
+                nxt = roomtrack.next_roomtrack
+                roomtrack.next_roomtrack = None
                 prev.next_roomtrack = nxt
                 self.no_tracks = self.no_tracks-1
-                rt.delete()
+                roomtrack.delete()
                 prev.save()
                 self.save()
-                self.broadcast('update.tracks.add')
+                self.broadcast('update.tracks.remove')
+                return True
+            else:
+                return False
+        else:
+            return False
 
     def get_roomtrack_by_index(self, index):
         rt = self.current_roomtrack
@@ -398,6 +399,11 @@ class RoomTrack(models.Model):
     track = models.ForeignKey(
         'Track', on_delete=models.PROTECT, related_name="+")
 
+    def get_obj(self):
+        obj = self.track.get_obj()
+        obj['roomtrack_id'] = self.id
+        return obj
+
     @classmethod
     def create(cls, track, next_track=None, room=None):
         rt = cls(track=track, added_on=timezone.now(),
@@ -407,6 +413,10 @@ class RoomTrack(models.Model):
             rt.next_roomtrack = rt
             rt.save()
         return rt
+
+    @classmethod
+    def get_by_id(cls, pk):
+        return cls.objects.get(id=pk)
 
 
 class Track(models.Model):
@@ -431,7 +441,7 @@ class Track(models.Model):
 
     @classmethod
     def browse(cls):
-        tracks= cls.objects.all()[:20]
+        tracks = cls.objects.all()[:20]
         return tracks
 
     @classmethod

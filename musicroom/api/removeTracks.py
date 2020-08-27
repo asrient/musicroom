@@ -4,7 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate, login
 
 from musicroom.common import apiRespond
-from musicroom.models import User, Track
+from musicroom.models import User, RoomTrack
 
 
 @require_http_methods(["POST"])
@@ -12,16 +12,22 @@ def main(request):
     if request.user.is_authenticated:
         if request.user.room != None:
             room = request.user.room
-            if 'track_indexes' in request.POST:
-                indexes=request.POST.getlist('track_indexes')
+            if 'roomtrack_ids' in request.POST:
+                roomtrack_ids = request.POST.getlist('roomtrack_ids')
                 affected_tracks = []
-                for track_index in indexes:
-                    track_index = int(track_index)
-                    affected_tracks.append(track_index)
-                    room.remove_track(track_index)
-                return apiRespond(201, affected_track_indexes=affected_tracks)
+                for roomtrack_id in roomtrack_ids:
+                    roomtrack_id = int(roomtrack_id)
+                    try:
+                        roomtrack = RoomTrack.get_by_id(roomtrack_id)
+                    except:
+                        pass
+                    else:
+                        done = room.remove_roomtrack(roomtrack)
+                        if done:
+                            affected_tracks.append(roomtrack_id)
+                return apiRespond(201, roomtrack_ids=affected_tracks)
             else:
-                return apiRespond(400, msg='track_indexes missing')
+                return apiRespond(400, msg='roomtrack_ids missing')
         else:
             return apiRespond(400, msg='Not a member of any room')
     else:

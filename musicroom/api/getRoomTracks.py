@@ -12,11 +12,11 @@ def main(request):
     if request.user.is_authenticated:
         if request.user.room != None:
             room = request.user.room
-            tracks = room.get_tracks()
+            tracks = room.get_roomtracks()
             List = []
             for track in tracks:
                 List.append(track.get_obj())
-            return apiRespond(200, tracks=List)
+            return apiRespond(200, roomtracks=List)
         else:
             return apiRespond(400, msg='Not a member of any room')
     else:

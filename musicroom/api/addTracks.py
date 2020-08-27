@@ -15,16 +15,16 @@ def main(request):
             if 'track_ids' in request.POST:
                 track_ids=request.POST.getlist('track_ids')
                 if len(track_ids):
-                    affected_tracks=[]
+                    roomtracks=[]
                     for track_id in track_ids:
                         try:
                             track=Track.get_by_id(track_id)
                         except:
                             pass
                         else:
-                            affected_tracks.append(track_id)
-                            room.add_track(track)
-                    return apiRespond(201, affected_track_ids=affected_tracks)
+                            roomtrack=room.add_track(track)
+                            roomtracks.append(roomtrack.get_obj())
+                    return apiRespond(201, roomtracks=roomtracks)
                 else:
                      return apiRespond(400, msg='track_ids format invalid')
             else:
