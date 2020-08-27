@@ -1,4 +1,5 @@
 <link rel="stylesheet" type="text/css" href="/static/styles/header.css" />
+{% if not blank %}
 <div id="header">
     <a id="hd_hero" href="/"><img id="hd_mrIcon" src="/static/icons/mr.png"/></a>
     {% if not header.is_empty %}
@@ -13,3 +14,4 @@
     {% endif %}
 </div>
 <div id="hd_space"></div>
+{% endif %}

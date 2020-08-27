@@ -5,7 +5,7 @@ from django.contrib.auth.base_user import BaseUserManager
 import datetime
 from django.utils import timezone
 from musicroom.settings import STORAGE_URLS
-from musicroom.common import makecode, live_event
+from musicroom.common import makecode, live_event, roomtask
 
 
 class UserManager(BaseUserManager):
@@ -132,7 +132,7 @@ class User(AbstractUser):
         profile = {'user_id': self.id, 'name': self.name, 'is_self': True}
         if self != ref_user:
             profile['is_self'] = False
-            friend_status, friend_obj = self.friendship_status(ref_user)
+            friend_status, friend_obj = ref_user.friendship_status(self)
             profile['friendship_status'] = friend_status
             if friend_status == 3:
                 profile['friends_since'] = friend_obj.accepted_on
@@ -326,6 +326,7 @@ class Room(models.Model):
             self.duration_to_complete = rt.track.duration
         self.save()
         # schedule next skip_to
+        roomtask('schedule', room_id=self.id)
         self.broadcast('update.playback.skipto')
 
     def add_track(self, track, index=None):
@@ -427,6 +428,11 @@ class Track(models.Model):
     @classmethod
     def get_by_id(cls, pk):
         return cls.objects.get(id=pk)
+
+    @classmethod
+    def browse(cls):
+        tracks= cls.objects.all()[:20]
+        return tracks
 
     @classmethod
     def create(cls, **values):

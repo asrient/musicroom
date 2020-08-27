@@ -21,8 +21,7 @@ def main(request):
                 except:
                     return apiRespond(400, msg='Already a friend or requested')
                 else:
-                    print(friend)
-                    return apiRespond(201, msg='ok')
+                    return apiRespond(201, friendship_status=request.user.friendship_status(target_user)[0])
         else:
             return apiRespond(400, msg='id missing')
     else:

@@ -8,7 +8,6 @@
     <link rel="stylesheet" type="text/css" href="/static/xui/xui.css" />
     <link rel="stylesheet" type="text/css" href="/static/styles/shared.css" />
     <script type="text/javascript" src="/static/scripts/shared.js"></script>
-    <script type="text/javascript" src={% block script %}{% endblock %}></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
     <meta name="description" content={% block desc %}"Enjoy music with friends together, free!"{% endblock %} />
@@ -21,7 +20,7 @@
     <script type="text/javascript" src="/static/scripts/bg.js"></script>
     <div id="bg">
         {% block root %}
-        {% include "header.html" with blank=True %}
+        {% include "header.html" with blank=no_header|default:False %}
         {% block content %}
         <h1>Something went wrong!</h1>
         {% endblock %}
@@ -29,5 +28,5 @@
     </div>
     {% endblock %}
 </body>
-
+<script type="text/javascript" src={% block script %}{% endblock %}></script>
 </html>

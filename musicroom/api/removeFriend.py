@@ -18,7 +18,7 @@ def main(request):
             else:
                 done = request.user.unfriend(target_user)
                 if done:
-                    return apiRespond(201, msg='ok')
+                    return apiRespond(201, friendship_status=request.user.friendship_status(target_user)[0])
                 else:
                     return apiRespond(400, msg='not a friend')
         else:

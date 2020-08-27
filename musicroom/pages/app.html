@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block script %}"/static/bundle/app.js"{% endblock %}
+{% block content %}
+<script>
+    {% autoescape off %}
+    window.initialState = {{ state }}
+    {% endautoescape %}
+</script>
+<div id="root">Loading...</div>
+<video id="player"></video>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>
+    window.player = document.getElementById('player');
+    if (Hls.isSupported()) {
+    window.hls = new Hls();
+    window.hls.attachMedia(window.player);
+    window.hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        window.player.play();
+    });
+  }
+  else{
+    console.error('HTTP Live Streaming not supported!')
+    window.hls=null
+  }
+</script>
+{% endblock %}

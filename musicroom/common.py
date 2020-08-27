@@ -35,5 +35,11 @@ def live_event(group, msg_type, **data):
         group, {"type": msg_type, **data})
 
 
+def roomtask(task, **data):
+    # task='schedule'
+    async_to_sync(channel_layer.send)(
+        'roomkeeping', {"type": task, **data})
+
+
 def to_json(data):
     return json.dumps(data, cls=DateTimeEncoder)

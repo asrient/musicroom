@@ -20,7 +20,7 @@ from musicroom.startup import init
 from musicroom.paths.index import main as index
 from musicroom.paths.emailPref import main as emailPref
 from musicroom.paths.login import main as login
-from musicroom.paths.rooms import main as rooms
+from musicroom.paths.app import app, app_login_required
 from musicroom.paths.signup import main as signup
 from musicroom.paths.setName import main as setName
 
@@ -30,7 +30,10 @@ urlpatterns = [
     path('login', login, name='login'),
     path('signup', signup, name='signup'),
     path('setName', setName, name='set_name'),
-    path('rooms', rooms, name='rooms'),
+    path('rooms', app_login_required, name='rooms'),
+    path('createRoom', app_login_required, name='create_room'),
+    path('profile/<int:user_id>', app_login_required, name='profile'),
+    path('roomPreview/<int:room_id>', app_login_required, name='room_preview'),
     path('api/', include('musicroom.api.urls')),
     path('admin/', admin.site.urls),
 ]
