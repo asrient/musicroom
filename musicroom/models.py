@@ -346,7 +346,7 @@ class Room(models.Model):
     def remove_roomtrack(self, roomtrack):
         # removes a roomtrack
         if self.no_tracks > 1:
-            if self.current_roomtrack.id != roomtask.id:
+            if self.current_roomtrack.id != roomtrack.id:
                 prev = roomtrack.previous_roomtrack
                 nxt = roomtrack.next_roomtrack
                 roomtrack.next_roomtrack = None
