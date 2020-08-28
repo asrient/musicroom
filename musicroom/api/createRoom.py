@@ -10,9 +10,9 @@ from musicroom.models import User, Track
 @require_http_methods(["POST"])
 def main(request):
     if request.user.is_authenticated:
-        if "track_ids" in request.POST:
+        if "track_ids[]" in request.POST:
             tracks=[]
-            track_ids=request.POST.getlist('track_ids')
+            track_ids=request.POST.getlist('track_ids[]')
             for track_id in track_ids:
                 try:
                     track=Track.get_by_id(track_id)

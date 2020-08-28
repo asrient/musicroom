@@ -12,8 +12,8 @@ def main(request):
     if request.user.is_authenticated:
         if request.user.room != None:
             room = request.user.room
-            if 'user_ids' in request.POST:
-                user_ids=request.POST.getlist('user_ids')
+            if 'user_ids[]' in request.POST:
+                user_ids=request.POST.getlist('user_ids[]')
                 if len(user_ids):
                     affected_users=[]
                     for user_id in user_ids:
@@ -25,7 +25,7 @@ def main(request):
                             affected_users.append(user_id)
                             room.grant_access(user,save=False)
                     room.save()
-                    return apiRespond(201, affected_user_ids=affected_users)
+                    return apiRespond(201, user_ids=affected_users)
                 else:
                      return apiRespond(400, msg='user_ids format invalid')
             else:

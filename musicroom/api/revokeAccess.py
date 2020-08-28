@@ -12,8 +12,8 @@ def main(request):
     if request.user.is_authenticated:
         if request.user.room != None:
             room = request.user.room
-            if 'user_ids' in request.POST:
-                user_ids=request.POST.getlist('user_ids')
+            if 'user_ids[]' in request.POST:
+                user_ids=request.POST.getlist('user_ids[]')
                 if len(user_ids):
                     affected_users=[]
                     for user_id in user_ids:

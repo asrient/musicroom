@@ -12,8 +12,8 @@ def main(request):
     if request.user.is_authenticated:
         if request.user.room != None:
             room = request.user.room
-            if 'track_ids' in request.POST:
-                track_ids=request.POST.getlist('track_ids')
+            if 'track_ids[]' in request.POST:
+                track_ids=request.POST.getlist('track_ids[]')
                 if len(track_ids):
                     roomtracks=[]
                     for track_id in track_ids:

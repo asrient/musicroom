@@ -253,7 +253,7 @@ class Room(models.Model):
             'room_id': self.id,
             'members_count': self.members.count(),
             'is_paused': self.is_paused,
-            'current_track': self.current_roomtrack.get_obj(),
+            'current_roomtrack': self.current_roomtrack.get_obj(),
             'play_start_time': self.play_start_time,
             'duration_to_complete': self.duration_to_complete
         }
