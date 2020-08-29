@@ -51,11 +51,21 @@ class Live(WebsocketConsumer):
 
     def update_members_disconnected(self, event):
         if 'action_user' in event:
-            self.dispatch_msg('update.members.disconnected', event['action_user'])
+            self.dispatch_msg('update.members.disconnected',
+                              event['action_user'])
 
     def update_members_add(self, event):
         if 'action_user' in event:
-            self.dispatch_msg('update.members.add', event['action_user'])
+            user_id = event['action_user']['user_id']
+            try:
+                user = User.get_by_id(user_id)
+            except:
+                pass
+            else:
+                status = self.user.friendship_status(user)[0]
+                is_friend = status == 3
+                self.dispatch_msg(
+                    'update.members.add', action_user=event['action_user'], is_friend=is_friend)
 
     def update_members_remove(self, event):
         if 'action_user' in event:
@@ -84,12 +94,12 @@ class Live(WebsocketConsumer):
     def update_playback_play(self, event):
         if 'room' in event and 'action_user' in event:
             self.dispatch_msg('update.playback.play',
-                            event['action_user'], room=event['room'])
+                              event['action_user'], room=event['room'])
 
     def dispatch_msg(self, msg_type, action_user=None, **msg):
         data = {'type': msg_type, 'action_user': action_user, **msg}
         self.send(text_data=to_json(data))
 
     def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json['message']
+        data = json.loads(text_data)
+        print(data)
