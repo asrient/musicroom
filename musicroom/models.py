@@ -5,7 +5,7 @@ from django.contrib.auth.base_user import BaseUserManager
 import datetime
 from django.utils import timezone
 from musicroom.settings import STORAGE_URLS
-from musicroom.common import makecode, live_event, roomtask
+from musicroom.common import makecode, live_event, roomtask, dump_datetime
 
 
 class UserManager(BaseUserManager):
@@ -61,6 +61,11 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+    def get_value(self, field_name):
+        field_object = User._meta.get_field(field_name)
+        value = field_object.value_from_object(self)
+        return value
 
     def broadcast(self, msg_type, **data):
         grp_id = 'user-'+str(self.id)
@@ -155,8 +160,10 @@ class User(AbstractUser):
         if room.can_user_access(self):
             self.room = room
             self.save()
-            live_event('user-'+str(self.id), 'room.connect', room_id=room.id)
-            room.broadcast('update.members.add')
+            live_event('user-'+str(self.id), 'room.connect',
+                       room_id=room.get_value('id'))
+            room.broadcast('update.members.add',
+                           action_user=self.get_profile_min())
             return room
         else:
             raise ValueError("User does not have access")
@@ -167,8 +174,9 @@ class User(AbstractUser):
             self.room = None
             self.save()
             live_event('user-'+str(self.id),
-                       'room.disconnect', room_id=room.id)
-            room.broadcast('update.members.remove')
+                       'room.disconnect', room_id=room.get_value('id'))
+            room.broadcast('update.members.remove',
+                           action_user=self.get_profile_min())
             if room.members.count() == 0:
                 room.delete()
 
@@ -244,6 +252,11 @@ class Room(models.Model):
     current_roomtrack = models.ForeignKey(
         "RoomTrack", on_delete=models.CASCADE, related_name="+")
 
+    def get_value(self, field_name):
+        field_object = Room._meta.get_field(field_name)
+        value = field_object.value_from_object(self)
+        return value
+
     def broadcast(self, msg_type, **data):
         grp_id = 'room-'+str(self.id)
         live_event(group=grp_id, msg_type=msg_type, **data)
@@ -254,8 +267,8 @@ class Room(models.Model):
             'members_count': self.members.count(),
             'is_paused': self.is_paused,
             'current_roomtrack': self.current_roomtrack.get_obj(),
-            'play_start_time': self.play_start_time,
-            'duration_to_complete': self.duration_to_complete
+            'play_start_time': dump_datetime(self.play_start_time),
+            'duration_to_complete': dump_datetime(self.duration_to_complete)
         }
         return state
 
@@ -305,16 +318,20 @@ class Room(models.Model):
         if save:
             self.save()
 
-    def play(self):
-        self.skip_to(self.current_roomtrack, self.duration_to_complete)
+    def play(self, action_user=None):
+        self.skip_to(self.current_roomtrack,
+                     self.duration_to_complete, action_user=action_user)
 
-    def pause(self):
+    def pause(self, action_user=None):
         self.is_paused = True
         self.paused_on = timezone.now()
         self.save()
-        self.broadcast('update.playback.pause')
+        if action_user != None:
+            action_user = action_user.get_profile_min()
+        self.broadcast('update.playback.pause',
+                       action_user=action_user, room=self.get_state_obj())
 
-    def skip_to(self, roomtrack, duration=None):
+    def skip_to(self, roomtrack, duration=None, action_user=None):
         rt = roomtrack
         self.current_roomtrack = rt
         self.is_paused = False
@@ -326,10 +343,13 @@ class Room(models.Model):
             self.duration_to_complete = rt.track.duration
         self.save()
         # schedule next skip_to
-        roomtask('schedule', room_id=self.id)
-        self.broadcast('update.playback.skipto')
+        roomtask('schedule', room_id=self.get_value('id'))
+        if action_user != None:
+            action_user = action_user.get_profile_min()
+        self.broadcast('update.playback.skipto',
+                       action_user=action_user, room=self.get_state_obj())
 
-    def add_track(self, track):
+    def add_track(self, track, action_user=None):
         # insert track between curr_last and curr
         curr = self.current_roomtrack
         curr_last = curr.previous_roomtrack
@@ -340,13 +360,17 @@ class Room(models.Model):
         curr_last.save()
         self.no_tracks = self.no_tracks+1
         self.save()
-        self.broadcast('update.tracks.add')
+        if action_user != None:
+            action_user = action_user.get_profile_min()
+        self.broadcast('update.tracks.add',
+                       action_user=action_user, roomtrack=rt.get_obj())
         return rt
 
-    def remove_roomtrack(self, roomtrack):
+    def remove_roomtrack(self, roomtrack, action_user=None):
         # removes a roomtrack
         if self.no_tracks > 1:
             if self.current_roomtrack.id != roomtrack.id:
+                obj = roomtrack.get_obj()
                 prev = roomtrack.previous_roomtrack
                 nxt = roomtrack.next_roomtrack
                 roomtrack.next_roomtrack = None
@@ -355,7 +379,10 @@ class Room(models.Model):
                 roomtrack.delete()
                 prev.save()
                 self.save()
-                self.broadcast('update.tracks.remove')
+                if action_user != None:
+                    action_user = action_user.get_profile_min()
+                self.broadcast('update.tracks.remove',
+                               action_user=action_user, roomtrack=obj)
                 return True
             else:
                 return False
@@ -431,7 +458,7 @@ class Track(models.Model):
 
     def get_obj(self):
         playback_url = STORAGE_URLS[self.storage_bucket]+self.playback_path
-        obj = {'track_id': self.id, 'title': self.title, 'duration': self.duration,
+        obj = {'track_id': self.id, 'title': self.title, 'duration': dump_datetime(self.duration),
                'artists': self.artists, 'playback_url': playback_url}
         return obj
 

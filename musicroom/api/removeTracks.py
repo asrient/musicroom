@@ -22,7 +22,7 @@ def main(request):
                     except:
                         pass
                     else:
-                        done = room.remove_roomtrack(roomtrack)
+                        done = room.remove_roomtrack(roomtrack, request.user)
                         if done:
                             affected_tracks.append(roomtrack_id)
                 return apiRespond(201, roomtrack_ids=affected_tracks)

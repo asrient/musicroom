@@ -5,6 +5,7 @@ import datetime
 from django.utils.crypto import get_random_string
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+import django.core.serializers
 
 
 channel_layer = get_channel_layer()
@@ -43,3 +44,12 @@ def roomtask(task, **data):
 
 def to_json(data):
     return json.dumps(data, cls=DateTimeEncoder)
+
+
+def dump_datetime(obj):
+    if isinstance(obj, (datetime.date, datetime.datetime)):
+        return obj.isoformat()
+    elif isinstance(obj, datetime.time):
+        return (obj.hour * 60 + obj.minute) * 60 + obj.second
+    else:
+        return obj

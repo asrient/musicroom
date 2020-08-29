@@ -13,20 +13,20 @@ def main(request):
         if request.user.room != None:
             room = request.user.room
             if 'track_ids[]' in request.POST:
-                track_ids=request.POST.getlist('track_ids[]')
+                track_ids = request.POST.getlist('track_ids[]')
                 if len(track_ids):
-                    roomtracks=[]
+                    roomtracks = []
                     for track_id in track_ids:
                         try:
-                            track=Track.get_by_id(track_id)
+                            track = Track.get_by_id(track_id)
                         except:
                             pass
                         else:
-                            roomtrack=room.add_track(track)
+                            roomtrack = room.add_track(track, request.user)
                             roomtracks.append(roomtrack.get_obj())
                     return apiRespond(201, roomtracks=roomtracks)
                 else:
-                     return apiRespond(400, msg='track_ids format invalid')
+                    return apiRespond(400, msg='track_ids format invalid')
             else:
                 return apiRespond(400, msg='track_ids missing')
         else:
