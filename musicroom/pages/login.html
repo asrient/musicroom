@@ -17,7 +17,7 @@
                     class="input">
                 <input placeholder="Password" name="password" type="password" id="passwordBox" class="input">
                 <div id="msg"></div>
-                <button id="loginButt" class="center redButt">LOG IN</button>
+                <button id="loginButt" onclick="login()" class="center redButt">LOG IN</button>
             </div>
         </div>
     </div>
@@ -51,7 +51,7 @@
     $("#passwordBox").on("input", () => {
         hideMsg()
     })
-    $("#loginButt").on("click", () => {
+    function login() {
         hideMsg()
         var data = {
             email: $("#emailBox").val().trim(),
@@ -75,6 +75,6 @@
         else{
             showMsg("Invalid email")
         }
-    })
+    }
 </script>
 {% endblock %}

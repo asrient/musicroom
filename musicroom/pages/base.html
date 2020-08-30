@@ -7,8 +7,8 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="/static/xui/xui.css" />
     <link rel="stylesheet" type="text/css" href="/static/styles/shared.css" />
-    <script type="text/javascript" src="/static/scripts/shared.js"></script>
     <script src="/static/scripts/jquery.js"></script>
+    <script src="/static/scripts/shared.js"></script>
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
     <meta name="description" content={% block desc %}"Enjoy music with friends together, free!"{% endblock %} />
     {% block tags %}{% endblock %}
@@ -17,7 +17,7 @@
 
 <body>
     {% block body %}
-    <script type="text/javascript" src="/static/scripts/bg.js"></script>
+    <script src="/static/scripts/bg.js"></script>
     <div id="bg">
         {% block root %}
         {% include "header.html" with blank=no_header|default:False %}
@@ -28,5 +28,5 @@
     </div>
     {% endblock %}
 </body>
-<script type="text/javascript" src={% block script %}{% endblock %}></script>
+<script src={% block script %}{% endblock %}></script>
 </html>
