@@ -330,8 +330,13 @@ class Room(models.Model):
         time_left = dump_datetime(
             self.duration_to_complete)-time_diff.total_seconds()
         time_left = int(time_left)
+        if time_left < 0:
+            print(
+                'PLAYBACK ERROR: Time played more than duration, possible SCHEDULED_SKIPTO_MISS', time_left)
+            time_left = dump_datetime(self.current_roomtrack.track.duration) 
         mins, secs = divmod(time_left, 60)
         self.duration_to_complete = datetime.time(0, mins, secs)
+        self.play_start_time = timezone.now()
         self.save()
         if action_user != None:
             action_user = action_user.get_profile_min()
