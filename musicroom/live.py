@@ -2,7 +2,7 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from musicroom.common import to_json
-from musicroom.models import User
+from musicroom.models import User, RoomTrack
 
 
 class Live(WebsocketConsumer):
@@ -82,18 +82,16 @@ class Live(WebsocketConsumer):
                               event['action_user'], roomtrack=event['roomtrack'])
 
     def update_playback_skipto(self, event):
-        if 'room' in event and 'action_user' in event:
+        if 'room' in event:
+            user=None
+            if 'action_user' in event:
+                user=event['action_user']
             self.dispatch_msg('update.playback.skipto',
-                              event['action_user'], room=event['room'])
+                              action_user=user, room=event['room'])
 
     def update_playback_pause(self, event):
         if 'room' in event and 'action_user' in event:
             self.dispatch_msg('update.playback.pause',
-                              event['action_user'], room=event['room'])
-
-    def update_playback_play(self, event):
-        if 'room' in event and 'action_user' in event:
-            self.dispatch_msg('update.playback.play',
                               event['action_user'], room=event['room'])
 
     def dispatch_msg(self, msg_type, action_user=None, **msg):
@@ -102,4 +100,23 @@ class Live(WebsocketConsumer):
 
     def receive(self, text_data):
         data = json.loads(text_data)
-        print(data)
+        if 'type' in data:
+            msg_type = data['type']
+            if self.user.room != None:
+                if msg_type == 'set.playback.pause':
+                    self.user.room.pause(action_user=self.user)
+                if msg_type == 'set.playback.play':
+                    self.user.room.play(action_user=self.user)
+                if msg_type == 'set.playback.skipto':
+                    if 'roomtrack_id' in data:
+                        rt_id = data['roomtrack_id']
+                        duration = None
+                        if 'duration' in data:
+                            duration = data['duration']
+                        try:
+                            rt = RoomTrack.get_by_id(rt_id)
+                        except:
+                            pass
+                        else:
+                            self.user.room.skip_to(
+                                roomtrack=rt, duration=duration, action_user=self.user)
