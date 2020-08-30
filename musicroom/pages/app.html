@@ -11,16 +11,8 @@
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script>
     window.player = document.getElementById('player');
-    if (Hls.isSupported()) {
-    window.hls = new Hls();
-    window.hls.attachMedia(window.player);
-    window.hls.on(Hls.Events.MANIFEST_PARSED, function() {
-        window.player.play();
-    });
-  }
-  else{
+    if (!Hls.isSupported()) {
     console.error('HTTP Live Streaming not supported!')
-    window.hls=null
   }
 </script>
 {% endblock %}

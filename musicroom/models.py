@@ -325,6 +325,13 @@ class Room(models.Model):
     def pause(self, action_user=None):
         self.is_paused = True
         self.paused_on = timezone.now()
+        start_time = self.play_start_time
+        time_diff = timezone.now()-start_time
+        time_left = dump_datetime(
+            self.duration_to_complete)-time_diff.total_seconds()
+        time_left = int(time_left)
+        mins, secs = divmod(time_left, 60)
+        self.duration_to_complete = datetime.time(0, mins, secs)
         self.save()
         if action_user != None:
             action_user = action_user.get_profile_min()

@@ -25,6 +25,7 @@
     background-color: rgb(255 255 255 / 90%);
     color: #353535;
     border: none;
+    border-radius: 0px !important;
 }
 #msg{
     display: none;

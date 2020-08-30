@@ -130,20 +130,15 @@ p {
 
 button {
   font-family: 'Segoe UI', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 400;
-  border-radius: 0.5rem;
-  padding: 0.15rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  margin: 0.2rem;
-  border: none;
-  background: linear-gradient(#65AFFA, #0E81FF);
-  border: 0.5px rgba(0, 0, 0, 0.1) solid;
-  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.28);
-  color: white;
-  transition-property: all;
-  transition-duration: 100ms;
+  font-size: inherit;
+  font-weight: inherit;
+  border-radius: 0rem;
+  padding: 0.1rem;
+  margin: 0px;
+  display: block;
+  border:none;
+  background: none;
+  cursor: pointer;
 }
 
 .maxHt {
