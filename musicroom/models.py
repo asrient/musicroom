@@ -333,7 +333,7 @@ class Room(models.Model):
         if time_left < 0:
             print(
                 'PLAYBACK ERROR: Time played more than duration, possible SCHEDULED_SKIPTO_MISS', time_left)
-            time_left = dump_datetime(self.current_roomtrack.track.duration) 
+            time_left = dump_datetime(self.current_roomtrack.track.duration)
         mins, secs = divmod(time_left, 60)
         self.duration_to_complete = datetime.time(0, mins, secs)
         self.play_start_time = timezone.now()
@@ -342,6 +342,11 @@ class Room(models.Model):
             action_user = action_user.get_profile_min()
         self.broadcast('update.playback.pause',
                        action_user=action_user, room=self.get_state_obj())
+
+    def skip_to_next(self):
+        curr_rt=self.current_roomtrack
+        next_rt=curr_rt.next_roomtrack
+        self.skip_to(next_rt)
 
     def skip_to(self, roomtrack, duration=None, action_user=None):
         rt = roomtrack
@@ -355,7 +360,8 @@ class Room(models.Model):
             self.duration_to_complete = rt.track.duration
         self.save()
         # schedule next skip_to
-        roomtask('schedule', room_id=self.get_value('id'))
+        roomtask('schedule.skipto', room_id=self.get_value('id'),
+                 timeout=dump_datetime(self.duration_to_complete))
         if action_user != None:
             action_user = action_user.get_profile_min()
         self.broadcast('update.playback.skipto',
