@@ -12,4 +12,7 @@ def main(request):
         res = render(request, 'index.html',{'header':{'is_loggedin':False,'is_empty':False},"prefer_email":prefer_email})
         return res
     else:
-        return redirect("/rooms")
+        if request.user is None:
+            return redirect("/rooms")
+        else:
+            return redirect("/room")
