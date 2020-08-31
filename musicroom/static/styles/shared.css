@@ -39,3 +39,15 @@
   opacity: 0;
   display: none;
 }
+.trunc {
+  width: 16rem;
+  max-width: 40vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media(max-width:350){
+  .trunc {
+    max-width: 34vw;
+  }
+}

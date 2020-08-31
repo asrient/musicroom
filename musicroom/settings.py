@@ -129,8 +129,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STORAGE_URLS={
 'home':'',
+'jio':'',
 'heroku1':'https://gth.fgh.com'
 }
+
+JIOMUSIC_STREAM_BASEURL='http://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/'
 
 ASGI_APPLICATION = 'musicroom.routing.application'
 

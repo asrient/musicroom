@@ -337,6 +337,8 @@ class Room(models.Model):
         mins, secs = divmod(time_left, 60)
         self.duration_to_complete = datetime.time(0, mins, secs)
         self.play_start_time = timezone.now()
+        self.no_tracks = RoomTrack.count(self)
+        print('pausing.. rt id',self.current_roomtrack.id)
         self.save()
         if action_user != None:
             action_user = action_user.get_profile_min()
@@ -344,8 +346,9 @@ class Room(models.Model):
                        action_user=action_user, room=self.get_state_obj())
 
     def skip_to_next(self):
-        curr_rt=self.current_roomtrack
-        next_rt=curr_rt.next_roomtrack
+        curr_rt = self.current_roomtrack
+        next_rt = curr_rt.next_roomtrack
+        print('skiping to next',next_rt.id)
         self.skip_to(next_rt)
 
     def skip_to(self, roomtrack, duration=None, action_user=None):
@@ -358,6 +361,8 @@ class Room(models.Model):
             self.duration_to_complete = duration
         else:
             self.duration_to_complete = rt.track.duration
+        self.save()
+        self.no_tracks = RoomTrack.count(self)
         self.save()
         # schedule next skip_to
         roomtask('schedule.skipto', room_id=self.get_value('id'),
@@ -376,7 +381,7 @@ class Room(models.Model):
         rt = RoomTrack.create(track, next_track=curr, room=self)
         curr_last.next_roomtrack = rt
         curr_last.save()
-        self.no_tracks = self.no_tracks+1
+        self.no_tracks = RoomTrack.count(self)
         self.save()
         if action_user != None:
             action_user = action_user.get_profile_min()
@@ -392,10 +397,11 @@ class Room(models.Model):
                 prev = roomtrack.previous_roomtrack
                 nxt = roomtrack.next_roomtrack
                 roomtrack.next_roomtrack = None
+                roomtrack.save()
                 prev.next_roomtrack = nxt
-                self.no_tracks = self.no_tracks-1
-                roomtrack.delete()
                 prev.save()
+                roomtrack.delete()
+                self.no_tracks = RoomTrack.count(self)
                 self.save()
                 if action_user != None:
                     action_user = action_user.get_profile_min()
@@ -460,6 +466,10 @@ class RoomTrack(models.Model):
         return rt
 
     @classmethod
+    def count(cls, room):
+        return cls.objects.filter(room=room).count()
+
+    @classmethod
     def get_by_id(cls, pk):
         return cls.objects.get(id=pk)
 
@@ -469,20 +479,26 @@ class Track(models.Model):
     title = models.CharField(max_length=255)
     artists = models.CharField(max_length=255)
     duration = models.TimeField()
-    no_plays = models.IntegerField()
-    filename = models.CharField(max_length=255)
+    plays_count = models.IntegerField()
+    ref_id = models.CharField(max_length=255, default=None, null=True)
     storage_bucket = models.CharField(max_length=255)
     playback_path = models.CharField(max_length=255)
+    image_path = models.CharField(max_length=255, default=None, null=True)
 
     def get_obj(self):
         playback_url = STORAGE_URLS[self.storage_bucket]+self.playback_path
+        image_url = STORAGE_URLS[self.storage_bucket]+self.image_path
         obj = {'track_id': self.id, 'title': self.title, 'duration': dump_datetime(self.duration),
-               'artists': self.artists, 'playback_url': playback_url}
+               'artists': self.artists, 'playback_url': playback_url, 'image_url': image_url}
         return obj
 
     @classmethod
     def get_by_id(cls, pk):
         return cls.objects.get(id=pk)
+
+    @classmethod
+    def get_by_ref_id(cls, ref_id):
+        return cls.objects.get(ref_id=ref_id)
 
     @classmethod
     def browse(cls):
@@ -492,7 +508,7 @@ class Track(models.Model):
     @classmethod
     def create(cls, **values):
         track = cls(added_on=timezone.now(), **values)
-        track.no_plays = 0
+        track.plays_count = 0
         track.save()
         return track
 

@@ -24,6 +24,7 @@ from musicroom.api.removeTracks import main as removeTracks
 from musicroom.api.getRoomCode import main as getRoomCode
 from musicroom.api.getRooms import main as getRooms
 from musicroom.api.tracks import main as tracks
+from musicroom.api.searchTracks import main as search_tracks
 
 
 urlpatterns = [
@@ -51,4 +52,5 @@ urlpatterns = [
     path('room/access/code', getRoomCode),
     path('rooms', getRooms),
     path('tracks', tracks),
+    path('tracks/search/<str:word>', search_tracks),
 ]
