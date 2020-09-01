@@ -355,7 +355,12 @@ class Room(models.Model):
 
     def skip_to(self, roomtrack, duration=None, action_user=None):
         rt = roomtrack
+        prev_rt=self.current_roomtrack
         self.current_roomtrack = rt
+        if rt != prev_rt:
+            track=rt.track
+            track.plays_count+=1
+            track.save()
         self.is_paused = False
         self.paused_on = None
         self.play_start_time = timezone.now()
@@ -363,8 +368,6 @@ class Room(models.Model):
             self.duration_to_complete = duration
         else:
             self.duration_to_complete = rt.track.duration
-        self.save()
-        self.no_tracks = RoomTrack.count(self)
         self.save()
         # schedule next skip_to
         roomtask('schedule.skipto', room_id=self.get_value('id'),
@@ -504,7 +507,7 @@ class Track(models.Model):
 
     @classmethod
     def browse(cls):
-        tracks = cls.objects.all()[:20]
+        tracks = cls.objects.all().order_by('-plays_count', '-added_on')[:25]
         return tracks
 
     @classmethod
