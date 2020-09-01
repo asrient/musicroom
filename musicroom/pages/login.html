@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
+<script>
+    const next = "{{next}}"
+</script>
 <link rel="stylesheet" type="text/css" href="/static/styles/forms.css" />
 <div class="container">
     <div class="ink-white size-xxl base-m center" id="greet">
@@ -61,7 +64,7 @@
             api.post('auth', data, (code, res) => {
             if(code==200){
                 console.log("success")
-                window.location.href="/rooms"
+                window.location.href=next
             }
             else if(code==400){
                 showFull();

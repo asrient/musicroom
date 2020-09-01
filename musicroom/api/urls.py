@@ -25,6 +25,7 @@ from musicroom.api.getRoomCode import main as getRoomCode
 from musicroom.api.getRooms import main as getRooms
 from musicroom.api.tracks import main as tracks
 from musicroom.api.searchTracks import main as search_tracks
+from musicroom.api.setAvatar import main as setAvatar
 
 
 urlpatterns = [
@@ -32,6 +33,7 @@ urlpatterns = [
     path('register', register, name='api.register'),
     path('logout', logout, name='logout'),
     path('set/name', setName, name='api.set_name'),
+    path('set/avatar', setAvatar, name='api.set_avatar'),
     path('profile', getProfile, name='api.get_profile'),
     path('profile/me', getMyProfile, name='api.get_my_profile'),
     path('friends', friendsList, name='api.friends_list'),

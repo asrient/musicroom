@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block tags %}
+<link rel="stylesheet" type="text/css" href="/static/styles/setAvatar.css" />
+{% endblock %}
+{% block content %}
+<script>
+  const setName={{ set_name }}
+</script>
+<div class="container">
+  <div id="title" class="ink-white size-xxl base-regular">
+    Have a <img id="title-logo" src="/static/icons/bitmoji-txt.svg"/>?
+  </div>
+  <div id="s1">
+    <div id="s1-hero-cont" class="center">
+      <img id="s1-hero" src="/static/media/bitmoji-hero.png"/>
+    </div>
+    <br/>
+    <div id="button-target"></div>
+    <div class="center" style="padding-top: 1.2rem;">
+      <a href="/setName" class="button bordered rounded white ink-light size-s base-semilight">Skip</a>
+    </div>
+    <br/>
+    <br/>
+  </div>
+  <div id="s2" class="center-col">
+    <br/>
+    <div id="bitmoji"></div>
+    <div id="name" class="size-m ink-white base-regular"></div>
+    <br/>
+    <div class="button rounded bordered white">Saving..</div>
+  </div>
+  <div id="s3" style="display: none;" class="center-col">
+    <br/>
+    <br/>
+    <br/>
+    <div class="ink-light base-regular size-m">
+      You need to keep bitmoji option enabled
+    </div>
+    <br/>
+    <div class="center redButt" onclick="tryagain()">Try again</div>
+    <br/>
+  </div>
+    <script>
+      function tryagain(){
+        $("#s1").css({display:'block'})
+        $("#s3").css({display:'none'})
+      }
+      var api = new window.Api();
+      function save(type='avatar',data,cb){
+        api.post('set/'+type, data, (code, res) => {
+                if (code == 200) {
+                    cb(true)
+                } else if (code == 400) {
+                  console.error(code,res)
+                    cb(false)
+                } else if (code == 300) {
+                    window.location.href = "/"
+                }
+            })
+      }
+      window.snapKitInit = function () {
+        var loginButtonIconId = "button-target";
+        // Mount Login Button
+        snap.loginkit.mountButton(loginButtonIconId, {
+          clientId: "{{ client_id }}",
+          redirectURI: "{{ redirect_url }}",
+          scopeList: [
+            "user.display_name",
+            "user.bitmoji.avatar",
+            "user.external_id",
+          ],
+          handleResponseCallback: function () {
+            snap.loginkit.fetchUserInfo().then(
+              function (result) {
+                var data=result.data.me;
+                console.log("User info:", result.data.me);
+                if(data.bitmoji.avatar){
+                  $("#s1").css({display:'none'})
+                  $("#title").text("Almost done")
+                  $("#s2").css({display:'flex'})
+                  $("#bitmoji").css({backgroundImage:'url('+data.bitmoji.avatar+')'})
+                  var d1=false,d2=true
+                  if(setName){
+                    d2=false
+                    $("#name").text(data.displayName)
+                    save('name',{name:data.displayName},()=>{
+                      d2=true
+                      if(d1&&d2){
+                        if(!setName){
+                          window.location.href = "/account"
+                        }
+                        else
+                        window.location.href = "/"
+                      }
+                    })
+                  }
+                  save('avatar',{avatar_url:data.bitmoji.avatar},()=>{
+                    d1=true
+                    if(d1&&d2){
+                      if(!setName){
+                          window.location.href = "/account"
+                        }
+                        else
+                        window.location.href = "/"
+                      }
+                    })
+                }
+                else{
+                  console.error("Result didnt had bitmoji");
+                  $("#s3").css({display:'flex'})
+                  $("#s1").css({display:'none'})
+                }
+                
+              },
+              function (err) {
+                console.log(err); // Error
+              }
+            );
+          },
+        });
+      };
+
+      // Load the SDK asynchronously
+      (function (d, s, id) {
+        var js,
+          sjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://sdk.snapkit.com/js/v1/login.js";
+        sjs.parentNode.insertBefore(js, sjs);
+      })(document, "script", "loginkit-sdk");
+    </script>
+{% endblock %}

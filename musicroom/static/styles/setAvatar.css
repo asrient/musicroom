@@ -1,0 +1,28 @@
+#title{
+    padding: 1.2rem 0.4rem;
+}
+#title-logo{
+    position: relative;
+    height: 1em;
+    top: 0.8rem;
+}
+#s1-hero{
+    height: 20rem;
+    max-height: 30vh;
+    width: 40rem;
+    max-width: 85vw;
+    object-fit: contain;
+}
+#s2{
+    display: none;
+}
+#bitmoji{
+    height: 10rem;
+    width: 10rem;
+    margin: 1rem 1.5rem;
+    background-color: rgb(65, 65, 65);
+    border-radius: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}

@@ -120,6 +120,10 @@ LOGIN_URL = '/login'
 
 AUTH_USER_MODEL = 'musicroom.User'
 
+BASEURL = 'http://localhost:8000'
+
+SNAPKIT_CLIENT_ID = "fbeca407-ed14-471f-8092-b95e83b5a63a"
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 

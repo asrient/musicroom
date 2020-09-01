@@ -51,6 +51,7 @@ class User(AbstractUser):
         unique=True,
     )
     name = models.CharField(max_length=100)
+    avatar_url = models.CharField(max_length=250, null=True, default=None)
     first_name = None
     last_name = None
     last_seen = models.DateTimeField()
@@ -131,10 +132,11 @@ class User(AbstractUser):
             return (0, None)
 
     def get_profile_min(self):
-        return {'user_id': self.id, 'name': self.name}
+        return {'user_id': self.id, 'name': self.name, 'avatar_url': self.avatar_url}
 
     def get_profile(self, ref_user):
-        profile = {'user_id': self.id, 'name': self.name, 'is_self': True}
+        profile = {'user_id': self.id, 'name': self.name,
+                   'avatar_url': self.avatar_url, 'is_self': True}
         if self != ref_user:
             profile['is_self'] = False
             friend_status, friend_obj = ref_user.friendship_status(self)
@@ -338,7 +340,7 @@ class Room(models.Model):
         self.duration_to_complete = datetime.time(0, mins, secs)
         self.play_start_time = timezone.now()
         self.no_tracks = RoomTrack.count(self)
-        print('pausing.. rt id',self.current_roomtrack.id)
+        print('pausing.. rt id', self.current_roomtrack.id)
         self.save()
         if action_user != None:
             action_user = action_user.get_profile_min()
@@ -348,7 +350,7 @@ class Room(models.Model):
     def skip_to_next(self):
         curr_rt = self.current_roomtrack
         next_rt = curr_rt.next_roomtrack
-        print('skiping to next',next_rt.id)
+        print('skiping to next', next_rt.id)
         self.skip_to(next_rt)
 
     def skip_to(self, roomtrack, duration=None, action_user=None):

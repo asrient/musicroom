@@ -23,6 +23,7 @@ from musicroom.paths.login import main as login
 from musicroom.paths.app import app, app_login_required
 from musicroom.paths.signup import main as signup
 from musicroom.paths.setName import main as setName
+from musicroom.paths.setAvatar import main as setAvatar
 
 urlpatterns = [
     path('', index, name='index'),
@@ -30,6 +31,7 @@ urlpatterns = [
     path('login', login, name='login'),
     path('signup', signup, name='signup'),
     path('setName', setName, name='set_name'),
+    path('setAvatar', setAvatar, name='set_avatar'),
     path('rooms', app_login_required, name='rooms'),
     path('room', app_login_required, name='room'),
     path('friendRequests', app_login_required, name='friend_requests'),
