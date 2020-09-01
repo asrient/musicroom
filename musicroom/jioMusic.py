@@ -24,7 +24,7 @@ def get_duration_from_id(song_id):
     try:
         plist = m3u8.load(url)
     except Exception as e:
-        print('error', e,song_id,url)
+        print('error', e, song_id, url)
         return None
     else:
         segments_count = len(plist.segments)
@@ -32,7 +32,7 @@ def get_duration_from_id(song_id):
         duration = (segments_count-1)*segment_duration
         last_segment = plist.segments[-1]
         duration += last_segment.duration
-        duration=int(duration)
+        duration = int(duration)
         return duration
 
 
@@ -62,10 +62,12 @@ def get_track(obj):
         return track
 
 
-def search(word, more=False):
+def search(word, more=False, lang=None):
+    url = "http://beatsapi.media.jio.com/v2_1/beats-api/jio/src/response/search2/"+word+"/"
+    if lang != None:
+        url += lang
     try:
-        content = urllib.request.urlopen(
-            "http://beatsapi.media.jio.com/v2_1/beats-api/jio/src/response/search2/"+word+"/").read()
+        content = urllib.request.urlopen(url).read()
     except:
         return None
     else:

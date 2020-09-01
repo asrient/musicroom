@@ -11,10 +11,17 @@ from musicroom.jioMusic import search
 @require_http_methods(["GET"])
 def main(request, word):
     txt = word.split(':')[0]
+    lang = None
     more = False
-    if len(word.split(':')) > 1 and word.split(':')[1] == 'all':
-        more = True
-    tracks = search(txt, more)
+    if len(word.split(':')) > 1:
+        opts = word.split(':')[1:]
+        if 'all' in opts:
+            more = True
+        if 'english' in opts:
+            lang = 'english'
+        elif 'hindi' in opts:
+            lang = 'hindi'
+    tracks = search(txt, more, lang=lang)
     List = []
     if tracks is not None:
         for track in tracks:
