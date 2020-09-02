@@ -83,18 +83,25 @@ class Live(WebsocketConsumer):
 
     def update_playback_skipto(self, event):
         if 'room' in event:
-            user=None
+            user = None
             if 'action_user' in event:
-                user=event['action_user']
-            print('dispatching skipto',self.user.id,'rt',self.user.room.current_roomtrack.id)
+                user = event['action_user']
+            print('dispatching skipto', self.user.id, 'rt',
+                  self.user.room.current_roomtrack.id)
             self.dispatch_msg('update.playback.skipto',
                               action_user=user, room=event['room'])
 
     def update_playback_pause(self, event):
         if 'room' in event and 'action_user' in event:
-            print('dispatching pause',self.user.id,'rt',self.user.room.current_roomtrack.id)
+            print('dispatching pause', self.user.id, 'rt',
+                  self.user.room.current_roomtrack.id)
             self.dispatch_msg('update.playback.pause',
                               event['action_user'], room=event['room'])
+
+    def send_chat(self, event):
+        if 'text' in event and 'date' in event and 'action_user' in event:
+            self.dispatch_msg('chat.text',
+                              event['action_user'], date=event['date'], text=event['text'])
 
     def dispatch_msg(self, msg_type, action_user=None, **msg):
         data = {'type': msg_type, 'action_user': action_user, **msg}
@@ -105,23 +112,29 @@ class Live(WebsocketConsumer):
         if 'type' in data:
             msg_type = data['type']
             if self.my_room_id != None:
-                #cuz the model instance does not update automatically
-                room=Room.get_by_id(self.my_room_id)
-                if msg_type == 'set.playback.pause':
-                    print('asking to pause',self.user.id,'rt id',room.current_roomtrack.id)
-                    room.pause(action_user=self.user)
-                if msg_type == 'set.playback.play':
-                    room.play(action_user=self.user)
-                if msg_type == 'set.playback.skipto':
-                    if 'roomtrack_id' in data:
-                        rt_id = data['roomtrack_id']
-                        duration = None
-                        if 'duration' in data:
-                            duration = data['duration']
-                        try:
-                            rt = RoomTrack.get_by_id(rt_id)
-                        except:
-                            pass
-                        else:
-                            room.skip_to(
-                                roomtrack=rt, duration=duration, action_user=self.user)
+                # cuz the model instance does not update automatically
+                if msg_type == 'chat.text':
+                    if 'date' in data and 'text' in data:
+                        self.room_send(
+                            'send.chat', date=data['date'], text=data['text'], action_user=self.user.get_profile_min())
+                else:
+                    room = Room.get_by_id(self.my_room_id)
+                    if msg_type == 'set.playback.pause':
+                        print('asking to pause', self.user.id,
+                              'rt id', room.current_roomtrack.id)
+                        room.pause(action_user=self.user)
+                    elif msg_type == 'set.playback.play':
+                        room.play(action_user=self.user)
+                    elif msg_type == 'set.playback.skipto':
+                        if 'roomtrack_id' in data:
+                            rt_id = data['roomtrack_id']
+                            duration = None
+                            if 'duration' in data:
+                                duration = data['duration']
+                            try:
+                                rt = RoomTrack.get_by_id(rt_id)
+                            except:
+                                pass
+                            else:
+                                room.skip_to(
+                                    roomtrack=rt, duration=duration, action_user=self.user)
