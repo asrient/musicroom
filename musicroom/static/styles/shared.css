@@ -1,5 +1,6 @@
 body{
-  -webkit-overflow-scrolling: touch
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 .mr_underline {
   border-bottom: solid 5px rgb(192, 0, 0);
