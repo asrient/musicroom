@@ -187,7 +187,7 @@ class User(AbstractUser):
         rooms = []
         friends = self.get_friends()
         for friend in friends:
-            if friend.room != None:
+            if friend.room != None and friend.room.can_user_access(self):
                 rooms.append(friend.room)
                 if len(rooms) >= max_rooms:
                     break
