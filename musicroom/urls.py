@@ -24,6 +24,8 @@ from musicroom.paths.app import app, app_login_required
 from musicroom.paths.signup import main as signup
 from musicroom.paths.setName import main as setName
 from musicroom.paths.setAvatar import main as setAvatar
+from musicroom.paths.code import main as code
+from musicroom.paths.joinRoom import main as joinRoom
 
 urlpatterns = [
     path('', index, name='index'),
@@ -33,6 +35,8 @@ urlpatterns = [
     path('setName', setName, name='set_name'),
     path('setAvatar', setAvatar, name='set_avatar'),
     path('rooms', app_login_required, name='rooms'),
+    path('code/<str:code>', code, name='room_code'),
+    path('joinRoom', joinRoom, name='join_room'),
     path('account', app_login_required, name='account'),
     path('room', app_login_required, name='room'),
     path('room/chat', app_login_required, name='room_chat'),

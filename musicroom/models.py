@@ -429,6 +429,10 @@ class Room(models.Model):
         return cls.objects.get(id=pk)
 
     @classmethod
+    def get_by_code(cls, code):
+        return cls.objects.get(code=code)
+
+    @classmethod
     def create(cls, tracks=[]):
         room = cls(created_on=timezone.now(), play_start_time=timezone.now(),
                    is_paused=False, paused_on=None, no_tracks=0)

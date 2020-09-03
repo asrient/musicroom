@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="/static/styles/forms.css" />
+<div class="container">
+    <div class="ink-white size-xxl base-m center" id="greet">
+        Have a room code?
+    </div>
+    <div id="sec" class="center">
+        <div class="center-col">
+            <div id="form" class="center-col">
+                <input placeholder="Code" name="code" type="text" id="codeBox" class="input">
+                <div id="msg"></div>
+                <button id="joinButt" class="center redButt">Join</button>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+<script>
+    function showMsg(txt) {
+        $("#msg").css("display", "block")
+        $("#msg").text(txt);
+    }
+
+    function hideMsg() {
+        $("#msg").css("display", "none")
+    }
+    $("#nameBox").on("input", () => {
+        hideMsg()
+    })
+    $("#joinButt").on("click", () => {
+        hideMsg()
+        var code = $("#codeBox").val().trim()
+        if (code.length) {
+            window.location.href = '/code/' + code
+        } else {
+            showMsg("Please enter a code")
+        }
+    })
+</script>
+{% endblock %}
