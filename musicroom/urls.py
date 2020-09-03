@@ -33,6 +33,7 @@ urlpatterns = [
     path('setName', setName, name='set_name'),
     path('setAvatar', setAvatar, name='set_avatar'),
     path('rooms', app_login_required, name='rooms'),
+    path('account', app_login_required, name='account'),
     path('room', app_login_required, name='room'),
     path('room/chat', app_login_required, name='room_chat'),
     path('friendRequests', app_login_required, name='friend_requests'),
