@@ -86,15 +86,11 @@ class Live(WebsocketConsumer):
             user = None
             if 'action_user' in event:
                 user = event['action_user']
-            print('dispatching skipto', self.user.id, 'rt',
-                  self.user.room.current_roomtrack.id)
             self.dispatch_msg('update.playback.skipto',
                               action_user=user, room=event['room'])
 
     def update_playback_pause(self, event):
         if 'room' in event and 'action_user' in event:
-            print('dispatching pause', self.user.id, 'rt',
-                  self.user.room.current_roomtrack.id)
             self.dispatch_msg('update.playback.pause',
                               event['action_user'], room=event['room'])
 
@@ -102,6 +98,11 @@ class Live(WebsocketConsumer):
         if 'text' in event and 'date' in event and 'action_user' in event:
             self.dispatch_msg('chat.text',
                               event['action_user'], date=event['date'], text=event['text'])
+
+    def chat_typing(self, event):
+        if 'isTyping' in event and 'date' in event and 'user_id' in event:
+            self.dispatch_msg('chat.typing',
+                              None, date=event['date'], isTyping=event['isTyping'], user_id=event['user_id'])
 
     def dispatch_msg(self, msg_type, action_user=None, **msg):
         data = {'type': msg_type, 'action_user': action_user, **msg}
@@ -117,11 +118,13 @@ class Live(WebsocketConsumer):
                     if 'date' in data and 'text' in data:
                         self.room_send(
                             'send.chat', date=data['date'], text=data['text'], action_user=self.user.get_profile_min())
+                if msg_type == 'chat.typing':
+                    if 'date' in data and 'isTyping' in data:
+                        self.room_send(
+                            'chat.typing', date=data['date'], isTyping=data['isTyping'], user_id=self.user.get_value('id'))
                 else:
                     room = Room.get_by_id(self.my_room_id)
                     if msg_type == 'set.playback.pause':
-                        print('asking to pause', self.user.id,
-                              'rt id', room.current_roomtrack.id)
                         room.pause(action_user=self.user)
                     elif msg_type == 'set.playback.play':
                         room.play(action_user=self.user)
