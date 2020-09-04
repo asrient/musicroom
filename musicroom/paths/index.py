@@ -1,8 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
 
-import musicroom.paths.hang
-
 
 def main(request):
     if not request.user.is_authenticated:
