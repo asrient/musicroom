@@ -20,12 +20,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'zcub=w$8wq61&x_jggl-u5&3c5xw7d3-kd^22b$%shcb)%sb15'
+SECRET_KEY = os.environ.get('DJ_SECRET_KEY', 'bhyr/@5h56yBhgr$t6uj*RF!0')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*','localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -46,7 +46,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -78,8 +78,12 @@ WSGI_APPLICATION = 'musicroom.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', ''),
+        'NAME': os.environ.get('DB_NAME', 'MR'),
+        'USER': os.environ.get('DB_USER', 'mr1'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'xxx-xxx'),
     }
 }
 
@@ -120,9 +124,9 @@ LOGIN_URL = '/login'
 
 AUTH_USER_MODEL = 'musicroom.User'
 
-BASEURL = 'http://localhost:8000'
+BASEURL = os.environ.get('BASE_URL', 'http://localhost:8000')
 
-SNAPKIT_CLIENT_ID = "fbeca407-ed14-471f-8092-b95e83b5a63a"
+SNAPKIT_CLIENT_ID = os.environ.get('SNAPKIT_CLIENT_ID', "xxx-xxx-xxx")
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -131,13 +135,13 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'exposed')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STORAGE_URLS={
-'home':'',
-'jio':'',
-'heroku1':'https://gth.fgh.com'
+# add like 'heroku1':'https://gth.fgh.com'
+STORAGE_URLS = {
+    'home': '',
+    'jio': '',
 }
 
-JIOMUSIC_STREAM_BASEURL='http://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/'
+JIOMUSIC_STREAM_BASEURL = 'http://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/'
 
 ASGI_APPLICATION = 'musicroom.routing.application'
 
@@ -153,3 +157,22 @@ CHANNEL_LAYERS = {
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'musicroom', 'static')
 ]
+
+try:
+    from settings_dev import *
+except ImportError:
+    pass
+
+#####################
+'''
+ENV VARS REQUIRED:
+
+DJ_SECRET_KEY
+BASE_URL
+SNAPKIT_CLIENT_ID
+REDIS_URL
+DB_HOST
+DB_NAME
+DB_USER
+DB_PASSWORD
+'''
