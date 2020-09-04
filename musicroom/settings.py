@@ -142,7 +142,7 @@ STORAGE_URLS = {
     'jio': '',
 }
 
-JIOMUSIC_STREAM_BASEURL = 'http://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/'
+JIOMUSIC_STREAM_BASEURL = 'https://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/'
 
 ASGI_APPLICATION = 'musicroom.routing.application'
 

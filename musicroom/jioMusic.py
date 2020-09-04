@@ -8,7 +8,7 @@ import json
 import urllib.request
 
 
-IMG_BASEURL = "http://jioimages.cdn.jio.com/hdindiamusic/images/"
+IMG_BASEURL = "https://jioimages.cdn.jio.com/hdindiamusic/images/"
 bitrate = 320
 
 
