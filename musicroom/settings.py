@@ -77,10 +77,17 @@ WSGI_APPLICATION = 'musicroom.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.parse(os.environ.get('DATABASE_URL', ''))
-}
+db_url = os.environ.get('DATABASE_URL')
 
+DATABASES = {}
+
+if db_url != None:
+    DATABASES['default'] = dj_database_url.parse(db_url)
+else:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -151,7 +158,6 @@ CHANNEL_LAYERS = {
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'musicroom', 'static')
 ]
-
 
 
 try:
