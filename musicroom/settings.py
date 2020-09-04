@@ -78,8 +78,8 @@ WSGI_APPLICATION = 'musicroom.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': os.environ.get('DB_HOST', ''),
         'PORT': os.environ.get('DB_PORT', ''),
         'NAME': os.environ.get('DB_NAME', 'MR'),
         'USER': os.environ.get('DB_USER', 'mr1'),
