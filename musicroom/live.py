@@ -25,7 +25,7 @@ class Live(WebsocketConsumer):
             print("Anonymous user connected to /live")
 
     def disconnect(self, close_code):
-        if self.user.id != None and self.user.room != None:
+        if self.user != None and self.user.room != None:
             self.room_send('update.members.disconnected',
                            action_user=self.user.get_profile_min())
             self.room_disconnect({'room_id': self.user.room.id})
