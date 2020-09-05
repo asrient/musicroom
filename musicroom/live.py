@@ -10,15 +10,19 @@ class Live(WebsocketConsumer):
     user = None
 
     def connect(self):
-        if 'user' in self.scope and self.scope['user'] != None:
+        if 'user' in self.scope and self.scope['user'] != None and self.scope['user'].id != None:
             self.user = self.scope["user"]
             self.accept()
             async_to_sync(self.channel_layer.group_add)(
                 'user-'+str(self.user.id), self.channel_name)
-            if self.user.room != None:
+            if 'room' in self.user and self.user.room != None:
                 self.room_connect({'room_id': self.user.room.get_value('id')})
                 self.room_send('update.members.connected',
                                action_user=self.user.get_profile_min())
+            else:
+                print("connected user has no room")
+        else:
+                print("Anonymous user connected to /live")
 
     def disconnect(self, close_code):
         if self.user.room != None:
