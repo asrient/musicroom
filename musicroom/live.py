@@ -17,7 +17,7 @@ class Live(WebsocketConsumer):
             # self.accept()
             async_to_sync(self.channel_layer.group_add)(
                 'user-'+str(self.user.id), self.channel_name)
-            if 'room' in self.user and self.user.room != None:
+            if self.user.room != None:
                 self.room_connect({'room_id': self.user.room.get_value('id')})
                 self.room_send('update.members.connected',
                                action_user=self.user.get_profile_min())
