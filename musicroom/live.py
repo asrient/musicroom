@@ -10,9 +10,11 @@ class Live(WebsocketConsumer):
     user = None
 
     def connect(self):
+        # for debug
+        self.accept()
         if 'user' in self.scope and self.scope['user'] != None and self.scope['user'].id != None:
             self.user = self.scope["user"]
-            self.accept()
+            # self.accept()
             async_to_sync(self.channel_layer.group_add)(
                 'user-'+str(self.user.id), self.channel_name)
             if 'room' in self.user and self.user.room != None:
@@ -28,7 +30,7 @@ class Live(WebsocketConsumer):
         if self.user != None:
             if self.user.room != None:
                 self.room_send('update.members.disconnected',
-                            action_user=self.user.get_profile_min())
+                               action_user=self.user.get_profile_min())
                 self.room_disconnect({'room_id': self.user.room.id})
             async_to_sync(self.channel_layer.group_discard)(
                 'user-'+str(self.user.id), self.channel_name)
