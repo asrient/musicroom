@@ -25,12 +25,13 @@ class Live(WebsocketConsumer):
             print("Anonymous user connected to /live")
 
     def disconnect(self, close_code):
-        if self.user != None and self.user.room != None:
-            self.room_send('update.members.disconnected',
-                           action_user=self.user.get_profile_min())
-            self.room_disconnect({'room_id': self.user.room.id})
-        async_to_sync(self.channel_layer.group_discard)(
-            'user-'+str(self.user.id), self.channel_name)
+        if self.user != None:
+            if self.user.room != None:
+                self.room_send('update.members.disconnected',
+                            action_user=self.user.get_profile_min())
+                self.room_disconnect({'room_id': self.user.room.id})
+            async_to_sync(self.channel_layer.group_discard)(
+                'user-'+str(self.user.id), self.channel_name)
 
     def room_send(self, msg_type, **data):
         async_to_sync(self.channel_layer.group_send)(
