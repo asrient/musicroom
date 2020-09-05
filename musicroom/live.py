@@ -11,10 +11,10 @@ class Live(WebsocketConsumer):
 
     def connect(self):
         # for debug
-        self.accept()
+        # self.accept()
         if 'user' in self.scope and self.scope['user'] != None and self.scope['user'].id != None:
             self.user = self.scope["user"]
-            # self.accept()
+            self.accept()
             async_to_sync(self.channel_layer.group_add)(
                 'user-'+str(self.user.id), self.channel_name)
             if self.user.room != None:
