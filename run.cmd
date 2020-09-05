@@ -1,2 +1,2 @@
-uvicorn musicroom.asgi:application --port 2000
+daphne -b :: -p 5000 musicroom.asgi:application
 PAUSE
