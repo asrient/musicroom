@@ -46,16 +46,20 @@
   height: 4rem;
 }
 @keyframes blink {
-  from {
+  0% {
     background: rgba(233, 16, 0, 0.8);
   }
-  to {
+  50% {
     background: rgba(192, 0, 0, 0.65);
+  }
+  100% {
+    background: rgba(233, 16, 0, 0.8);
   }
 }
 #hd_room_opt {
   background: rgb(255, 18, 0, 0.8);
   color: white;
+  -webkit-animation: 1.5s blink infinite ease-in-out;
   animation-name: blink;
   animation-duration: 1.5s;
   animation-iteration-count: infinite;
