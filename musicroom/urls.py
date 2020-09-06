@@ -15,6 +15,7 @@ Including another URLconf
 """
 from musicroom.paths.joinRoom import main as joinRoom
 from musicroom.paths.code import main as code
+from musicroom.paths.loader import loader
 from musicroom.paths.setAvatar import main as setAvatar
 from musicroom.paths.setName import main as setName
 from musicroom.paths.signup import main as signup
@@ -52,6 +53,7 @@ urlpatterns = [
     path('roomPreview/<int:room_id>', app_login_required, name='room_preview'),
     path('api/', include('musicroom.api.urls')),
     path('admin/', admin.site.urls),
+    path('privacyPolicy', loader, {'page':'privacyPolicy'}),
     re_path(r'^favicon\.ico$', favicon_view),
 ]
 

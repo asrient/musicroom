@@ -161,7 +161,7 @@ STATICFILES_DIRS = [
 
 
 try:
-    from settings_dev import *
+    from musicroom.settings_dev import *
 except ImportError:
     print("Using Django PRODUCTION Settings")
 
