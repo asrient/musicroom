@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Signup - Friendzone{% endblock %}
 {% block content %}
+<script>
+    const next = "{{next}}"
+</script>
 <link rel="stylesheet" type="text/css" href="/static/styles/forms.css" />
 <div class="container">
     <div class="ink-white size-xxl base-m center" id="greet">
@@ -62,7 +65,7 @@
             api.post('register', data, (code, res) => {
             if(code==200){
                 console.log("success")
-                window.location.href="/setAvatar"
+                window.location.href = next
             }
             else if(code==400){
                 showFull();
