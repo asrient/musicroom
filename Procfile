@@ -1,2 +1,2 @@
-web: uvicorn musicroom.asgi:application --host=0.0.0.0  --port $PORT
+web: daphne -b :: -p $PORT musicroom.asgi:application
 worker: python manage.py runworker roomkeeping
