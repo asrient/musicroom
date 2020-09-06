@@ -1,47 +1,67 @@
-#header{
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width:100%;
-    height: 4rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.329);
-    z-index: 5;
+#header {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.329);
+  z-index: 5;
 }
-#hd_hero{
-    padding: 0.3rem 0.9rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+#hd_hero {
+  padding: 0.3rem 0.9rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-#hd_mrIcon{
-    height: 3rem;
+#hd_mrIcon {
+  height: 3rem;
 }
-.hd_opt{
-    height: 4rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0.3rem 1rem;
-    color:rgb(199, 199, 199);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
+.hd_opt {
+  height: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.3rem 1rem;
+  color: rgb(199, 199, 199);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
 }
-.hd_opt:hover{
-    color:inherit;
-    background-color: rgba(58, 58, 58, 0.26);
+.hd_opt:hover {
+  color: inherit;
+  background-color: rgba(58, 58, 58, 0.26);
 }
-.hd_opt.red_opt{
-    background-color: rgb(206, 0, 0);
-    color: white;
+.hd_opt.red_opt {
+  background-color: rgb(206, 0, 0);
+  color: white;
 }
-.hd_opt.red_opt:hover{
-    background-color: rgb(255, 0, 0);
+.hd_opt.red_opt:hover {
+  background-color: rgb(255, 0, 0);
 }
-#hd_space{
-    height: 4rem;
+#hd_space {
+  height: 4rem;
+}
+@keyframes blink {
+  from {
+    background: rgba(233, 16, 0, 0.8);
+  }
+  to {
+    background: rgba(192, 0, 0, 0.65);
+  }
+}
+#hd_room_opt {
+  background: rgb(255, 18, 0, 0.8);
+  color: white;
+  animation-name: blink;
+  animation-duration: 1.5s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+#hd_room_opt:hover{
+    background: rgb(255, 17, 0);
+    animation-name: none;
 }

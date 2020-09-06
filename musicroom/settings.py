@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('DJ_SECRET_KEY', 'bhyr/@5h56yBhgr$t6uj*RF!0')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']
 
@@ -163,7 +163,7 @@ STATICFILES_DIRS = [
 try:
     from settings_dev import *
 except ImportError:
-    pass
+    print("Using Django PRODUCTION Settings")
 
 #####################
 '''

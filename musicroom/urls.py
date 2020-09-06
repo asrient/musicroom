@@ -13,19 +13,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
-
-from musicroom.startup import init
-from musicroom.paths.index import main as index
-from musicroom.paths.emailPref import main as emailPref
-from musicroom.paths.login import main as login
-from musicroom.paths.app import app, app_login_required
-from musicroom.paths.signup import main as signup
-from musicroom.paths.setName import main as setName
-from musicroom.paths.setAvatar import main as setAvatar
-from musicroom.paths.code import main as code
 from musicroom.paths.joinRoom import main as joinRoom
+from musicroom.paths.code import main as code
+from musicroom.paths.setAvatar import main as setAvatar
+from musicroom.paths.setName import main as setName
+from musicroom.paths.signup import main as signup
+from musicroom.paths.app import app, app_login_required
+from musicroom.paths.login import main as login
+from musicroom.paths.emailPref import main as emailPref
+from musicroom.paths.index import main as index
+from musicroom.startup import init
+from django.contrib import admin
+from django.urls import path, include, re_path
+from django.views.generic.base import RedirectView
+
+favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 
 urlpatterns = [
     path('', index, name='index'),
@@ -50,6 +52,7 @@ urlpatterns = [
     path('roomPreview/<int:room_id>', app_login_required, name='room_preview'),
     path('api/', include('musicroom.api.urls')),
     path('admin/', admin.site.urls),
+    re_path(r'^favicon\.ico$', favicon_view),
 ]
 
 handler404 = 'musicroom.paths.errors.page404'
