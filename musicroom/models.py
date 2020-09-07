@@ -355,11 +355,11 @@ class Room(models.Model):
 
     def skip_to(self, roomtrack, duration=None, action_user=None):
         rt = roomtrack
-        prev_rt=self.current_roomtrack
+        prev_rt = self.current_roomtrack
         self.current_roomtrack = rt
         if rt != prev_rt:
-            track=rt.track
-            track.plays_count+=1
+            track = rt.track
+            track.plays_count += 1
             track.save()
         self.is_paused = False
         self.paused_on = None
