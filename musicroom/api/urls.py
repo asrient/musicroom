@@ -26,6 +26,11 @@ from musicroom.api.getRooms import main as getRooms
 from musicroom.api.tracks import main as tracks
 from musicroom.api.searchTracks import main as search_tracks
 from musicroom.api.setAvatar import main as setAvatar
+from musicroom.api.liveAuth import liveAuth
+from musicroom.api.play import play
+from musicroom.api.pause import pause
+from musicroom.api.skipto import skipto
+from musicroom.api.friendStatus import friendship_status
 
 
 urlpatterns = [
@@ -38,6 +43,7 @@ urlpatterns = [
     path('profile/me', getMyProfile, name='api.get_my_profile'),
     path('friends', friendsList, name='api.friends_list'),
     path('friends/requests', friendRequests, name='api.friend_requests'),
+    path('friends/status', friendship_status, name='api.friendship_status'),
     path('friends/add', addFriend, name='api.add_friend'),
     path('friends/remove', removeFriend, name='api.remove_friend'),
     path('room', getMyRoom, name='api.getMyRoom'),
@@ -45,6 +51,9 @@ urlpatterns = [
     path('room/join', joinRoom),
     path('room/leave', leaveRoom),
     path('room/members', membersList),
+    path('room/play', play),
+    path('room/pause', pause),
+    path('room/skipto', skipto),
     path('room/access/users', getAccessUsers),
     path('room/tracks', getRoomTracks),
     path('room/access/grant', grantAccess),
@@ -55,4 +64,5 @@ urlpatterns = [
     path('rooms', getRooms),
     path('tracks', tracks),
     path('tracks/search/<str:word>', search_tracks),
+    path('private/auth', liveAuth),
 ]

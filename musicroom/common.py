@@ -3,12 +3,12 @@ import json
 from json import JSONEncoder
 import datetime
 from django.utils.crypto import get_random_string
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 import django.core.serializers
+import redis
+from musicroom.settings import REDIS_URL
 
 
-channel_layer = get_channel_layer()
+tunnel = redis.from_url(REDIS_URL)
 
 
 class DateTimeEncoder(JSONEncoder):
@@ -31,17 +31,6 @@ def makecode(length=20):
     return get_random_string(length=length)
 
 
-def live_event(group, msg_type, **data):
-    async_to_sync(channel_layer.group_send)(
-        group, {"type": msg_type, **data})
-
-
-def roomtask(task, **data):
-    # task='schedule'
-    async_to_sync(channel_layer.send)(
-        'roomkeeping', {"type": task, **data})
-
-
 def to_json(data):
     return json.dumps(data, cls=DateTimeEncoder)
 
@@ -53,3 +42,19 @@ def dump_datetime(obj):
         return (obj.hour * 60 + obj.minute) * 60 + obj.second
     else:
         return obj
+
+
+def push_to_tunnel(channel_name, **data):
+    tunnel.publish(channel_name, to_json(data))
+
+
+def live_event(group, msg_type, **data):
+    push_to_tunnel('live:relay.event', group=group, type=msg_type, data=data)
+
+
+def usertask(task, user_id, **data):
+    push_to_tunnel('live:task.user', user_id=user_id, task=task, data=data)
+
+
+def roomtask(task, room_id, **data):
+    push_to_tunnel('live:task.user', room_id=room_id, task=task, data=data)

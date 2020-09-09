@@ -5,7 +5,7 @@ from django.contrib.auth.base_user import BaseUserManager
 import datetime
 from django.utils import timezone
 from musicroom.settings import STORAGE_URLS
-from musicroom.common import makecode, live_event, roomtask, dump_datetime
+from musicroom.common import makecode, live_event, roomtask, usertask, dump_datetime
 
 
 class UserManager(BaseUserManager):
@@ -162,8 +162,7 @@ class User(AbstractUser):
         if room.can_user_access(self):
             self.room = room
             self.save()
-            live_event('user-'+str(self.id), 'room.connect',
-                       room_id=room.get_value('id'))
+            usertask('room.join', self.id, room_id=room.get_value('id'))
             room.broadcast('update.members.add',
                            action_user=self.get_profile_min())
             return room
@@ -175,8 +174,7 @@ class User(AbstractUser):
             room = self.room
             self.room = None
             self.save()
-            live_event('user-'+str(self.id),
-                       'room.disconnect', room_id=room.get_value('id'))
+            usertask('room.leave', self.id, room_id=room.get_value('id'))
             room.broadcast('update.members.remove',
                            action_user=self.get_profile_min())
             if room.members.count() == 0:
@@ -339,7 +337,6 @@ class Room(models.Model):
         mins, secs = divmod(time_left, 60)
         self.duration_to_complete = datetime.time(0, mins, secs)
         self.play_start_time = timezone.now()
-        self.no_tracks = RoomTrack.count(self)
         print('pausing.. rt id', self.current_roomtrack.id)
         self.save()
         if action_user != None:

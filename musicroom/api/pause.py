@@ -4,18 +4,18 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate, login
 
 from musicroom.common import apiRespond
+from musicroom.models import User
 
 
-@require_http_methods(["POST"])
-def main(request):
+@require_http_methods(["GET"])
+def pause(request):
     if request.user.is_authenticated:
-        if "name" in request.POST:
-            name = request.POST["name"].strip()
-            request.user.name = name
-            request.user.save()
-            return apiRespond(200, name=name)
+        if request.user.room != None:
+            room = request.user.room
+            room.pause(action_user=request.user)
+            return apiRespond(201, msg='paused')
         else:
-            return apiRespond(400, msg='Give a name')
+            return apiRespond(400, msg='Not a member of any room')
     else:
         # user is already logged in, redirect to root
         return apiRespond(400, msg='User not logged in')

@@ -32,7 +32,6 @@ ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -127,6 +126,10 @@ AUTH_USER_MODEL = 'musicroom.User'
 
 BASEURL = os.environ.get('BASE_URL', 'http://localhost:8000')
 
+DOMAIN_NAME = os.environ.get('DOMAIN_NAME', 'localhost:8000')
+
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')
+
 SNAPKIT_CLIENT_ID = os.environ.get('SNAPKIT_CLIENT_ID', "xxx-xxx-xxx")
 
 # Static files (CSS, JavaScript, Images)
@@ -144,21 +147,17 @@ STORAGE_URLS = {
 
 JIOMUSIC_STREAM_BASEURL = 'https://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/'
 
-ASGI_APPLICATION = 'musicroom.routing.application'
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
-        },
-    },
-}
-
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'musicroom', 'static')
 ]
 
+LIVE_ACCESS_KEY = os.environ.get('LIVE_ACCESS_KEY', '1122')
+
+LIVE_URL = os.environ.get('LIVE_URL', 'ws://localhost:2000/updates')
+
+SESSION_COOKIE_DOMAIN = '.'+DOMAIN_NAME
+
+SESSION_COOKIE_NAME = 'mrsid'
 
 try:
     from musicroom.settings_dev import *
@@ -171,10 +170,10 @@ ENV VARS REQUIRED:
 
 DJ_SECRET_KEY
 BASE_URL
+DOMAIN_NAME
 SNAPKIT_CLIENT_ID
 REDIS_URL
-DB_HOST
-DB_NAME
-DB_USER
-DB_PASSWORD
+DATABASE_URL
+LIVE_ACCESS_KEY
+LIVE_URL
 '''

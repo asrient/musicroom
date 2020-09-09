@@ -1,2 +1,2 @@
-daphne -b :: -p 5000 musicroom.asgi:application
+.\venv\Scripts\activate && python manage.py runserver 0.0.0.0:8000
 PAUSE
