@@ -155,14 +155,14 @@ LIVE_ACCESS_KEY = os.environ.get('LIVE_ACCESS_KEY', '1122')
 
 LIVE_URL = os.environ.get('LIVE_URL', 'ws://localhost:2000/updates')
 
-SESSION_COOKIE_DOMAIN = '.'+DOMAIN_NAME
-
 SESSION_COOKIE_NAME = 'mrsid'
 
 try:
     from musicroom.settings_dev import *
 except ImportError:
     print("Using Django PRODUCTION Settings")
+
+SESSION_COOKIE_DOMAIN = '.'+DOMAIN_NAME
 
 #####################
 '''

@@ -117,6 +117,7 @@ GitHub.sublime-settings
 ############
 exposed/
 musicroom/settings_dev.py
+musicroom/settings_dev.prod.py
 
 .elasticbeanstalk/
 .elasticbeanstalk/*

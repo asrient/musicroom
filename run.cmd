@@ -1,2 +1,2 @@
-.\venv\Scripts\activate && python manage.py runserver 0.0.0.0:8000
+.\venv\Scripts\activate && gunicorn -b 0.0.0.0:80 musicroom.wsgi
 PAUSE
