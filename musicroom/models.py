@@ -5,7 +5,7 @@ from django.contrib.auth.base_user import BaseUserManager
 import datetime
 from django.utils import timezone
 from musicroom.settings import STORAGE_URLS
-from musicroom.common import makecode, live_event, roomtask, usertask, dump_datetime
+from musicroom.common import makecode, live_event, roomtask, usertask, dump_datetime, schedule
 
 
 class UserManager(BaseUserManager):
@@ -367,7 +367,7 @@ class Room(models.Model):
             self.duration_to_complete = rt.track.duration
         self.save()
         # schedule next skip_to
-        roomtask('schedule.skipto', room_id=self.get_value('id'),
+        schedule('skipto', room_id=self.get_value('id'),
                  timeout=dump_datetime(self.duration_to_complete))
         if action_user != None:
             action_user = action_user.get_profile_min()

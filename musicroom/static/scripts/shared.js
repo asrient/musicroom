@@ -1,15 +1,18 @@
 document.documentElement.setAttribute("data-theme", "dark");
 
 function isEmail(email) {
-    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-    return regex.test(email);
+  var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+  return regex.test(email);
 }
 
-window.isEmail=isEmail
+window.isEmail = isEmail
 class Api {
-    constructor(){
-    this.baseUrl = "/api/";
-    }
+  constructor(baseUrl = null) {
+    if (baseUrl)
+      this.baseUrl = baseUrl;
+    else
+      this.baseUrl = "/api/";
+  }
   _send(method, url, data, cb) {
     $.ajax({
       url: this.baseUrl + url,
