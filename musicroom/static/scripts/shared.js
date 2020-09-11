@@ -18,6 +18,10 @@ class Api {
       url: this.baseUrl + url,
       type: method,
       data,
+      xhrFields: {
+        withCredentials: true
+      },
+      crossDomain: true,
       headers: {
         "MR-CLIENT": 'web'
       },
