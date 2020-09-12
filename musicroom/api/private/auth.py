@@ -34,5 +34,4 @@ def p_auth(request):
         else:
             return apiRespond(400, msg='mrsid missing')
     else:
-        print(request.GET,request.POST)
         return apiRespond(400, msg='access_key invalid')

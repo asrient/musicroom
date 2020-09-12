@@ -241,6 +241,7 @@ class Friendship(models.Model):
 
 class Room(models.Model):
     created_on = models.DateTimeField()
+    last_check_on = models.DateTimeField()
     access_users = models.ManyToManyField(
         User, related_name="access_to_rooms")
     is_paused = models.BooleanField(default=False)
@@ -251,6 +252,15 @@ class Room(models.Model):
     code = models.CharField(max_length=50, default=None, null=True)
     current_roomtrack = models.ForeignKey(
         "RoomTrack", on_delete=models.CASCADE, related_name="+")
+
+    def check_state(self):
+        curr_time = timezone.now()
+        offline_members = self.members.filter(
+            last_seen__lte=curr_time-datetime.timedelta(seconds=0,  minutes=5))
+        for user in offline_members:
+            user.leave_room()
+        self.last_check_on = curr_time
+        self.save()
 
     def dissolve(self):
         schedule('room.dissolve', 0, room_id=self.id)
@@ -436,7 +446,7 @@ class Room(models.Model):
 
     @classmethod
     def create(cls, tracks=[]):
-        room = cls(created_on=timezone.now(), play_start_time=timezone.now(),
+        room = cls(created_on=timezone.now(), last_check_on=timezone.now(), play_start_time=timezone.now(),
                    is_paused=False, paused_on=None, no_tracks=0)
         room.current_roomtrack = RoomTrack.create(tracks[0])
         room.no_tracks = 1

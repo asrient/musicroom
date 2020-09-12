@@ -32,6 +32,8 @@ from musicroom.api.pause import pause
 from musicroom.api.skipto import skipto
 from musicroom.api.friendStatus import friendship_status
 from musicroom.api.private.skipto import p_skipto
+from musicroom.api.private.roomCheck import p_room_check
+from musicroom.api.ping import ping
 
 
 urlpatterns = [
@@ -67,4 +69,6 @@ urlpatterns = [
     path('tracks/search/<str:word>', search_tracks),
     path('private/auth', p_auth),
     path('private/skipto', p_skipto),
+    path('private/roomCheck', p_room_check),
+    path('ping', ping),
 ]

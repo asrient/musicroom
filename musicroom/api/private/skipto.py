@@ -34,5 +34,4 @@ def p_skipto(request):
         else:
             return apiRespond(400, msg='room_id missing')
     else:
-        print(request.GET, request.POST)
         return apiRespond(400, msg='access_key invalid')
