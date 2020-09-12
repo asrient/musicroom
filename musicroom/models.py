@@ -260,7 +260,10 @@ class Room(models.Model):
         for user in offline_members:
             user.leave_room()
         self.last_check_on = curr_time
-        self.save()
+        try:
+            self.save()
+        except:
+            print("room dissolved, all members offline")
 
     def dissolve(self):
         schedule('room.dissolve', 0, room_id=self.id)
