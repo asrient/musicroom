@@ -9,7 +9,7 @@ from musicroom.models import User
 
 
 @require_http_methods(["POST"])
-def liveAuth(request):
+def p_auth(request):
     if "access_key" in request.POST and request.POST["access_key"] == LIVE_ACCESS_KEY:
         if "mrsid" in request.POST:
             try:

@@ -60,5 +60,5 @@ def roomtask(task, room_id, **data):
     push_to_tunnel('live:task.room', room_id=room_id, task=task, data=data)
 
 
-def schedule(task, **data):
-    push_to_tunnel('schedule:'+task, **data)
+def schedule(task, timeout, **data):
+    push_to_tunnel('schedule:'+task, timeout=timeout, data=data)

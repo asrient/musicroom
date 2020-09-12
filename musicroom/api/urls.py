@@ -26,11 +26,12 @@ from musicroom.api.getRooms import main as getRooms
 from musicroom.api.tracks import main as tracks
 from musicroom.api.searchTracks import main as search_tracks
 from musicroom.api.setAvatar import main as setAvatar
-from musicroom.api.liveAuth import liveAuth
+from musicroom.api.private.auth import p_auth
 from musicroom.api.play import play
 from musicroom.api.pause import pause
 from musicroom.api.skipto import skipto
 from musicroom.api.friendStatus import friendship_status
+from musicroom.api.private.skipto import p_skipto
 
 
 urlpatterns = [
@@ -64,5 +65,6 @@ urlpatterns = [
     path('rooms', getRooms),
     path('tracks', tracks),
     path('tracks/search/<str:word>', search_tracks),
-    path('private/auth', liveAuth),
+    path('private/auth', p_auth),
+    path('private/skipto', p_skipto),
 ]

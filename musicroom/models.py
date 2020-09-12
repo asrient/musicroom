@@ -178,7 +178,7 @@ class User(AbstractUser):
             room.broadcast('update.members.remove',
                            action_user=self.get_profile_min())
             if room.members.count() == 0:
-                room.delete()
+                room.dissolve()
 
     def get_rooms(self):
         max_rooms = 10
@@ -251,6 +251,10 @@ class Room(models.Model):
     code = models.CharField(max_length=50, default=None, null=True)
     current_roomtrack = models.ForeignKey(
         "RoomTrack", on_delete=models.CASCADE, related_name="+")
+
+    def dissolve(self):
+        schedule('room.dissolve', 0, room_id=self.id)
+        self.delete()
 
     def get_value(self, field_name):
         field_object = Room._meta.get_field(field_name)
@@ -367,8 +371,9 @@ class Room(models.Model):
             self.duration_to_complete = rt.track.duration
         self.save()
         # schedule next skip_to
-        schedule('skipto', room_id=self.get_value('id'),
-                 timeout=dump_datetime(self.duration_to_complete))
+        # timeout in ms
+        schedule('skipto', (dump_datetime(self.duration_to_complete)-2)*1000,
+                 room_id=self.get_value('id'))
         if action_user != None:
             action_user = action_user.get_profile_min()
         self.broadcast('update.playback.skipto',
