@@ -29,4 +29,4 @@ def main(request):
             return apiRespond(400, msg='track_ids missing')
     else:
         # user is already logged in, redirect to root
-        return apiRespond(400, msg='User not logged in')
+        return apiRespond(401, msg='User not logged in')

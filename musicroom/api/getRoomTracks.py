@@ -21,4 +21,4 @@ def main(request):
             return apiRespond(400, msg='Not a member of any room')
     else:
         # user is already logged in, redirect to root
-        return apiRespond(400, msg='User not logged in')
+        return apiRespond(401, msg='User not logged in')
