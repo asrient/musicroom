@@ -1,0 +1,73 @@
+#buttContainer{
+    height: 6rem;
+    width: 100%;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    background:linear-gradient(rgba(0, 0, 0, 0.07),rgba(0, 0, 0, 0.747))
+}
+.redButt_s{
+    padding: 0.2rem 3rem;
+    background-color: rgb(184, 0, 0);
+    border-radius: 0.2rem;
+    -webkit-user-select: none;
+    font-size: 1rem;
+    color:white;
+    font-weight: 600;
+    cursor: pointer;
+}
+.redButt_s:hover{
+    background-color: rgb(243, 0, 0);
+}
+.butt_active{
+    background-color: rgba(131, 0, 0, 0.288);
+    color:rgba(216, 0, 0, 0.911);
+    border:solid 2px rgba(185, 0, 0, 0.788);
+}
+.butt_active:hover{
+    background-color: rgba(131, 0, 0, 0.212);
+}
+.searchBar{
+    padding: 0.6rem;
+    padding-bottom: 1.2rem;
+    display: grid;
+    grid-template-columns: auto 3rem;
+}
+#search{
+    max-width: 80vw;
+    margin-right: 0px;
+}
+.searchButt{
+    height: 2.6rem;
+    width: 100%;
+    background-color: rgb(184, 0, 0);
+    color:white;
+    -webkit-user-select: none;
+    cursor: pointer;
+}
+.searchButt:hover{
+    background-color: rgb(253, 0, 0);
+}
+.codeBox{
+    margin:0.5rem auto;
+    font-size: 0.9rem;
+    font-weight: 200;
+    color:rgb(201, 201, 201);
+    background-color: rgba(20, 20, 20, 0.836);
+    width: 20rem;
+    max-width: 85vw;
+    border-bottom:solid 3px rgb(199, 0, 0);
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 3rem;
+}
+.codeExport{
+    background-color: rgb(184, 0, 0);
+    width: 100%;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.codeExport:hover{
+    background-color: rgba(228, 0, 0, 0.836);
+}

@@ -1,0 +1,23 @@
+#grid{
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+.item{
+    padding: 3rem 1rem;
+}
+#friendsHero{
+    margin-top:1rem;
+    max-height: 7rem;
+    width:auto;
+    max-width: 100%;
+    object-fit: contain;
+    -webkit-user-select: none;
+}
+@media(max-width:900px){
+    #grid{
+        display: block;
+    }
+    .item{
+        padding: 1rem 1rem;
+    }
+}

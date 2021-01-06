@@ -1,0 +1,46 @@
+.chat_bar {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  padding: 0.7rem 0.5rem;
+  background: linear-gradient(rgba(0, 0, 0, 0.185), black);
+  z-index: 3;
+}
+.chat_input {
+  padding: 0.5rem;
+  font-family: inherit;
+  border: rgb(60, 60, 60) solid thin;
+  margin: 0.2rem 0.3rem;
+  border-radius: 1rem;
+  font-size: 0.95rem;
+  color: #ffffff;
+  font-weight: 300;
+  background: rgba(12, 12, 12, 0.66);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  width: 16rem;
+  min-width: 13rem;
+  max-width: 75vw;
+  min-height: 1.8rem;
+  resize: none;
+}
+.chat_sendButt {
+  height: 2.1rem;
+  width: 2.1rem;
+  color: white;
+  font-size: 0.9rem;
+  border-radius: 100%;
+  background-image: url("/static/icons/chat-send.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+}
+.chat_sendButt.disabled {
+  background-image: url("/static/icons/chat-send-disabled.png");
+  cursor: default;
+}
+.chat_sendButt:hover {
+  opacity: 0.8;
+}

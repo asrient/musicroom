@@ -1,0 +1,26 @@
+.container{
+    margin:1rem;
+    background-color: rgb(27 27 27 / 74%);
+    border:solid thin rgb(42 42 42 / 48%);
+    border-radius: 0.2rem;
+    padding: 0.5rem;
+    height: 27rem;
+    width: 25rem;
+    display: grid;
+    grid-template-rows: auto 3rem 3.5rem;
+}
+.hero{
+    padding: 0.5rem;
+    overflow: hidden;
+}
+.txt{
+    padding: 0.7rem;
+    text-align: center;
+}
+@media(max-width:900px){
+    .container{
+        height: 22rem;
+        width: 87vw;
+        max-width: 25rem;
+    }
+}

@@ -1,0 +1,94 @@
+.link {
+  margin: 0.1rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.link:hover {
+  opacity: 0.7rem;
+}
+.trackContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 0.7rem;
+  max-width: 30rem;
+  padding: 0.65rem 0.5rem;
+  border: solid thin rgba(255, 255, 255, 0.068);
+  border-radius: 0.1rem;
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
+}
+.opts{
+    position: absolute;
+    right: 0.3rem;
+}
+.playing {
+  justify-content: center;
+  border: none;
+  margin-bottom: 0px;
+  margin-left: 0px;
+}
+.playable {
+  -webkit-user-select: none;
+}
+.content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.playable .content {
+  cursor: pointer;
+}
+.playable .content:hover {
+  opacity: 0.7;
+  color: rgba(0, 255, 0, 0.664) !important;
+}
+.title {
+  font-size: 1.1rem;
+  padding: 0.2rem 0.3rem;
+  padding-top: 0.6rem;
+}
+.playable .title{
+    font-size: 0.94rem;
+} 
+.artists {
+  font-size: 0.9rem;
+  padding-left: 0.7rem;
+}
+.playable .artists{
+    font-size: 0.7rem;
+}
+.duration {
+  padding-right: 0.9rem;
+  color: var(--grey);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.art {
+  height: 3.6rem;
+  width: 3.6rem;
+  margin: 0.5rem;
+  background-color: rgba(99, 99, 99, 0.548);
+  border-radius: 0.2rem;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.playing .title {
+  font-size: 1.5rem;
+}
+.playing .art {
+  height: 5rem;
+  width: 5rem;
+}
+.playButt {
+  margin: 0px;
+  opacity: 0.5rem;
+  box-shadow: 0 0 4px 3px #00000042;
+  border-radius: 100%;
+  padding: 0.2rem;
+}

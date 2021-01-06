@@ -1,0 +1,115 @@
+.container {
+  padding-top: 3rem;
+  padding-bottom: 5rem;
+  display: flex;
+  flex-direction: column-reverse;
+  min-height: calc(100vh - 4rem);
+  max-width: 40rem;
+}
+@keyframes pop {
+  from {
+    right: 3rem;
+  }
+  to {
+    right: 0px;
+  }
+}
+.text {
+  padding: 0.3rem 0.5rem;
+  color: rgb(212, 212, 212);
+  font-size: 0.85rem;
+  font-weight: 200;
+  padding-top: 0px;
+  padding-left: 0.6rem;
+}
+.chat {
+  cursor: default;
+  display: grid;
+  grid-template-columns: 4rem auto;
+  text-align: left;
+  width: fit-content;
+  max-width: 23rem;
+  animation-name: pop;
+  animation-duration: 0.7s;
+  position: relative;
+  margin: 0.6rem 0.4rem;
+}
+.event {
+  padding: 0.4rem 1rem;
+  margin: 0.3rem auto;
+  max-width: 30rem;
+  color: rgb(128, 128, 128);
+  background-color: rgba(44, 44, 44, 0.28);
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 200;
+}
+.avatarBox {
+  padding: 0.5rem;
+  padding-top: 0px;
+  display: flex;
+  justify-content: flex-start;
+}
+.chatTitle {
+  color: rgb(158, 0, 21);
+  font-size: 0.93rem;
+  font-weight: 500;
+  padding-bottom: 0.4rem;
+}
+.chatTime {
+  font-size: 0.7rem;
+  padding-left: 0.5rem;
+  font-weight: 100;
+  color: rgb(148, 148, 148);
+}
+.chatTyping {
+  font-size: 0.75rem;
+  padding: 0.8rem 1rem;
+  padding-bottom: 0px;
+  font-weight: 100;
+  color: rgb(148, 148, 148);
+}
+.toastContainer {
+  position: fixed;
+  z-index: 3;
+  top: 4rem;
+  left: 0px;
+  width: 100%;
+  padding: 1rem;
+}
+.toast {
+  font-size: 0.9rem;
+  color: rgb(245, 245, 245);
+  font-weight: 500;
+  padding: 0.4rem 1rem;
+  background-color: rgb(74, 74, 74);
+  border-radius: 1rem;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#refButt {
+  position: fixed;
+  right: 2rem;
+  top: 6rem;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+  font-weight: 200;
+  background-color: rgba(105, 105, 105, 0.295);
+  background-image: url('/static/icons/refresh.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1rem;
+  border-radius: 100%;
+  padding: 0.4rem;
+  height: 2.1rem;
+  width: 2.1rem;
+}
+#refButt:hover {
+  background-color: rgba(138, 138, 138, 0.712);
+}
+@media(max-width:800px){
+  #refButt {
+    right: 1rem;
+  }
+}
