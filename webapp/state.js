@@ -19,21 +19,7 @@ if (!cache.messageCounter) {
 
 var isFirstPlay = true;
 
-const LIVE_BASE_URL = (function () {
-    var hostUrl = window.location.host;
-    var protocol = 'https://'
-    if (window.location.protocol == 'http:') {
-        protocol = 'http://'
-    }
-    if (location.hostname == 'localhost') {
-        hostUrl = 'localhost:3000'
-    }
-    else {
-        hostUrl = 'live.' + hostUrl
-    }
-    return protocol + hostUrl;
-})();
-
+const LIVE_BASE_URL = window.initialState.live_url;
 
 var liveApi = new window.Api(LIVE_BASE_URL + '/')
 
@@ -89,18 +75,8 @@ class Live {
     connect = () => {
         this.socket = null;
         this.isConnected = false;
-        var hostUrl = window.location.host;
-        var protocol = 'https://'
-        if (window.location.protocol == 'http:') {
-            protocol = 'http://'
-        }
-        if (location.hostname == 'localhost') {
-            hostUrl = 'localhost:3000'
-        }
-        else {
-            hostUrl = 'live.' + hostUrl
-        }
-        this.socket = new io(hostUrl, { path: '/updates' });
+        console.log('connecting to live server..',LIVE_BASE_URL)
+        this.socket = new io(LIVE_BASE_URL, { path: '/updates' });
         this.socket.on('connect', this._onOpen);
         this.socket.on('reconnect', this._onOpen);
         this.socket.on('disconnect', this._onClose);

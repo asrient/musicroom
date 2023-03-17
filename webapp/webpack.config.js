@@ -28,7 +28,7 @@ module.exports = {
   },
   resolve: { extensions: ["*", ".js", ".jsx"] },
   output: {
-    path: "H:\\AA\\musicRoom\\server\\musicroom\\static\\bundle",
+    path: path.resolve('../server/musicroom/static/bundle'),
     publicPath: "/",
     filename: "[name].js"
   },

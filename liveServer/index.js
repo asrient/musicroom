@@ -14,7 +14,7 @@ var cors = require('cors');
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/mr', { useNewUrlParser: true });
 
 app.use(cors({
-    origin: process.env.MAIN_SERVER_PUBLIC_URL || "http://localhost:8080",
+    origin: process.env.MAIN_SERVER_PUBLIC_URL || "http://localhost:8000",
     credentials: true,
 }))
 

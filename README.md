@@ -114,7 +114,7 @@ gunicorn -b 0.0.0.0:80 musicroom.wsgi
 For local setup, you can also use `settings_dev.py` file
 
 - `DJ_SECRET_KEY`: Django secret key
-- `BASE_URLBASE_URL`: Root url of the server. eg: `https://example.com`
+- `BASE_URL`: Root url of the server. eg: `https://example.com`
 - `DATABASE_URL`: eg: `postgres://user:password@localhost/dbname`
 - `DOMAIN_NAME`: eg: `example.com`
 - `LIVE_ACCESS_KEY`: A random string that needs to be same both servers. eg: `xx-access-key-xx`

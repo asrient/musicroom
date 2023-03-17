@@ -127,3 +127,4 @@ musicroom/settings_dev.prod.py
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 .DS_Store
+.parcel-cache

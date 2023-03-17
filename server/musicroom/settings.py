@@ -126,7 +126,7 @@ AUTH_USER_MODEL = 'musicroom.User'
 
 BASEURL = os.environ.get('BASE_URL', 'http://localhost:8000')
 
-DOMAIN_NAME = os.environ.get('DOMAIN_NAME', 'localhost:8000')
+DOMAIN_NAME = os.environ.get('DOMAIN_NAME', 'localhost')
 
 REDIS_URL = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')
 
@@ -153,7 +153,7 @@ STATICFILES_DIRS = [
 
 LIVE_ACCESS_KEY = os.environ.get('LIVE_ACCESS_KEY', '1122')
 
-LIVE_URL = os.environ.get('LIVE_URL', 'ws://localhost:2000/updates')
+LIVE_URL = os.environ.get('LIVE_URL', 'http://localhost:3000')
 
 SESSION_COOKIE_NAME = 'mrsid'
 
