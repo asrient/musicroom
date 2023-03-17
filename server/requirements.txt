@@ -6,10 +6,10 @@ attrs==20.1.0
 autobahn==20.7.1
 Automat==20.2.0
 autopep8==1.5.3
-cffi==1.14.2
+cffi==1.15.1
 click==7.1.2
 constantly==15.1.0
-cryptography==3.0
+cryptography==39.0.2
 distlib==0.3.1
 dj-database-url==0.5.0
 Django==3.0.8
@@ -24,7 +24,7 @@ incremental==17.5.0
 iso8601==0.1.12
 m3u8==0.7.1
 msgpack==1.0.0
-psycopg2==2.8.5
+psycopg2-binary==2.9.5
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycodestyle==2.6.0
