@@ -1,6 +1,5 @@
 import { createStore } from 'redux';
 import React, { Component } from "react";
-import { resetBgColor, setbgColor } from './utils';
 
 var toastCounter = 0;
 var messageCounter = 0;
@@ -212,17 +211,15 @@ class Live {
 
 function getPlaybackUrl(track_id, cb){
     let url = sessionStorage.getItem("stream/"+track_id);
-    let artwork_colors = sessionStorage.getItem("artColors/"+track_id);
-    if (url && !!artwork_colors){
-        cb(url, JSON.parse(artwork_colors));
+    if (url){
+        cb(url);
     }
     else{
         api.get('tracks/stream/'+track_id, null, (status, data) => {
             if (status == 200) {
                 console.log('loaded playback url', data)
                 sessionStorage.setItem("stream/"+track_id, data.stream_url);
-                sessionStorage.setItem("artColors/"+track_id, JSON.stringify(data.artwork_colors));
-                cb(data.stream_url, data.artwork_colors);
+                cb(data.stream_url);
             }
             else {
                 console.error(status, data)
@@ -245,7 +242,6 @@ class Playback {
             is_playing: false,
             can_play: true,
             is_loaded: false,
-            artwork_colors: null,
         }
         this.state.track_id = track_id
         this.state.sleek = sleek
@@ -270,13 +266,12 @@ class Playback {
         resetBgColor();
     }
     loadPlaybackData = (cb) => {
-        getPlaybackUrl(this.state.track_id, (url, artwork_colors) => {
+        getPlaybackUrl(this.state.track_id, (url) => {
             if(!url){
                 alert('Could not stream this song');
                 return;
             }
             this.state.url = url;
-            this.state.artwork_colors = artwork_colors;
             cb();
         });
     }
@@ -328,9 +323,6 @@ class Playback {
         this.state.is_loaded = true
         if (this.state.can_play)
             this.play();
-        if(this.state.artwork_colors && this.state.artwork_colors.length >= 1) {
-            setbgColor(this.state.artwork_colors);
-        }
     }
     _onError = (e, data) => {
         var errorType = data.type;
