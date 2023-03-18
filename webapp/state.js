@@ -328,7 +328,7 @@ class Playback {
         this.state.is_loaded = true
         if (this.state.can_play)
             this.play();
-        if(this.state.artwork_colors && this.state.artwork_colors.length >= 2) {
+        if(this.state.artwork_colors && this.state.artwork_colors.length >= 1) {
             setbgColor(this.state.artwork_colors);
         }
     }

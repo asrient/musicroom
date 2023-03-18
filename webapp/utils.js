@@ -8,6 +8,10 @@ export function durationFormat(sec) {
     return min + ":" + (sec < 10 ? "0" : "") + sec;
 }
 
+export function avg(arr) {
+    return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
 export function setbgColor(colors) {
     if(!colors) {
         colors = [
@@ -15,7 +19,18 @@ export function setbgColor(colors) {
             [77, 41, 41],
         ]
     }
-    document.getElementById('bg').style.background=`linear-gradient(120deg,rgb(${colors[0][0]} ${colors[0][1]} ${colors[0][2]}),rgb(${colors[1][0]} ${colors[1][1]} ${colors[1][2]}))`
+    else {
+        colors = colors.map((color)=>{
+            let factor = 1;
+            color.forEach(c => {
+                if (c > 120) factor = 0.5;
+            });
+            return color.map((c)=>{
+                return Math.floor(c*factor)
+            });
+        });
+    }
+    document.getElementById('bg').style.background=`rgb(${colors[0][0]} ${colors[0][1]} ${colors[0][2]})`
 }
 
 export function resetBgColor () {
