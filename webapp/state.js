@@ -251,7 +251,7 @@ class Playback {
         if (iOSSafari) {
             getPlaybackUrl(this.state.track_id, (url) => {
                 if(!url){
-                    this.toast('Could not stream this song', '/room');
+                    alert('Could not stream this song');
                     return;
                 }
                 this.state.url = url;
@@ -272,7 +272,7 @@ class Playback {
     loadUrl = () => {
         getPlaybackUrl(this.state.track_id, (url) => {
             if(!url){
-                this.toast('Could not stream this song', '/room');
+                alert('Could not stream this song');
                 return;
             }
             this.state.url = url;

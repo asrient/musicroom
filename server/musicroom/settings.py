@@ -147,7 +147,7 @@ STORAGE_URLS = {
     'gaana1':''
 }
 
-GAANA1_BASEURL = "https://gaana.boundary.ml/"
+GAANA1_BASEURL = "http://127.0.0.1:8001/" #"https://gaana.boundary.ml/"
 
 JIOMUSIC_STREAM_BASEURL = 'https://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/'
 
