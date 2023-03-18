@@ -13,10 +13,10 @@
   align-items: center;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.2rem;
   max-width: 30rem;
-  padding: 0.65rem 0.5rem;
-  border: solid thin rgba(255, 255, 255, 0.068);
+  padding: 0.5rem 0.3rem;
+  border-bottom: solid thin rgba(255, 255, 255, 0.068);
   border-radius: 0.1rem;
   overflow: hidden;
   position: relative;

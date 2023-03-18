@@ -2,7 +2,7 @@ import $ from "jquery";
 import React, { Component } from "react";
 import { Link, Route } from "wouter";
 import css from "./track.css";
-
+import {durationFormat} from "./utils.js";
 
 class TrackItem extends React.Component {
     constructor(props) {
@@ -17,7 +17,7 @@ class TrackItem extends React.Component {
     duration() {
 
         if (!this.props.playing)
-            return (<div className={css.duration}>{this.props.duration}</div>)
+            return (<div className={css.duration}>{durationFormat(this.props.duration)}</div>)
 
     }
     playButt(){

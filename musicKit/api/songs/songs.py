@@ -20,7 +20,6 @@ class Songs():
         }
         response = await aiohttp.get(endpoints.search_songs_url + search_query+"&content_filter=2&include=allItems&isRegSrch=0&webVersion=mix&rType=web&usrLang=Hindi,English,Punjabi&isChrome=1", headers=headers)
         result = await response.json()
-        print('res',result, response)
         track_ids = set()
         for grp in result['gr']:
            for item in grp['gd']:
@@ -44,7 +43,11 @@ class Songs():
         for i in track_id:
           response = await aiohttp.post(endpoints.song_details_url + i)
           result = await response.json()
-          track_info.extend(await asyncio.gather(*[self.format_json_songs(i) for i in result['tracks']]))
+          try:
+            track_info.extend(await asyncio.gather(*[self.format_json_songs(i) for i in result['tracks']]))
+          except Exception as e:
+            print('error getting track info', i, e)
+            pass
         return track_info
 
     async def format_json_songs(self, results: dict) -> dict:

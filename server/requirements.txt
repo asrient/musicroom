@@ -43,3 +43,5 @@ virtualenv==20.0.31
 websockets==8.1
 whitenoise==5.1.0
 zope.interface==5.1.0
+opencv-python-headless
+scikit-learn

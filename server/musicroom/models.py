@@ -3,9 +3,11 @@ from django.db.models import Q
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 import datetime
+import json
 from django.utils import timezone
 from musicroom.settings import STORAGE_URLS
 from musicroom.common import makecode, live_event, roomtask, usertask, dump_datetime, schedule
+from musicroom.services.imgUtils import DominantColors
 
 
 class UserManager(BaseUserManager):
@@ -508,13 +510,29 @@ class Track(models.Model):
     storage_bucket = models.CharField(max_length=255)
     playback_path = models.CharField(max_length=255)
     image_path = models.CharField(max_length=255, default=None, null=True)
+    artwork_colors = models.CharField(max_length=255, default=None, null=True)
 
     def get_obj(self):
         playback_url = STORAGE_URLS[self.storage_bucket]+self.playback_path
-        image_url = STORAGE_URLS[self.storage_bucket]+self.image_path
+        image_url = self.get_img_url()
         obj = {'track_id': self.id, 'title': self.title, 'duration': dump_datetime(self.duration),
                'artists': self.artists, 'playback_url': playback_url, 'image_url': image_url}
         return obj
+    
+    def get_img_url(self):
+        return STORAGE_URLS[self.storage_bucket]+self.image_path
+    
+    def get_artwork_colors(self):
+        if self.artwork_colors == None:
+            if self.image_path != None:
+                image_url = self.get_img_url()
+                d = DominantColors(image_url)
+                colors = d.dominantColors()
+                self.artwork_colors = json.dumps(colors)
+                self.save()
+                return colors
+        else:
+            return json.loads(self.artwork_colors)
 
     @classmethod
     def get_by_id(cls, pk):

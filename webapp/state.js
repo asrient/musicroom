@@ -1,5 +1,6 @@
 import { createStore } from 'redux';
 import React, { Component } from "react";
+import { resetBgColor, setbgColor } from './utils';
 
 var toastCounter = 0;
 var messageCounter = 0;
@@ -211,15 +212,17 @@ class Live {
 
 function getPlaybackUrl(track_id, cb){
     let url = sessionStorage.getItem("stream/"+track_id);
-    if (url){
-        cb(url);
+    let artwork_colors = sessionStorage.getItem("artColors/"+track_id);
+    if (url && !!artwork_colors){
+        cb(url, JSON.parse(artwork_colors));
     }
     else{
         api.get('tracks/stream/'+track_id, null, (status, data) => {
             if (status == 200) {
                 console.log('loaded playback url', data)
                 sessionStorage.setItem("stream/"+track_id, data.stream_url);
-                cb(data.stream_url);
+                sessionStorage.setItem("artColors/"+track_id, JSON.stringify(data.artwork_colors));
+                cb(data.stream_url, data.artwork_colors);
             }
             else {
                 console.error(status, data)
@@ -241,7 +244,8 @@ class Playback {
             sleek: 0,
             is_playing: false,
             can_play: true,
-            is_loaded: false
+            is_loaded: false,
+            artwork_colors: null,
         }
         this.state.track_id = track_id
         this.state.sleek = sleek
@@ -249,12 +253,7 @@ class Playback {
         this.hls = new Hls();
         this.player = window.player;
         if (iOSSafari) {
-            getPlaybackUrl(this.state.track_id, (url) => {
-                if(!url){
-                    alert('Could not stream this song');
-                    return;
-                }
-                this.state.url = url;
+            this.loadPlaybackData(() => {
                 this.player.src = this.state.url;
                 this._onPlaylistLoaded();
             });
@@ -268,14 +267,21 @@ class Playback {
     }
     kill() {
         this.hls.destroy();
+        resetBgColor();
     }
-    loadUrl = () => {
-        getPlaybackUrl(this.state.track_id, (url) => {
+    loadPlaybackData = (cb) => {
+        getPlaybackUrl(this.state.track_id, (url, artwork_colors) => {
             if(!url){
                 alert('Could not stream this song');
                 return;
             }
             this.state.url = url;
+            this.state.artwork_colors = artwork_colors;
+            cb();
+        });
+    }
+    loadUrl = () => {
+        this.loadPlaybackData(() => {
             this.hls.loadSource(this.state.url);
         });
     }
@@ -322,6 +328,9 @@ class Playback {
         this.state.is_loaded = true
         if (this.state.can_play)
             this.play();
+        if(this.state.artwork_colors && this.state.artwork_colors.length >= 2) {
+            setbgColor(this.state.artwork_colors);
+        }
     }
     _onError = (e, data) => {
         var errorType = data.type;
@@ -632,7 +641,7 @@ var state = {
                         this.player.kill()
                         this.player = null
                     }
-                    this.player = new Playback(roomtrack.track_id, sleek, !st.room.is_paused)
+                    this.player = new Playback(roomtrack.track_id, sleek, !st.room.is_paused, roomtrack.image_url)
                 }
             }
             else {

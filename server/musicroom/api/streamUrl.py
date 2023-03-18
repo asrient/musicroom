@@ -7,6 +7,7 @@ from musicroom.common import apiRespond
 from musicroom.models import User, Track
 from musicroom.services.music import Music
 
+
 @require_http_methods(["GET"])
 def stream_url_api(request, track_id):
     if request.user.is_authenticated:
@@ -15,7 +16,8 @@ def stream_url_api(request, track_id):
             music = Music()
             stream_url = music.get_stream_url(track)
             if stream_url is not None:
-                return apiRespond(200, stream_url=stream_url)
+                colors = track.get_artwork_colors()
+                return apiRespond(200, stream_url=stream_url, artwork_colors=colors)
             else:
                 return apiRespond(400, msg='Error getting stream url')
         else:
