@@ -1,3 +1,4 @@
+require('dotenv').config();
 const request = require('request').defaults({ jar: true });
 var crypto = require('crypto');
 
@@ -35,7 +36,7 @@ class Api {
       form: body,
       json: true
     },
-      function (error, response, body) {
+      (error, response, body) => {
         if (!error) {
           var code = response.statusCode;
           if (typeof body == 'string') {

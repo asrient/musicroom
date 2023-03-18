@@ -209,10 +209,31 @@ class Live {
     }
 }
 
+function getPlaybackUrl(track_id, cb){
+    let url = sessionStorage.getItem("stream/"+track_id);
+    if (url){
+        cb(url);
+    }
+    else{
+        api.get('tracks/stream/'+track_id, null, (status, data) => {
+            if (status == 200) {
+                console.log('loaded playback url', data)
+                sessionStorage.setItem("stream/"+track_id, data.stream_url);
+                cb(data.stream_url);
+            }
+            else {
+                console.error(status, data)
+                cb(null);
+            }
+        })
+    }
+}
+
+
 var socket = null;
 
 class Playback {
-    constructor(track_id, url, sleek = 0, canPlay = true) {
+    constructor(track_id, sleek = 0, canPlay = true) {
         this.state = {
             url: null,
             track_id: null,
@@ -222,15 +243,21 @@ class Playback {
             can_play: true,
             is_loaded: false
         }
-        this.state.url = url
         this.state.track_id = track_id
         this.state.sleek = sleek
         this.state.can_play = canPlay
         this.hls = new Hls();
         this.player = window.player;
         if (iOSSafari) {
-            this.player.src = this.state.url;
-            this._onPlaylistLoaded()
+            getPlaybackUrl(this.state.track_id, (url) => {
+                if(!url){
+                    this.toast('Could not stream this song', '/room');
+                    return;
+                }
+                this.state.url = url;
+                this.player.src = this.state.url;
+                this._onPlaylistLoaded();
+            });
         }
         else {
             this.hls.attachMedia(this.player);
@@ -243,7 +270,14 @@ class Playback {
         this.hls.destroy();
     }
     loadUrl = () => {
-        this.hls.loadSource(this.state.url);
+        getPlaybackUrl(this.state.track_id, (url) => {
+            if(!url){
+                this.toast('Could not stream this song', '/room');
+                return;
+            }
+            this.state.url = url;
+            this.hls.loadSource(this.state.url);
+        });
     }
     play(sleek = null) {
         if (sleek) {
@@ -598,7 +632,7 @@ var state = {
                         this.player.kill()
                         this.player = null
                     }
-                    this.player = new Playback(roomtrack.track_id, roomtrack.playback_url, sleek, !st.room.is_paused)
+                    this.player = new Playback(roomtrack.track_id, sleek, !st.room.is_paused)
                 }
             }
             else {

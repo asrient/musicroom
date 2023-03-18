@@ -178,7 +178,6 @@ io.on('connection', function (socket) {
     var cookies = cookie.parse(socket.handshake.headers.cookie);
     if (cookies.mrsid) {
         api.post("auth", { mrsid: cookies.mrsid }, (status, data) => {
-            console.log(status, data)
             if (status == 200 && data != null && data.user_id != null) {
                 new Peer(socket, data.user_id, data.room_id);
             }

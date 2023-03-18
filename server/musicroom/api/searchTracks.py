@@ -5,23 +5,24 @@ from django.contrib.auth import authenticate, login
 
 from musicroom.common import apiRespond
 from musicroom.models import Track
-from musicroom.jioMusic import search
+from musicroom.services.music import Music
 
 
 @require_http_methods(["GET"])
 def main(request, word):
     txt = word.split(':')[0]
     lang = None
-    more = False
+    limit = 5
     if len(word.split(':')) > 1:
         opts = word.split(':')[1:]
         if 'all' in opts:
-            more = True
+            limit = 20
         if 'english' in opts:
             lang = 'english'
         elif 'hindi' in opts:
             lang = 'hindi'
-    tracks = search(txt, more, lang=lang)
+    music = Music()
+    tracks = music.search(txt, limit, lang=lang)
     List = []
     if tracks is not None:
         for track in tracks:

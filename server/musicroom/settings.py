@@ -71,6 +71,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'musicroom.wsgi.application'
+ASGI_APPLICATION = 'musicroom.asgi.application'
 
 
 # Database
@@ -143,9 +144,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STORAGE_URLS = {
     'home': '',
     'jio': '',
+    'gaana1':''
 }
 
+GAANA1_BASEURL = "https://gaana.boundary.ml/"
+
 JIOMUSIC_STREAM_BASEURL = 'https://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/'
+
+MUSIC_SERVICE = "gaana1"
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'musicroom', 'static')

@@ -3,7 +3,7 @@ from django.utils import timezone
 from musicroom.common import to_json, dump_datetime, makecode
 from musicroom.models import Track
 from musicroom.settings import JIOMUSIC_STREAM_BASEURL
-import m3u8
+from .musicUtils import get_duration_from_m3u8
 import json
 import urllib.request
 
@@ -21,19 +21,7 @@ def get_duration_from_id(song_id):
     ids = song_id.split('_')
     url = JIOMUSIC_STREAM_BASEURL + \
         ids[0]+'/'+ids[1]+'/'+song_id+'_'+str(bitrate)+'.mp4/chunklist.m3u8'
-    try:
-        plist = m3u8.load(url)
-    except Exception as e:
-        print('error', e, song_id, url)
-        return None
-    else:
-        segments_count = len(plist.segments)
-        segment_duration = plist.target_duration
-        duration = (segments_count-1)*segment_duration
-        last_segment = plist.segments[-1]
-        duration += last_segment.duration
-        duration = int(duration)
-        return duration
+    return get_duration_from_m3u8(url)
 
 
 def make_track(obj):
@@ -62,7 +50,7 @@ def get_track(obj):
         return track
 
 
-def search(word, more=False, lang=None):
+def search(word, limit=10, lang=None):
     url = "http://beatsapi.media.jio.com/v2_1/beats-api/jio/src/response/search2/"+word+"/"
     if lang != None:
         url += lang
@@ -83,8 +71,13 @@ def search(word, more=False, lang=None):
                     if track is not None:
                         tracks.append(track)
                         jio_ids.append(song['id'])
-                        if not more and len(jio_ids) > 1:
+                        limit -= 1
+                        if limit<=0:
                             break
             return tracks
         else:
             return None
+
+
+def get_stream_url(track: Track):
+    return track.playback_path
