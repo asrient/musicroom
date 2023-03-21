@@ -40,3 +40,34 @@ export function resetBgColor () {
 export function currentScreenType () {
     return window.innerWidth < 768 ? "mobile" : "desktop";
 };
+
+export function generateUserColor(userId) {
+    var colors = [
+        "#ffcd5b",
+        "#002aae",
+        "#00c29c",
+        "#f35ecc",
+        "#333000",
+        "#ab81ff",
+        "#ba631d",
+        "#0047ac",
+        "#9c3f00",
+        "#00daff",
+        "#ff5f5c",
+        "#006ec6",
+        "#9d7b4d",
+        "#cb8fff",
+        "#a7ad86",
+        "#ff64b4",
+        "#002338",
+        "#ff88e3",
+        "#00374d",
+        "#d8efdf",
+        "#005fa5",
+        "#827964",
+        "#005688",
+        "#003e55",
+        "#00485e"
+    ];
+    return colors[userId % colors.length];
+}

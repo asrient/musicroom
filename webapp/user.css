@@ -35,6 +35,14 @@
   background-repeat: no-repeat;
   background-size: contain;
   background-image: url("/static/icons/avatar1.png");
+  overflow: hidden;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 200;
+  color: rgb(255, 255, 255);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .circleContainer {
   position: relative;

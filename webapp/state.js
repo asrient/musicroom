@@ -971,8 +971,24 @@ var state = {
             })
         }
     },
-    // join_request_ids is only used to keep track of new requests, actual requests are fetched from api when needed
+    getCurrentTrackIndex() {
+        var st = store.getState();
+        if (!st.room) { return -1; }
+        return st.room.tracks.findIndex(t => t.roomtrack_id == st.room.current_roomtrack.roomtrack_id);
+    },
+    playAdjacent(flag) {
+        const currInd = this.getCurrentTrackIndex();
+        if(currInd<0){ return; }
+        const st = store.getState();
+        const n = st.room.tracks.length;
+        let reqInd = currInd + (flag==='next' ? 1 : -1);
+        if(reqInd<0){ reqInd = n-1; }
+        if(reqInd>=n){ reqInd = 0; }
+        const roomtrackId = st.room.tracks[reqInd].roomtrack_id;
+        this.skipTo(roomtrackId);
+    },
     markRequestsAsSeen() {
+        // join_request_ids is only used to keep track of new requests, actual requests are fetched from api when needed
         const st = store.getState();
         if (!st.room) {
             return;

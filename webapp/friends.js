@@ -55,7 +55,7 @@ class Friends extends React.Component {
         }
         else {
             return (<div className="container" style={{ padding: '1rem 0.5rem' }}>
-                <div className="ink-white base-regular size-l">
+                <div className="center ink-white base-regular size-xl">
                     My friends
                 </div>
                 <br />

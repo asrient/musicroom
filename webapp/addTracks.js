@@ -126,19 +126,16 @@ class AddTracks extends React.Component {
         if (this.state.done)
             return (<Redirect to="/room" />)
         else
-            return (<>
-                <Header blank />
-                <div className="container" style={{ padding: '1rem 0.5rem' }}>
-                    <div className="ink-white base-regular size-xxl">
-                        Pick your music
+            return (<div className="container" style={{ padding: '1rem 0.5rem' }}>
+                    <div className="center ink-white base-regular size-xl">
+                        Search music
                 </div>
                     <br />
                     {this.searchBar()}
                     {this.tracks()}
                     <br />
                     {this.opt()}
-                </div>
-            </>)
+                </div>)
     }
 }
 

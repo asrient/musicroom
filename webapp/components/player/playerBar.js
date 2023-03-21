@@ -124,8 +124,10 @@ function Bar() {
         window.state.pause();
         break;
       case 'next':
+        window.state.playAdjacent('next');
         break;
       case 'prev':
+        window.state.playAdjacent('prev');
         break;
     }
   }

@@ -1,8 +1,8 @@
-import $ from "jquery";
 import React, { Component } from "react";
-import Header from "./header.js";
 import { Link, Route, Redirect } from "wouter";
 import css from "./user.css";
+import {generateUserColor} from "./utils";
+
 
 class UserLink extends React.Component {
     constructor(props) {
@@ -15,32 +15,35 @@ class UserLink extends React.Component {
     }
 }
 
-class UserCircle extends React.Component {
-    constructor(props) {
-        super(props);
+function UserCircle(props) {
+    let styles = {};
+    if (props.avatar_url) {
+        styles.backgroundImage = 'url(' + props.avatar_url + ')'
+    } else {
+        styles.backgroundImage = 'none';
+        styles.backgroundColor = generateUserColor(props.user_id);
     }
-    render() {
-        var styles = {}
-        if (this.props.avatar_url) {
-            styles.backgroundImage = 'url(' + this.props.avatar_url + ')'
-        }
-        if (this.props.size) {
-            styles.height = this.props.size;
-            styles.width = this.props.size;
-        }
-        if (this.props.style) {
-            styles = { ...styles, ...this.props.style }
-        }
-        var cls = css.circle + ' ' + this.props.className
-        if (!this.props.noclick) {
-            cls += ' ' + css.clickEffects
-        }
-        return (<div key={this.props.user_id}
-            style={styles}
-            onClick={this.onClick}
-            className={cls}>
-        </div>)
+    if (props.size) {
+        styles.height = props.size;
+        styles.width = props.size;
     }
+    if (props.style) {
+        styles = { ...styles, ...props.style }
+    }
+    if(styles.height || styles.width){
+        styles.fontSize = `calc(${styles.height} * 0.7)`;
+    }
+    var cls = css.circle + ' ' + props.className
+    if (!props.noclick) {
+        cls += ' ' + css.clickEffects;
+    }
+    const initials = props.name ? props.name[0].toUpperCase() : '';
+    return (<div key={props.user_id}
+        style={styles}
+        onClick={props.onClick}
+        className={cls}>
+        {!props.avatar_url && initials}
+    </div>)
 }
 
 const LinkContent = ({ onClick, href, disableLink, size, isMe, user, originalOnClick, addText }) => {
