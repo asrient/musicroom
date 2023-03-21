@@ -1,10 +1,10 @@
 import $ from "jquery";
 import React, { Component } from "react";
-import Header from "./header.js";
 import { UserItem } from "./user.js";
 import { SelectButton } from "./global.js";
 import { Link, Route, Redirect } from "wouter";
 import css from "./common.css";
+
 
 class FriendRequests extends React.Component {
     constructor(props) {
@@ -110,8 +110,8 @@ class FriendRequests extends React.Component {
             </div>)
         }
         else {
-            return (<div className="container" style={{ padding: '1rem 0.5rem' }}>
-                <div className="ink-white base-regular size-xxl">
+            return (<div className="container" style={{ padding: '1rem 0.5rem', marginTop: '1.5rem' }}>
+                <div className="ink-white base-regular size-xl">
                     Friend requests
                 </div>
                 <br />
@@ -125,10 +125,7 @@ class FriendRequests extends React.Component {
         if (this.state.done)
             return (<Redirect to='/account' />)
         else
-            return (<>
-                <Header blank />
-                {this.main()}
-            </>)
+            return (this.main());
     }
 }
 

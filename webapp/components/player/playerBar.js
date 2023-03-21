@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { Link, Route } from "wouter";
 import css from "./playerBar.css";
 import ForScreen from "../forScreen";
@@ -8,6 +8,7 @@ import { currentScreenType } from "../../utils";
 import Queue from "./queue";
 import ProgressBar from "./progressBar";
 import RoomControlPannel from "./roomControl";
+import { UserCircleLink, UserCircle } from "../../user";
 
 
 function SongInfo({ image_url, title, artists, onClick, innerRef }) {
@@ -61,6 +62,53 @@ function MusicControl({ isPlaying, onClick, isDisabled }) {
   );
 }
 
+function UsersDisplay() {
+  const members = useSelector(state => state.room?.members);
+  const me = useSelector(state => state.me);
+  const maxUsers = 3;
+
+  const [usersToShow, setUsersToShow] = useState([]);
+  const [moreUsersCount, setMoreUsersCount] = useState(0);
+  
+  useEffect(() => {
+    if(!members) {
+      setUsersToShow([me]);
+      setMoreUsersCount(0);
+      return;
+    }
+    const { friends, others } = members;
+    const users = [...friends, ...others];
+
+    const toShow = [me];
+    for (let user of users) {
+      if(toShow.length >= maxUsers) {
+        break;
+      }
+      if (user.user_id != me.user_id) {
+        toShow.push(user);
+      }
+    }
+    const moreCount = users.length - toShow.length;
+    setUsersToShow(toShow);
+    setMoreUsersCount(moreCount);
+  }, [members, me]);
+  
+  if(usersToShow.length<1) return null;
+
+  return (
+    <div className={'center '+css.usersDisplay} style={{paddingRight: '0.5rem'}}>
+      {usersToShow.map((user, i) => (
+        <div key={user.user_id} style={{paddingRight: '0.2rem'}}>
+        <UserCircleLink {...user} size="2rem" myUserId={me.user_id} title={user.name + (me.user_id===user.user_id ? ' (You)' : '')} />
+        </div>
+      ))}
+      {moreUsersCount > 0 && <div>
+      <UserCircle name="" user_id={8} size="2rem" style={{fontSize: '0.7rem', fontWeight:'300'}} >
+      +{moreUsersCount}
+      </UserCircle></div>}
+    </div>
+  );
+}
 
 const arrowStyle = { color: '#2B2B2B' }; // style for an svg element
 
@@ -161,6 +209,9 @@ function Bar() {
         <ProgressBar/>
       </div>
       <div className={css.bar_d_sec3}>
+      <ForScreen desktop>
+      <UsersDisplay />
+      </ForScreen>
         {roomActive && membersCount>1 && <IconButton size="s" url="/static/icons/chat.svg" title="Chat" />}
         <Pannel desktopWidth={'18rem'} content={roomControlPannel}>
           <RoomControlButton />

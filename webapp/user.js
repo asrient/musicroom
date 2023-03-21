@@ -15,6 +15,12 @@ class UserLink extends React.Component {
     }
 }
 
+function UserCircleLink({myUserId, ...props}) {
+    return (<Link href={myUserId==props.user_id ? "/account" : "/profile/" + props.user_id}>
+        <UserCircle {...props} />
+    </Link>)
+}
+
 function UserCircle(props) {
     let styles = {};
     if (props.avatar_url) {
@@ -30,7 +36,7 @@ function UserCircle(props) {
     if (props.style) {
         styles = { ...styles, ...props.style }
     }
-    if(styles.height || styles.width){
+    if((styles.height || styles.width) && !styles.fontSize){
         styles.fontSize = `calc(${styles.height} * 0.7)`;
     }
     var cls = css.circle + ' ' + props.className
@@ -41,8 +47,9 @@ function UserCircle(props) {
     return (<div key={props.user_id}
         style={styles}
         onClick={props.onClick}
+        title={props.title}
         className={cls}>
-        {!props.avatar_url && initials}
+        {!props.avatar_url && (initials || props.children)}
     </div>)
 }
 
@@ -54,7 +61,7 @@ const LinkContent = ({ onClick, href, disableLink, size, isMe, user, originalOnC
         textStyle.fontSize = `calc(${size} - 0.3rem)`;
     }
 
-    const text = user.name + (isMe ? ' (Me)' : '');
+    const text = user.name + (isMe ? ' (You)' : '');
 
     const onClickHtml = (e) => {
         if (!!originalOnClick) {
@@ -81,4 +88,4 @@ function UserItem({ user, onClick, children, isMe, style, ...props }) {
     </div>)
 }
 
-export { UserLink, UserItem, UserCircle };
+export { UserLink, UserItem, UserCircle, UserCircleLink };

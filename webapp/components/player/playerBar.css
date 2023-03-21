@@ -1,5 +1,5 @@
 .bar {
-    position: fixed;
+    position: sticky;
     top: 0px;
     left: 0px;
     width: 100%;
@@ -10,9 +10,6 @@
     background-color: #292929;
     border-bottom: solid thin #131313;
     z-index: 5;
-}
-.spacer {
-    height: 3.6rem;
 }
 .bar_d_sec1 {
     display: grid;
@@ -40,7 +37,6 @@
     align-items: center;
     padding: 0.3rem 0.6rem;
     justify-content: flex-end;
-    min-width: 15rem;
     overflow: visible;
 }
 .controlsContainer{
@@ -167,6 +163,11 @@
         justify-content: center;
     }
 }
+@media screen and (max-width: 850px) {
+    .usersDisplay {
+        display: none;
+    }
+}
 @media screen and (max-width: 768px) {
     .mobile_only{
         display: block;
@@ -178,6 +179,7 @@
         display: none;
     }
     .bar {
+        position: fixed;
         top: auto;
         bottom: 0px;
         border-bottom: none;
@@ -190,10 +192,6 @@
         position: initial;
     }
     .bar_d_sec1 { 
-        display: none;
-    }
-    .spacer {
-        height: 0rem;
         display: none;
     }
     .si_img {

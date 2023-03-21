@@ -720,9 +720,11 @@ var state = {
     addRoomtrack: function (track) {
         var st = store.getState();
         if (st.room.tracks) {
-            var alreadyThere = st.room.tracks.find((rt) => { return rt.roomtrack_id == track.roomtrack_id })
+            const tracks = [...st.room.tracks];
+            var alreadyThere = tracks.find((rt) => { return rt.roomtrack_id == track.roomtrack_id })
             if (!alreadyThere) {
-                st.room.tracks.push(track)
+                tracks.push(track);
+                st.room.tracks = tracks;
                 update(st)
             }
         }
@@ -730,9 +732,11 @@ var state = {
     removeRoomtrack: function (track) {
         var st = store.getState();
         if (st.room.tracks) {
-            var index = st.room.tracks.findIndex((rt) => { return rt.roomtrack_id == track.roomtrack_id })
+            const tracks = [...st.room.tracks];
+            var index = tracks.findIndex((rt) => { return rt.roomtrack_id == track.roomtrack_id })
             if (index >= 0) {
-                st.room.tracks.splice(index, 1)
+                tracks.splice(index, 1);
+                st.room.tracks = tracks;
                 update(st)
             }
         }
@@ -748,11 +752,13 @@ var state = {
                 console.error("err in getting friendship status", status, data)
             }
             if (st.room.members) {
-                var alreadyThere = st.room.members[grp].find((member) => { return member.user_id == user.user_id })
+                const members = { ...st.room.members };
+                var alreadyThere = members[grp].find((member) => { return member.user_id == user.user_id })
                 if (!alreadyThere) {
-                    st.room.members[grp].push(user)
+                    members[grp].push(user);
                     st.room.members_count++;
-                    console.log(user, 'joined', grp, st.room.members)
+                    st.room.members = members;
+                    console.log(user, 'joined', grp, members);
                     update(st)
                 }
             }
@@ -762,10 +768,12 @@ var state = {
         var look = (grp) => {
             var index = st.room.members[grp].findIndex((member) => { return member.user_id == user.user_id })
             if (index >= 0) {
-                st.room.members[grp].splice(index, 1)
+                const members = { ...st.room.members };
+                members[grp].splice(index, 1);
                 st.room.members_count--;
-                console.log(user, 'left', grp, index)
-                update(st)
+                console.log(user, 'left', grp, index);
+                st.room.members = members;
+                update(st);
                 return true;
             }
             return false;
@@ -773,7 +781,7 @@ var state = {
         var st = store.getState();
         if (st.room.members) {
             if (!look('friends')) {
-                look('others')
+                look('others');
             }
         }
     },
