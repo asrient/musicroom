@@ -89,7 +89,7 @@ class Profile extends React.Component {
         if (this.state.profile) {
             if (this.state.profile.room) {
                 return (<div className="center" style={{ padding: '2rem 0.5rem' }}>
-                    <RoomCard {...this.state.profile.room} />
+                    <RoomCard room={this.state.profile.room} />
                 </div>)
             }
             else {

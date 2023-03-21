@@ -1,26 +1,43 @@
-.container{
-    margin:1rem;
-    background-color: rgb(27 27 27 / 74%);
-    border:solid thin rgb(42 42 42 / 48%);
-    border-radius: 0.2rem;
-    padding: 0.5rem;
-    height: 27rem;
-    width: 25rem;
+.roomCard{
     display: grid;
-    grid-template-rows: auto 3rem 3.5rem;
+    grid-template-columns: 5rem auto;
+    width: 30rem;
+    max-width: 80vw;
+    border-radius: 1.6rem;
+    padding: 1.2rem 0.4rem;
+    margin: 0.3rem 0.4rem;
+    background-color: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 0 0.5rem rgb(0 0 0 / 50%);
+    cursor: pointer;
+    justify-content: flex-start;
+    align-items: center;
 }
-.hero{
-    padding: 0.5rem;
+.roomCard:hover{
+    box-shadow: 0 0 0.5rem rgb(0 0 0 / 70%);
+    opacity: 0.8;
+}
+.ellipseText {
+    word-wrap: none;
+    white-space: nowrap;
     overflow: hidden;
 }
-.txt{
-    padding: 0.7rem;
-    text-align: center;
+.roomMembers{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0.4rem;
+    padding-top: 0px;
+    padding-left: 0px;
+    color: rgb(98, 98, 98);
+    font-size: 1rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
 }
+
 @media(max-width:900px){
-    .container{
-        height: 22rem;
-        width: 87vw;
-        max-width: 25rem;
+    .roomCard {
+        max-width: 90vw;
     }
 }

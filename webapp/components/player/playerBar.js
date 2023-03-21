@@ -4,7 +4,7 @@ import css from "./playerBar.css";
 import ForScreen from "../forScreen";
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
-import { currentScreenType } from "../../utils";
+import { currentScreenType, generateRoomEmoji } from "../../utils";
 import Queue from "./queue";
 import ProgressBar from "./progressBar";
 import RoomControlPannel from "./roomControl";
@@ -159,6 +159,7 @@ function Bar() {
   const currentTrack = useSelector(state => state.room?.current_roomtrack);
   const membersCount = useSelector(state => state.room?.members_count || 0);
   const roomActive = useSelector(state => !!state.room);
+  const roomId = useSelector(state => state.room?.room_id);
   const isPaused = useSelector(state => state.room ? state.room.is_paused : true);
   const joinRequestsCount = useSelector(state => state.room ? state.room.join_request_ids.length : 0);
 
@@ -190,10 +191,14 @@ function Bar() {
     <IconButton innerRef={ref} {...props} color={controlRoomColor} size="s" url="/static/icons/roomControl.svg" title="Room Control" />
   ));
 
+  const roomEmoji = roomActive ? generateRoomEmoji(roomId) : '🎸';
+
   return (
     <div className={css.bar}>
       <div className={css.bar_d_sec1}>
-        <div className={css.roomIcon}><TextButton text="🎸" size="s" /></div>
+        <div className={css.roomIcon}><Link href="/browse">
+        <TextButton text={roomEmoji} size="s" />
+        </Link></div>
         <div className={css.controlsContainer}>
           <MusicControl isDisabled={!roomActive} isPlaying={!isPaused} onClick={onMusicControlClick} />
         </div>

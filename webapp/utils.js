@@ -65,3 +65,38 @@ export function generateUserColor(userId) {
         "#358b85"];
     return colors[userId % colors.length];
 }
+
+export function generateRoomEmoji(roomId) {
+    var emojis = [
+        "🌴",
+        "🌳",
+        "🎤",
+        "🎼",
+        "🎹",
+        "🎸",
+        "🎺",
+        "🍁",
+        "🍂",
+        "🍃",
+        "🎲",
+        "🌲",
+        "🎳",
+        "🏀",
+        "🌵",
+        "🎬",
+        "🎨",
+        "🎭",
+        "🎮",
+        "🎯",
+        "🌾",
+        "🍄",
+        "🌷",
+        "🎧",
+        "🎷",
+        "🎻",
+        "🌿",
+        "🍀",
+        "🏈",
+    ];
+    return emojis[roomId % emojis.length];
+}
