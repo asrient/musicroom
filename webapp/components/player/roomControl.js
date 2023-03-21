@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import ForScreen from "../forScreen";
 import Switch from 'react-ios-switch';
 import { UserItem } from "../../user.js";
+import { Link, Route } from "wouter";
 
 
 function RoomMembers({ members, myUserId, closePannel }) {
@@ -101,7 +102,7 @@ export default function RoomControlPannel({ close }) {
     const room_id = useSelector(state => state.room?.room_id);
     const myUserId = useSelector(state => state.me.user_id);
     const inviteCode = useSelector(state => state.room?.room_code);
-    const requestedRoom = useSelector(state => state.room?.room_code);
+    const requestedRoom = useSelector(state => state.requested_room);
     const room_visible_to_friends = useSelector(state => state.user_preferences.room_visible_to_friends);
     const [isExiting, setIsExiting] = useState(false);
     const [settingLoading, setSettingLoading] = useState(false);
@@ -150,6 +151,13 @@ export default function RoomControlPannel({ close }) {
                 RoomPlay
             </div>
             <hr className={css.hr} />
+            {!!requestedRoom ? (<div className={"center-col size-xs base-semilight "+css.reqRoom+' '+css.chrome}>
+                <div style={{paddingBottom: '0.3rem'}}>Waiting to join room</div>
+                <div className="center">
+                    <Link href={'/roomPreview/'+requestedRoom.room_id}><div className="button ink-primary">View</div></Link>
+                    <div className="button ink-primary" onClick={() => window.state.cancelJoinRoom()}>Cancel</div>
+                </div>
+            </div>): ''}
             {!!room_id ? (<>
                 <div className={css.row}>
                     <div className={css.subTitle}>Invite Code</div>
@@ -167,7 +175,7 @@ export default function RoomControlPannel({ close }) {
                 <br />
                 <JoinRequests room_id={room_id} closePannel={close} />
                 <RoomMembers members={members} myUserId={myUserId} closePannel={close} />
-            </>) : (<div className="center">Play a music to create a room.</div>)}
+            </>) : !requestedRoom ? (<div className="center">Play a music to create a room.</div>): ''}
         </div>
         {!!room_id ? (<div>
             <button className="ink-red button size-xs strech" style={{ maxWidth: '18rem' }} onClick={exitRoom}>

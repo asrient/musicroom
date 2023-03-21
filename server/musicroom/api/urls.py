@@ -17,6 +17,7 @@ from musicroom.api.leaveRoom import main as leaveRoom
 from musicroom.api.membersList import main as membersList
 from musicroom.api.getRoomTracks import main as getRoomTracks
 from musicroom.api.respondJoinRoom import main as respondJoinRoom
+from musicroom.api.cancelJoinRoom import main as cancelJoinRoom
 from musicroom.api.addTracks import main as addTracks
 from musicroom.api.removeTracks import main as removeTracks
 from musicroom.api.getRoomCode import main as getRoomCode
@@ -56,6 +57,7 @@ urlpatterns = [
     path('room/create', createRoom, name='api.createRoom'),
     path('room/join', joinRoom),
     path('room/requestJoin', requestJoinRoom),
+    path('room/cancelJoinRoom', cancelJoinRoom),
     path('room/leave', leaveRoom),
     path('room/members', membersList),
     path('room/play', play),

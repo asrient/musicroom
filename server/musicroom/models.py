@@ -171,6 +171,8 @@ class User(AbstractUser):
             if notify_self:
                 self.broadcast('update.join_request.result', room=room.get_title_obj(self), was_approved=was_approved)
             room.broadcast('update.join_request.remove', action_user=self.get_profile_min(), was_approved=was_approved)
+            return True
+        return False
 
     def request_join_room(self, room):
         room: Room = room

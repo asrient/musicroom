@@ -885,6 +885,23 @@ var state = {
             }
         })
     },
+    cancelJoinRoom: function (cb = function () { }) {
+        if(!store.getState().requested_room) return;
+        const room_id = store.getState().requested_room.room_id;
+        api.post('room/cancelJoinRoom', { room_id }, (status, data) => {
+            if (status == 201) {
+                this.toast('Join request cancelled.');
+                const st = store.getState();
+                st.requested_room = null;
+                update(st);
+                cb(true, data);
+            }
+            else {
+                console.error(status, data);
+                cb(false);
+            }
+        })
+    },
     respondJoinRoom: function (user_id, approve) {
         return new Promise((resolve, reject) => {
             api.post('room/respondJoin', { user_id, approve }, (status, data) => {

@@ -31,7 +31,7 @@
     width: 100%;
     padding: 0.4rem;
 }
-.row.chrome{
+.chrome{
     background-color: #353535;
     border-radius: 0.5rem;
     margin: 0.4rem 0rem;
@@ -52,4 +52,8 @@
 .joinActions {
     padding: 0.4rem 0.2rem;
     padding-bottom: 0.5rem;
+}
+.reqRoom{
+    padding: 0.4rem 0.2rem;
+    margin-bottom: 0.3rem;
 }
