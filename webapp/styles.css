@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800&display=swap');
+
 .selButt{
   height: 2rem;
   width: 2rem;
@@ -49,4 +51,8 @@
 }
 .ap_butt{
 max-width: 80vw;
+}
+body {
+  background-color: #3E3E3E;
+  font-family: 'Inter', 'Segoe UI' , sans-serif;
 }

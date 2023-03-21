@@ -10,11 +10,13 @@ from musicroom.models import User, Track
 @require_http_methods(["GET"])
 def main(request):
     if request.user.is_authenticated:
+        room_obj = None
+        requested_room_obj = None
         if request.user.room != None:
-            room = request.user.room
-            return apiRespond(200, room=room.get_state_obj())
-        else:
-            return apiRespond(400, msg='Not a member of any room')
+            room_obj = request.user.room.get_state_obj()
+        if request.user.requested_room != None:
+            requested_room_obj = request.user.requested_room.get_title_obj(request.user)
+        return apiRespond(200, room=room_obj, requested_room = requested_room_obj)
     else:
         # user is already logged in, redirect to root
         return apiRespond(401, msg='User not logged in')

@@ -17,19 +17,21 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.2",
-    "css-loader": "^1.0.0",
-    "style-loader": "^0.23.0",
+    "css-loader": "^6.7.3",
+    "style-loader": "^3.3.2",
     "webpack": "^5.76.2",
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
     "jquery": "^3.5.1",
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-ios-switch": "^0.1.19",
+    "react-redux": "^8.0.5",
     "react-router-dom": "^4.3.1",
-    "react-textarea-autosize": "^8.2.0",
+    "react-textarea-autosize": "^8.4.0",
+    "reactjs-popup": "^2.0.5",
     "redux": "^4.0.5",
-    "wouter": "^2.5.1"
+    "wouter": "^2.10.0"
   }
 }

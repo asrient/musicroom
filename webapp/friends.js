@@ -1,6 +1,5 @@
 import $ from "jquery";
 import React, { Component } from "react";
-import Header from "./header.js";
 import { UserItem } from "./user.js";
 import { Link, Route, Redirect } from "wouter";
 
@@ -29,7 +28,7 @@ class Friends extends React.Component {
     friends() {
         var list = []
         this.state.friends.forEach(friend => {
-            list.push(<UserItem key={friend.user_id} {...friend}/>)
+            list.push(<UserItem key={friend.user_id} size='1.5rem' user = {friend}/>)
         });
         if (list.length) {
             return (list)
@@ -48,7 +47,7 @@ class Friends extends React.Component {
         else
             return (<div className="center ink-white size-m base-regular" style={{ padding: '2rem 1rem' }}>Loading..</div>)
     }
-    main() {
+    render() {
         if (this.state.error) {
             return (<div className="center container ink-light base-regular size-l" style={{ padding: '3rem 1rem' }}>
                 {this.state.error}
@@ -56,7 +55,7 @@ class Friends extends React.Component {
         }
         else {
             return (<div className="container" style={{ padding: '1rem 0.5rem' }}>
-                <div className="ink-white base-regular size-xxl">
+                <div className="ink-white base-regular size-l">
                     My friends
                 </div>
                 <br />
@@ -64,12 +63,6 @@ class Friends extends React.Component {
                 <br />
             </div>)
         }
-    }
-    render() {
-            return (<>
-                <Header blank />
-                {this.main()}
-            </>)
     }
 }
 

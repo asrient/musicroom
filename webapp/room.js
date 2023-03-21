@@ -8,147 +8,9 @@ import ChatBar from "./chatBar.js";
 import { Link, Redirect } from "wouter";
 import css from "./room.css";
 import sharedCss from "./common.css";
+import Queue from "./components/player/queue.js";
+import ProgressBar from "./components/player/progressBar.js";
 
-function time() {
-    return new Date().getTime() / 1000
-}
-
-class Queue extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { tracks: null, currentTrack: null }
-    }
-    componentDidMount() {
-        this.parseState();
-        this.unsub = window.state.subscribe(() => {
-            this.parseState();
-        })
-    }
-    parseState() {
-        var st = window.state.getState();
-        if (st.room) {
-            this.setState({ ...this.state, tracks: st.room.tracks, currentTrack: st.room.current_roomtrack })
-        }
-    }
-    componentWillUnmount() {
-        this.unsub();
-    }
-    list() {
-        if (this.state.tracks) {
-            var tracks = this.state.tracks
-            var currentTrack = this.state.currentTrack
-            var arranged = []
-            var currInd = tracks.findIndex((track) => { return track.roomtrack_id == currentTrack.roomtrack_id })
-            if (currInd != undefined) {
-                var counter = currInd;
-                for (var i = 0; i < tracks.length; i++) {
-                    if (counter >= tracks.length) {
-                        counter = 0
-                    }
-                    if (counter != currInd) {
-                        arranged.push(tracks[counter])
-                    }
-                    counter++;
-                }
-            }
-            else {
-                console.error('current track not found in tracks')
-                arranged = tracks
-            }
-            var list = []
-            arranged.forEach(track => {
-                list.push(<TrackItem onClick={() => {
-                    window.state.skipTo(track.roomtrack_id)
-                }} playable key={track.roomtrack_id} {...track} >
-                    <div className={css.delButt + ' center'} onClick={() => {
-                        window.state.removeTrack(track.roomtrack_id)
-                    }}>
-                        <img className={"icon " + css.trashIcon} style={{ fontSize: '0.5rem' }} src="/static/icons/close.svg" />
-                    </div>
-                </TrackItem>)
-            });
-            if (list.length)
-                return (<div>
-                    <div style={{ paddingLeft: '2rem', paddingBottom: '0.6rem' }}
-                        className='container size-m ink-light base-semibold'>
-                        Up next
-                    </div>
-                    {list}
-                </div>)
-            else
-                return (<div></div>)
-        }
-        else {
-            return (<div>Loading tracks..</div>)
-        }
-    }
-    render() {
-        if (this.state.exit)
-            return (<Redirect to='/rooms' />)
-        else
-            return (<div>
-                {this.list()}
-                <div className="center-col" style={{ padding: '1.3rem 0.3rem' }}>
-                    <div style={{ paddingTop: '0.6rem' }} className="center">
-                        <Link href='/room/addTracks' className={sharedCss.redButt_s + ' center'}>Add more</Link>
-                    </div>
-                </div>
-                <br />
-            </div>)
-    }
-}
-
-class ProgressBar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { isPaused: true, durationCompleted: 0, duration: 100 }
-        this.timerID = null
-    }
-    componentDidMount() {
-        this.parseState();
-        this.unsub = window.state.subscribe(() => {
-            this.parseState();
-        })
-    }
-    parseState() {
-        var st = window.state.getState();
-        if (st.room) {
-            var isPaused = st.room.is_paused;
-            var duration = st.room.current_roomtrack.duration
-            if (!isPaused)
-                var durationCompleted = duration - st.room.duration_to_complete + (time() - (new Date(st.room.play_start_time).getTime() / 1000))
-            else
-                var durationCompleted = duration - st.room.duration_to_complete
-            this.setState({ ...this.state, isPaused, durationCompleted, duration })
-            if (isPaused && this.timerID) {
-                window.clearInterval(this.timerID);
-                this.timerID = null
-            }
-            if (!isPaused && !this.timerID) {
-                this.timerID = window.setInterval(this.progressTimer, 1000);
-            }
-        }
-    }
-    componentWillUnmount() {
-        this.unsub();
-        if (this.timerID)
-            window.clearInterval(this.timerID);
-        this.timerID = null
-    }
-    progressTimer = () => {
-        if (!this.state.isPaused) {
-            var durationCompleted = this.state.durationCompleted + 1
-            this.setState({ ...this.state, durationCompleted })
-        }
-    }
-    render() {
-        var progress = (this.state.durationCompleted / this.state.duration) * 100
-        var fillStyle = { width: progress + '%' }
-        return (<div id={css.pBar}>
-            <div id={css.pbar_fill} style={fillStyle} ></div>
-        </div>)
-    }
-}
 
 class Room extends React.Component {
     constructor(props) {
@@ -330,9 +192,7 @@ class Room extends React.Component {
                                     {this.playButton()}
                                 </div>
                             </div>
-                            <div>
-                                <ProgressBar />
-                            </div>
+                            <ProgressBar />
                         </div>
                         <br />
                         <Queue />

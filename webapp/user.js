@@ -18,65 +18,8 @@ class UserLink extends React.Component {
 class UserCircle extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { redirect: false, text: null, isTyping: false }
     }
-    componentDidMount() {
-        this.parseState();
-        this.unsub = window.state.subscribe(() => {
-            this.parseState();
-        })
-    }
-    parseState() {
-        var st = window.state.getState();
-        if (st.room) {
-            const user_id = this.props.user_id
-            var msgs = st.messages
-            var txt = null
-            for (var i = msgs.length - 1; i >= 0; i--) {
-                if (msgs[i].from.user_id == user_id) {
-                    txt = msgs[i].text;
-                    break;
-                }
-            }
-            var isTyping = user_id in st.typingUsers;
-            this.setState({ ...this.state, text: txt, isTyping })
-        }
-    }
-    componentWillUnmount() {
-        this.unsub();
-    }
-    popup() {
-        if (!this.props.nopopup) {
-            if (this.state.text) {
-                var cls = css.popup
-                if (this.props.popupClass) {
-                    cls += ' ' + this.props.popupClass
-                }
-                return (<div className={cls}>
-                    <div className={css.popupTxt}>
-                        {this.state.text}
-                    </div>
-                </div>)
-            }
-            else if (this.state.isTyping) {
-                var cls = css['typing-indicator']
-                if (this.props.popupClass) {
-                    cls += ' ' + this.props.popupClass
-                }
-                return (<div className={cls}>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>)
-            }
-        }
-    }
-    onClick = () => {
-        if (!this.props.noclick) {
-            this.setState({ ...this.state, redirect: true })
-        }
-    }
-    main() {
+    render() {
         var styles = {}
         if (this.props.avatar_url) {
             styles.backgroundImage = 'url(' + this.props.avatar_url + ')'
@@ -98,40 +41,41 @@ class UserCircle extends React.Component {
             className={cls}>
         </div>)
     }
-    render() {
-        if (this.state.redirect) {
-            return (<Redirect to={'/profile/' + this.props.user_id} />)
-        }
-        else
-            return (<div className={css.circleContainer}>
-                {this.main()}
-                {this.popup()}
-            </div>)
-    }
 }
 
-class UserItem extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {}
+const LinkContent = ({ onClick, href, disableLink, size, isMe, user, originalOnClick, addText }) => {
+    // onclick is passed by Link, calling it will navigate to the link
+
+    var textStyle = {};
+    if (size) {
+        textStyle.fontSize = `calc(${size} - 0.3rem)`;
     }
-    render() {
-        var avatarStyle = {}
-        if (this.props.avatar_url) {
-            avatarStyle.backgroundImage = 'url(' + this.props.avatar_url + ')'
+
+    const text = user.name + (isMe ? ' (Me)' : '');
+
+    const onClickHtml = (e) => {
+        if (!!originalOnClick) {
+            originalOnClick({ user, openProfilePage: () => onClick(e), href });
+        } else if (!disableLink) {
+            onClick(e);
         }
-        return (<div className={css.userContainer}>
-            <div className={css.content}>
-                <div>
-                    <UserCircle nopopup {...this.props} className={css.avatar} />
-                </div>
-                <div>
-                    <Link href={"/profile/" + this.props.user_id} className={css.userName + " ink-white base-semilight trunc"}>{this.props.name}</Link>
-                </div>
-            </div>
-            <div>{this.props.children}</div>
-        </div>)
     }
+    return (<div className={css.content}>
+            <UserCircle {...user} size={size} noclick className={css.avatar} onClick={onClickHtml} />
+            <div className={css.userName + " base-semilight"} style={textStyle}>
+            <span className={!disableLink && css.link} onClick={onClickHtml}>{text}</span> {addText}
+            </div>
+    </div>)
+}
+
+function UserItem({ user, onClick, children, isMe, style, ...props }) {
+    const originalOnClick = onClick;
+    const link = isMe ? '/account' : '/profile/' + user.user_id;
+
+    return (<div className={css.userContainer} style={style || {}}>
+        <Link href={link}><LinkContent originalOnClick={originalOnClick} user={user} isMe={isMe} {...props} /></Link>
+        <div>{children}</div>
+    </div>)
 }
 
 export { UserLink, UserItem, UserCircle };

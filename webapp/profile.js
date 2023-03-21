@@ -1,6 +1,5 @@
 import $ from "jquery";
 import React, { Component } from "react";
-import Header from "./header.js";
 import {UserCircle} from "./user.js";
 import RoomCard from "./roomCard.js";
 import { Link, Route } from "wouter";
@@ -101,7 +100,7 @@ class Profile extends React.Component {
             return (<div></div>)
         }
     }
-    main(){
+    render(){
         if(this.state.error){
             return(<div className="center container ink-light base-regular size-l" style={{padding:'3rem 1rem'}}>
                 {this.state.error}
@@ -117,12 +116,6 @@ class Profile extends React.Component {
             {this.room()}
         </div>)
         }
-    }
-    render() {
-        return (<>
-            <Header blank />
-            {this.main()}
-        </>)
     }
 }
 

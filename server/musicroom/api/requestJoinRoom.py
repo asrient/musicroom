@@ -10,20 +10,23 @@ from musicroom.models import User, Track, Room
 @require_http_methods(["POST"])
 def main(request):
     if request.user.is_authenticated:
-        if "code" in request.POST:
+        if "room_id" in request.POST:
             try:
-                room=Room.get_by_code(request.POST['code'])
+                room = Room.get_by_id(request.POST['room_id'])
             except:
-                return apiRespond(400, msg='invalid code')
+                return apiRespond(400, msg='invalid room_id')
             else:
+                success = False
                 try:
-                    room: Room = request.user.join_room(room)
+                    success = request.user.request_join_room(room)
                 except:
-                    return apiRespond(400, msg='Access denied')
+                    pass
+                if success:
+                    return apiRespond(201, room = room.get_title_obj(request.user))
                 else:
-                    return apiRespond(201, room = room.get_state_obj())
+                    return apiRespond(400, msg='Access denied')
         else:
-            return apiRespond(400, msg='code missing')
+            return apiRespond(400, msg='room_id missing')
     else:
         # user is already logged in, redirect to root
         return apiRespond(401, msg='User not logged in')

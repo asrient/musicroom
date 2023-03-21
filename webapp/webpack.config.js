@@ -16,11 +16,15 @@ module.exports = {
       },
       {
         test: /\.(s*)css$/,
-        use: ["style-loader", {
+        use: [{ 
+          loader: "style-loader",
+        }, 
+        {
           loader: 'css-loader',
           options: {
             importLoaders: 1,
-            modules: true
+            modules: true,
+            url: false
           }
         }]
       }

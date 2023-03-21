@@ -1,6 +1,5 @@
 import $ from "jquery";
 import React, { Component } from "react";
-import Header from "./header.js";
 import RoomCard from "./roomCard.js";
 import { Link, Route } from "wouter";
 import css from "./rooms.css";
@@ -61,7 +60,6 @@ class Rooms extends React.Component {
     }
     render() {
         return (<>
-            <Header />
             {this.showRooms()}
         </>)
     }

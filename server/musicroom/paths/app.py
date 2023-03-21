@@ -19,9 +19,13 @@ def app_login_required(request, **args):
         'live_url': LIVE_URL
         }
     state['me'] = request.user.get_profile(request.user)
+    state['user_preferences'] = request.user.get_preferences()
     state['room'] = None
     if request.user.room != None:
         state['room'] = request.user.room.get_state_obj()
+    state['requested_room'] = None
+    if request.user.requested_room != None:
+        state['requested_room'] = request.user.requested_room.get_title_obj(request.user)
     res = render(request, 'app.html', {
                  'no_header': True,  'state': to_json(state)})
     return res

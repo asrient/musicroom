@@ -58,6 +58,9 @@ class User(AbstractUser):
     last_name = None
     last_seen = models.DateTimeField()
     room_joined_on = models.DateTimeField(null=True, default=None)
+    room_visible_to_friends = models.BooleanField(default=True)
+    requested_room = models.ForeignKey(
+        'Room', on_delete=models.SET_NULL, related_name="join_requests", null=True, default=None)
     room = models.ForeignKey(
         'Room', on_delete=models.SET_NULL, related_name="members", null=True, default=None)
     USERNAME_FIELD = 'email'
@@ -83,7 +86,7 @@ class User(AbstractUser):
         # returns both catagory 3 and 1
         friends = Friendship.objects.filter(
             Q(user1=self) | Q(user2=self, is_accepted=True))
-        List = []
+        List: list[User] = []
         for friend in friends:
             if friend.user1 == self:
                 List.append(friend.user2)
@@ -155,21 +158,40 @@ class User(AbstractUser):
 
     def create_room(self, tracks):
         room = Room.create(tracks)
-        room.grant_access(self)
         self.join_room(room)
         return room
+    
+    # can be initiated both by the user or the room members while approving/rejecting
+    def remove_room_request(self, was_approved=False, notify_self=True):
+        if self.requested_room != None:
+            room: Room = self.requested_room
+            self.requested_room = None
+            self.save()
+            #notify room members and the user
+            if notify_self:
+                self.broadcast('update.join_request.result', room=room.get_title_obj(self), was_approved=was_approved)
+            room.broadcast('update.join_request.remove', action_user=self.get_profile_min(), was_approved=was_approved)
 
+    def request_join_room(self, room):
+        room: Room = room
+        if self.room != room and self.requested_room != room:
+            if self.requested_room != None:
+                self.remove_room_request(was_approved=False, notify_self=False)
+            self.requested_room = room
+            self.save()
+            room.broadcast('update.join_request.add', action_user=self.get_profile_min())
+            return True
+        return False
+
+    # either got approved or using invite code
     def join_room(self, room):
         self.leave_room()
-        if room.can_user_access(self):
-            self.room = room
-            self.save()
-            usertask('room.join', self.id, room_id=room.get_value('id'))
-            room.broadcast('update.members.add',
-                           action_user=self.get_profile_min())
-            return room
-        else:
-            raise ValueError("User does not have access")
+        self.room = room
+        self.save()
+        usertask('room.join', self.id, room_id=room.get_value('id'))
+        room.broadcast('update.members.add',
+                        action_user=self.get_profile_min())
+        return room
 
     def leave_room(self):
         if self.room != None:
@@ -184,14 +206,27 @@ class User(AbstractUser):
 
     def get_rooms(self):
         max_rooms = 10
-        rooms = []
+        rooms: set[Room] = set()
         friends = self.get_friends()
         for friend in friends:
-            if friend.room != None and friend.room.can_user_access(self):
-                rooms.append(friend.room)
+            if friend.room != None and friend.room_visible_to_friends:
+                rooms.add(friend.room)
                 if len(rooms) >= max_rooms:
                     break
-        return rooms
+        return list(rooms)
+
+    def get_preferences(self):
+        return {
+            'room_visible_to_friends': self.room_visible_to_friends,
+        }
+    
+    def set_preferences(self, preferences: dict):
+        change = False
+        if 'room_visible_to_friends' in preferences:
+            self.room_visible_to_friends = preferences['room_visible_to_friends']
+            change = True
+        self.save()
+        return change
 
     def __str__(self):
         return self.email
@@ -244,8 +279,6 @@ class Friendship(models.Model):
 class Room(models.Model):
     created_on = models.DateTimeField()
     last_check_on = models.DateTimeField()
-    access_users = models.ManyToManyField(
-        User, related_name="access_to_rooms")
     is_paused = models.BooleanField(default=False)
     paused_on = models.DateTimeField(null=True, default=None)
     duration_to_complete = models.TimeField()
@@ -268,6 +301,7 @@ class Room(models.Model):
             print("room dissolved, all members offline")
 
     def dissolve(self):
+        ##todo: notify all join requesters
         schedule('room.dissolve', 0, room_id=self.id)
         self.delete()
 
@@ -287,7 +321,9 @@ class Room(models.Model):
             'is_paused': self.is_paused,
             'current_roomtrack': self.current_roomtrack.get_obj(),
             'play_start_time': dump_datetime(self.play_start_time),
-            'duration_to_complete': dump_datetime(self.duration_to_complete)
+            'duration_to_complete': dump_datetime(self.duration_to_complete),
+            'join_request_ids': self.get_join_request_ids(),
+            'room_code': self.code
         }
         return state
 
@@ -301,7 +337,7 @@ class Room(models.Model):
                 friends_found.append(member.get_profile_min())
                 if len(friends_found) > 2:
                     break
-        return {'room_id': self.id, 'members_count': count, 'member_friends': friends_found}
+        return {'room_id': self.id, 'members_count': count, 'member_friends': friends_found, 'current_roomtrack': self.current_roomtrack.get_obj(),}
 
     def get_roomtracks(self):
         rt = self.current_roomtrack
@@ -311,31 +347,29 @@ class Room(models.Model):
             List.append(rt)
         return List
 
-    def get_members(self):
+    def get_members(self) -> list[User]:
         members = self.members.all()
         return members
+    
+    def get_join_requests(self) -> list[User]:
+        return self.join_requests.all()
+    
+    # we use ids instead of count so that we dont face network safety issues
+    def get_join_request_ids(self) -> list[int]:
+        return list(self.join_requests.values_list('id', flat=True))
 
-    def get_access_users(self):
-        ausers = self.access_users.all()
-        return ausers
-
-    def can_user_access(self, user):
-        try:
-            self.access_users.get(id=user.id)
-        except:
-            return False
-        else:
+    def approve_join(self, user: User):
+        if user.requested_room == self:
+            user.remove_room_request(was_approved=True)
+            user.join_room(self)
             return True
+        return False
 
-    def grant_access(self, user, save=True):
-        self.access_users.add(user)
-        if save:
-            self.save()
-
-    def revoke_access(self, user, save=True):
-        self.access_users.remove(user)
-        if save:
-            self.save()
+    def reject_join(self, user: User):
+        if user.requested_room == self:
+            user.remove_room_request(was_approved=False)
+            return True
+        return False
 
     def play(self, action_user=None):
         self.skip_to(self.current_roomtrack,

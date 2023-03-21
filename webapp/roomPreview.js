@@ -30,7 +30,7 @@ class RoomPreview extends React.Component {
     friends() {
         var list = []
         this.state.friends.forEach(friend => {
-            list.push(<UserItem key={friend.user_id} {...friend} />)
+            list.push(<UserItem key={friend.user_id} user={friend} />)
         });
         if (list.length) {
             return (<div>
@@ -45,7 +45,7 @@ class RoomPreview extends React.Component {
     others() {
         var list = []
         this.state.others.forEach(friend => {
-            list.push(<UserItem key={friend.user_id} {...friend} />)
+            list.push(<UserItem key={friend.user_id} user={friend} />)
         });
         if (list.length) {
             return (<div>
@@ -67,9 +67,9 @@ class RoomPreview extends React.Component {
             return (<div className="center ink-white size-m base-regular" style={{ padding: '2rem 1rem' }}>Loading..</div>)
     }
     opt() {
-        var txt = 'Join'
+        var txt = 'Request to join'
         if (this.state.wait) {
-            txt = 'Joining..'
+            txt = 'Requesting..'
         }
         var st = window.state.getState()
         if (!st.room || (st.room && st.room.room_id != this.props.room_id))
@@ -79,7 +79,7 @@ class RoomPreview extends React.Component {
                     <div className='redButt center' onClick={() => {
                         if (!this.state.wait) {
                             this.setState({ ...this.state, wait: true })
-                            window.state.joinRoom(this.props.room_id, (res) => {
+                            window.state.requestJoinRoom(this.props.room_id, (res) => {
                                 if(res)
                                 this.setState({ ...this.state, wait: false, done: true })
                                 else
@@ -118,12 +118,9 @@ class RoomPreview extends React.Component {
     }
     render() {
         if (this.state.done)
-            return (<Redirect to='/room' />)
+            return (<Redirect to='/rooms' />)
         else
-            return (<>
-                <Header blank />
-                {this.main()}
-            </>)
+            return (this.main())
     }
 }
 

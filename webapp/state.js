@@ -51,7 +51,7 @@ function reducers(state = 0, action) {
             return st;
         }
         case 'UPDATE': {
-            return action.state
+            return {...action.state}
         }
         default:
             return state
@@ -78,7 +78,7 @@ class Live {
         console.log('connecting to live server..',LIVE_BASE_URL)
         this.socket = new io(LIVE_BASE_URL, { path: '/updates' });
         this.socket.on('connect', this._onOpen);
-        this.socket.on('reconnect', this._onOpen);
+        this.socket.on('reconnect', this._onReconnect);
         this.socket.on('disconnect', this._onClose);
         this.socket.on('connect_error', this._onError);
         this.socket.on('chat.text', (msg) => {
@@ -113,6 +113,46 @@ class Live {
                 var txt = user.name + ' joined'
                 state.announceEvent(txt)
             }
+        });
+        this.socket.on('update.join_request.result', (msg) => {
+            const data = JSON.parse(msg);
+            console.log('[update.join_request.result]', data);
+            const { room, was_approved } = data;
+            state.announceEvent(was_approved? "Request to join room accepted": `Your request to join room #${room.room_id} was denied.`);
+            if(was_approved) {
+                // this automatically takes care of requested_room state
+                state.syncRoomState();
+            } else {
+                // remove the request from local state
+                const st = window.state.getState();
+                st.requested_room = null;
+                update(st);
+            }
+        });
+        this.socket.on('update.join_request.add', (msg) => {
+            const data = JSON.parse(msg);
+            console.log('[update.join_request.add]', data);
+            const { action_user } = data;
+            state.announceEvent(`${action_user.name} is requesting to join.`);
+            const st = window.state.getState();
+            if(!st.room) {
+                console.error('Received join request while not in a room. This should not happen.', st, action_user);
+                return;
+            }
+            st.room.join_request_ids.push(action_user.user_id);
+            update(st);
+        });
+        this.socket.on('update.join_request.remove', (msg) => {
+            const data = JSON.parse(msg);
+            console.log('[update.join_request.remove]', data);
+            const { action_user } = data;
+            const st = window.state.getState();
+            if(!st.room) {
+                console.error('Received join request update while not in a room. This should not happen.', st, action_user);
+                return;
+            }
+            st.room.join_request_ids = st.room.join_request_ids.filter(id => id != action_user.user_id);
+            update(st);
         });
         this.socket.on('update.members.remove', (msg) => {
             var data = JSON.parse(msg);
@@ -185,6 +225,12 @@ class Live {
         st.isChatUpdated = false;
         update(st);
         state.syncChats()
+    }
+    _onReconnect = (event) => {
+        console.log('connection RECONNECTED!')
+        if((timeMS() - window.state.getState().lastConnectedOn) > 1000*5)
+            state.syncRoomState();
+        this._onOpen(event);
     }
     _onClose = (event) => {
         console.warn('connection DOWN!')
@@ -263,7 +309,6 @@ class Playback {
     }
     kill() {
         this.hls.destroy();
-        resetBgColor();
     }
     loadPlaybackData = (cb) => {
         getPlaybackUrl(this.state.track_id, (url) => {
@@ -388,6 +433,7 @@ const sampleMsg = {
 }
 
 var state = {
+    _store: store,
     getState: store.getState,
     subscribe: store.subscribe,
     player: null,
@@ -413,6 +459,23 @@ var state = {
                 console.error("Failed to ping", status, data);
             }
         })
+    },
+    // use it when you were disconnected for a long time and might have missed some updates
+    syncRoomState() {
+        api.get('room', null, (status, data) => {
+            if(status != 200){
+                console.error("Failed to sync room", status, data);
+                return;
+            }
+            const st = window.state.getState();
+            st.requested_room = data.requested_room;
+            update(st);
+            if(!!data.room){
+                this.changeRoom(data.room, false);
+            } else if(!!state.getState().room){
+                this.changeRoom(null, true);
+            }
+        });
     },
     syncChats() {
         var st = store.getState();
@@ -753,33 +816,36 @@ var state = {
         }
     },
     leaveRoom: function () {
-        var st = store.getState();
-        if (st.room != null) {
-            api.get('room/leave', null, (status, data) => {
-                if (status == 201) {
-                    st = store.getState();
-                    if (st.room != null) {
-                        st.room = null;
-                        st.messages = []
-                        st.typingUsers = []
-                        st.latestEvent = null
-                        update(st)
-                        this.clearCacheMessages()
-                        this.toast('You left the room')
-                        this.syncPlayback()
+        const promise = new Promise((resolve, reject) => {
+            var st = store.getState();
+            if (st.room != null) {
+                api.get('room/leave', null, (status, data) => {
+                    if (status == 201) {
+                        st = store.getState();
+                        if (st.room != null) {
+                            this.toast('You left the room');
+                            this.changeRoom(null, true);
+                        }
+                        resolve(status, data);
                     }
-                }
-                else {
-                    this.toast('error: Could not leave the room')
-                    console.error(status, data)
-                }
-            })
-        }
+                    else {
+                        this.toast('error: Could not leave the room')
+                        console.error(status, data);
+                        reject(status, data);
+                    }
+                });
+            } else {
+                reject(null, 'Not in a room');
+            }
+        });
+        return promise;
     },
     changeRoom: function (room, clearCacheMsgs = true) {
         var st = store.getState();
-        room.members = null;
-        room.tracks = null;
+        if(!!room){
+            room.members = null;
+            room.tracks = null;
+        }
         st.room = room
         st.latestEvent = null
         st.messages = []
@@ -790,14 +856,45 @@ var state = {
             this.clearCacheMessages()
         }
         this.syncPlayback()
-        this.updateRoomMembers()
-        this.updateRoomTracks()
+        if(!!room){
+            this.updateRoomMembers();
+            this.updateRoomTracks();
+        }
     },
-    joinRoom: function (roomId, cb = function () { }) {
-        api.post('room/join', { room_id: roomId }, (status, data) => {
+    requestJoinRoom: function (room_id, cb = function () { }) {
+        api.post('room/requestJoin', { room_id }, (status, data) => {
+            if (status == 201 && !!data.room) {
+                const requested_room = data.room;
+                this.toast('Join request sent');
+                const st = store.getState();
+                st.requested_room = requested_room;
+                update(st);
+                cb(true, data);
+            }
+            else {
+                console.error(status, data);
+                cb(false);
+            }
+        })
+    },
+    respondJoinRoom: function (user_id, approve) {
+        return new Promise((resolve, reject) => {
+            api.post('room/respondJoin', { user_id, approve }, (status, data) => {
+                if (status == 201) {
+                    resolve(data);
+                }
+                else {
+                    console.error(status, data);
+                    reject(status, data);
+                }
+            })
+        });
+    },
+    joinRoomWithCode: function (code, cb = function () { }) {
+        api.post('room/join', { code }, (status, data) => {
             if (status == 201) {
-                this.changeRoom(data)
                 this.toast('Welcome to the room', '/room')
+                this.changeRoom(data.room);
                 cb(true, data)
             }
             else {
@@ -872,6 +969,73 @@ var state = {
                     this.toast('Falied to skip', '/room')
                 }
             })
+        }
+    },
+    // join_request_ids is only used to keep track of new requests, actual requests are fetched from api when needed
+    markRequestsAsSeen() {
+        const st = store.getState();
+        if (!st.room) {
+            return;
+        }
+        st.room.join_request_ids = [];
+        update(st);
+    },
+    getJoinRequests() {
+        const promise = new Promise((resolve, reject) => {
+            api.get('room/getJoinRequests', null, (status, data) => {
+                if (status == 200) {
+                    resolve(data);
+                }
+                else {
+                    reject(status, data);
+                }
+            });
+        });
+        return promise;
+    },
+    setUserPreference (key, value) {
+        const promise = new Promise((resolve, reject) => {
+            api.post('set/userPreference', { key, value }, (status, data) => {
+                if (status == 201) {
+                    const st = store.getState();
+                    st.user_preferences[key] = value;
+                    resolve(data);
+                }
+                else {
+                    console.error(status, data);
+                    reject(status, data);
+                }
+            });
+        });
+        return promise;
+    },
+    codeExport () {
+        const code = store.getState().room?.room_code;
+        if (!code) {
+            state.toast("Failed to copy to clipboard.");
+            return;
+        }
+        const url = window.location.protocol + '//' + window.location.host + '/code/' + code;
+        const shareData = {
+            title: 'Friendzone Party?',
+            text: "Lets listen to music together on Friendzone! Room code: " + code + " See you there!",
+            url,
+        }
+        const clipText = url;
+        if (navigator.share) {
+            // Web Share API is supported
+            window.navigator.share(shareData).then(() => {
+                state.toast("Room code shared!")
+            })
+                .catch((e) => {
+                    console.error(e)
+                });
+        } else {
+            var promise = navigator.clipboard.writeText(clipText).then(() => {
+                state.toast("Link copied to clipboard")
+            }, () => {
+                state.toast("Failed to copy to clipboard")
+            });
         }
     }
 }

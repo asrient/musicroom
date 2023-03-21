@@ -1,20 +1,19 @@
 .link {
-  margin: 0.1rem;
   cursor: pointer;
-  text-decoration: underline;
 }
 .link:hover {
-  opacity: 0.7rem;
+  opacity: 0.7;
 }
 .userContainer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  width: 100%;
   align-items: center;
   margin-left: auto;
   margin-right: auto;
   max-width: 35rem;
-  padding: 0.6rem 0.5rem;
+  padding: 0.45rem 0.3rem;
   border-bottom: solid thin rgba(255, 255, 255, 0.068);
 }
 .content {
@@ -23,18 +22,14 @@
   align-items: center;
 }
 .userName {
-  font-size: 1rem;
+  font-size: 0.95rem;
   padding: 0.2rem 0.3rem;
-}
-.userName:hover {
-  opacity: 0.7;
 }
 .circle {
   display: block;
-  height: 2.5rem;
-  width: 2.5rem;
-  margin: 0.5rem;
-  background-color: rgb(188, 143, 255);
+  height: 1.5rem;
+  width: 1.5rem;
+  background-color: rgb(62, 114, 220);
   border-radius: 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -45,7 +40,7 @@
   position: relative;
 }
 .avatar {
-  margin-right: 1.2rem;
+  margin-right: 0.4rem;
 }
 .clickEffects {
   cursor: pointer;

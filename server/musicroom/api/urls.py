@@ -15,10 +15,8 @@ from musicroom.api.createRoom import main as createRoom
 from musicroom.api.joinRoom import main as joinRoom
 from musicroom.api.leaveRoom import main as leaveRoom
 from musicroom.api.membersList import main as membersList
-from musicroom.api.getAccessUsers import main as getAccessUsers
 from musicroom.api.getRoomTracks import main as getRoomTracks
-from musicroom.api.grantAccess import main as grantAccess
-from musicroom.api.revokeAccess import main as revokeAccess
+from musicroom.api.respondJoinRoom import main as respondJoinRoom
 from musicroom.api.addTracks import main as addTracks
 from musicroom.api.removeTracks import main as removeTracks
 from musicroom.api.getRoomCode import main as getRoomCode
@@ -35,6 +33,9 @@ from musicroom.api.private.skipto import p_skipto
 from musicroom.api.private.roomCheck import p_room_check
 from musicroom.api.ping import ping
 from musicroom.api.streamUrl import stream_url_api
+from musicroom.api.requestJoinRoom import main as requestJoinRoom
+from musicroom.api.setUserPreference import main as setUserPreference
+from musicroom.api.getJoinRoomRequests import main as getJoinRoomRequests
 
 
 urlpatterns = [
@@ -43,6 +44,7 @@ urlpatterns = [
     path('logout', logout, name='logout'),
     path('set/name', setName, name='api.set_name'),
     path('set/avatar', setAvatar, name='api.set_avatar'),
+    path('set/userPreference', setUserPreference, name='api.set_user_preference'),
     path('profile', getProfile, name='api.get_profile'),
     path('profile/me', getMyProfile, name='api.get_my_profile'),
     path('friends', friendsList, name='api.friends_list'),
@@ -53,15 +55,15 @@ urlpatterns = [
     path('room', getMyRoom, name='api.getMyRoom'),
     path('room/create', createRoom, name='api.createRoom'),
     path('room/join', joinRoom),
+    path('room/requestJoin', requestJoinRoom),
     path('room/leave', leaveRoom),
     path('room/members', membersList),
     path('room/play', play),
     path('room/pause', pause),
     path('room/skipto', skipto),
-    path('room/access/users', getAccessUsers),
     path('room/tracks', getRoomTracks),
-    path('room/access/grant', grantAccess),
-    path('room/access/revoke', revokeAccess),
+    path('room/respondJoin', respondJoinRoom),
+    path('room/getJoinRequests', getJoinRoomRequests),
     path('room/tracks/add', addTracks),
     path('room/tracks/remove', removeTracks),
     path('room/access/code', getRoomCode),

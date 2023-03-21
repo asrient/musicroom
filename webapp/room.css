@@ -59,13 +59,12 @@
   overflow: hidden;
 }
 #pBar{
-  margin:1rem auto;
-  width: 20rem;
-  max-width: 75vw;
-  margin-top: 0rem;
-  background-color: rgba(95, 0, 0, 0.644);
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  background-color: rgba(238, 238, 238, 0.663);
   height: 0.2rem;
-  border-radius: 0.5rem;
   display: flex;
 }
 #pbar_fill{

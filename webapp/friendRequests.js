@@ -32,7 +32,7 @@ class FriendRequests extends React.Component {
         var list = []
         this.state.requests.forEach(friend => {
             var isSel = this.state.selected.includes(friend.user_id)
-            list.push(<UserItem key={friend.user_id} {...friend}>
+            list.push(<UserItem key={friend.user_id} user = {friend} size='1.3rem'>
                 <SelectButton selected={isSel} onClick={() => {
                         var isSel = this.state.selected.includes(friend.user_id)
                         var selected = this.state.selected

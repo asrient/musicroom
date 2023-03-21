@@ -36,3 +36,7 @@ export function setbgColor(colors) {
 export function resetBgColor () {
     setbgColor();
 }
+
+export function currentScreenType () {
+    return window.innerWidth < 768 ? "mobile" : "desktop";
+};

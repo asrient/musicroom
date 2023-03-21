@@ -1,6 +1,6 @@
 import $ from "jquery";
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
+import * as ReactDOMClient from 'react-dom/client';
 import Toasts from "./toasts.js";
 import Rooms from "./rooms.js";
 import Room from "./room.js";
@@ -15,6 +15,9 @@ import Profile from "./profile.js";
 import { Switch, Route, Redirect } from "wouter";
 import css from "./styles.css";
 import state from "./state.js";
+import PlayerBar from "./components/player/playerBar";
+import { Provider } from 'react-redux';
+
 
 window.api = new window.Api()
 window.state = state;
@@ -91,9 +94,13 @@ class AutoplayBanner extends React.Component {
     }
 }
 
-ReactDOM.render(<div>
+const root = ReactDOMClient.createRoot(document.getElementById('root'));
+
+root.render(<Provider store={window.state._store}>
+    <div>
     <Toasts/>
     <AutoplayBanner/>
+    <PlayerBar/>
     <Switch>
         <Route path="/rooms"><Rooms /></Route>
         <Route path="/createRoom">
@@ -169,7 +176,7 @@ ReactDOM.render(<div>
         </Route>
         <Route>404, Not Found!</Route>
     </Switch>
-    </div>, document.getElementById('root')
-);
-
+    <div style={{height:'4rem'}}></div>
+    </div>
+    </Provider>);
 

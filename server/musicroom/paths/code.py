@@ -6,10 +6,16 @@ from musicroom.models import Room
 
 @login_required
 def main(request, code):
+    if not request.user.is_authenticated:
+        return redirect(to="/login?next="+request.path)
     try:
         room = Room.get_by_code(code)
     except:
         return HttpResponse("Invalid code")
     else:
-        room.grant_access(request.user)
-        return redirect(to="/roomPreview/"+str(room.id))
+        try:
+            room: Room = request.user.join_room(room)
+        except:
+            return HttpResponse('Failed to join room')
+        else:
+            return redirect(to="/room")
