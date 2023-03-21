@@ -265,7 +265,7 @@ class RoomAccess extends React.Component {
     }
     render() {
         if (this.state.done)
-            return (<Redirect to="/room" />)
+            return (<Redirect to="/browse" />)
         else
             return (<>
                 <Header blank />

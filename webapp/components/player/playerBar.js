@@ -99,11 +99,11 @@ function UsersDisplay() {
     <div className={'center '+css.usersDisplay} style={{paddingRight: '0.5rem'}}>
       {usersToShow.map((user, i) => (
         <div key={user.user_id} style={{paddingRight: '0.2rem'}}>
-        <UserCircleLink {...user} size="2rem" myUserId={me.user_id} title={user.name + (me.user_id===user.user_id ? ' (You)' : '')} />
+        <UserCircleLink {...user} size="1.6rem" myUserId={me.user_id} title={user.name + (me.user_id===user.user_id ? ' (You)' : '')} />
         </div>
       ))}
       {moreUsersCount > 0 && <div>
-      <UserCircle name="" user_id={8} size="2rem" style={{fontSize: '0.7rem', fontWeight:'300'}} >
+      <UserCircle name="" user_id={8} size="1.6rem" style={{fontSize: '0.7rem', fontWeight:'300'}} >
       +{moreUsersCount}
       </UserCircle></div>}
     </div>

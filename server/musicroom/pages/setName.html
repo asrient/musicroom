@@ -41,7 +41,7 @@
             api.post('set/name', data, (code, res) => {
                 if (code == 200) {
                     console.log("success")
-                    window.location.href = "/rooms"
+                    window.location.href = "/browse"
                 } else if (code == 400) {
                     showFull();
                     showMsg(res.msg);

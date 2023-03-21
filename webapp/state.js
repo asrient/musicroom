@@ -167,7 +167,7 @@ class Live {
             var user = data.action_user
             state.addRoomtrack(data.roomtrack)
             if (user.user_id != MY_ID) {
-                state.toast(user.name + ' added ' + data.roomtrack.title, '/room')
+                state.toast(user.name + ' added ' + data.roomtrack.title, '/browse')
             }
         });
         this.socket.on('update.tracks.remove', (msg) => {
@@ -175,7 +175,7 @@ class Live {
             var user = data.action_user
             state.removeRoomtrack(data.roomtrack)
             if (user.user_id != MY_ID) {
-                state.toast(user.name + ' removed ' + data.roomtrack.title, '/room')
+                state.toast(user.name + ' removed ' + data.roomtrack.title, '/browse')
             }
         });
         this.socket.on('update.playback.pause', (msg) => {
@@ -600,7 +600,7 @@ var state = {
         if (type == 'text') {
             st.messages.push(msg)
             var loc = window.location.pathname;
-            if (loc != '/room' && loc != '/room/chat') {
+            if (loc != '/browse' && loc != '/room/chat') {
                 this.toast(<div>
                     <div className="base-semibold" style={{ fontSize: '0.95rem' }}>
                         {from.name}
@@ -618,7 +618,7 @@ var state = {
             st.latestEvent = msg
             var loc = window.location.pathname;
             if (loc != '/room/chat') {
-                this.toast(text, '/room')
+                this.toast(text, '/browse')
             }
         }
         cache['msg' + key] = JSON.stringify({ type, key, date, from, text })
@@ -918,7 +918,7 @@ var state = {
     joinRoomWithCode: function (code, cb = function () { }) {
         api.post('room/join', { code }, (status, data) => {
             if (status == 201) {
-                this.toast('Welcome to the room', '/room')
+                this.toast('Welcome to the room', '/browse')
                 this.changeRoom(data.room);
                 cb(true, data)
             }
@@ -932,7 +932,7 @@ var state = {
         api.post('room/create', { track_ids: trackIds }, (status, data) => {
             if (status == 201) {
                 this.changeRoom(data)
-                this.toast('Room created', '/room')
+                this.toast('Room created', '/browse')
                 cb(true, data)
             }
             else {
@@ -944,7 +944,7 @@ var state = {
     removeTrack: function (roomtrackId, cb = function () { }) {
         api.post('room/tracks/remove', { roomtrack_ids: [roomtrackId] }, (status, data) => {
             if (status == 201) {
-                this.toast('Track removed', '/room')
+                this.toast('Track removed', '/browse')
                 cb(true)
             }
             else {
@@ -961,7 +961,7 @@ var state = {
                         //
                     }
                     else {
-                        this.toast('Falied to play', '/room')
+                        this.toast('Falied to play', '/browse')
                     }
                 })
             }
@@ -976,7 +976,7 @@ var state = {
                         //
                     }
                     else {
-                        this.toast('Falied to pause', '/room')
+                        this.toast('Falied to pause', '/browse')
                     }
                 })
             }
@@ -991,7 +991,7 @@ var state = {
                     //
                 }
                 else {
-                    this.toast('Falied to skip', '/room')
+                    this.toast('Falied to skip', '/browse')
                 }
             })
         }

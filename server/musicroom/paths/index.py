@@ -11,6 +11,6 @@ def main(request):
         return res
     else:
         if request.user.room is None:
-            return redirect("/rooms")
+            return redirect("/browse")
         else:
-            return redirect("/room")
+            return redirect("/browse")

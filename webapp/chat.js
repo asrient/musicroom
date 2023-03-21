@@ -130,7 +130,7 @@ class Chat extends React.Component {
     }
     render() {
         if (this.state.exit)
-            return (<Redirect to='/rooms' />)
+            return (<Redirect to='/browse' />)
         else
             return (<>
                 <Header roomControls />

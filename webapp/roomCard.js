@@ -51,7 +51,7 @@ class RoomCard extends React.Component {
     }
     opt() {
         if(this.state.isMember){
-            return(<Link href={'/room'} className={sharedCss.redButt_s+' '+ sharedCss.butt_active+ " center"}>Joined</Link>)
+            return(<Link href={'/browse'} className={sharedCss.redButt_s+' '+ sharedCss.butt_active+ " center"}>Joined</Link>)
         }
         else
         return(<Link href={'/roomPreview/' + this.props.room_id} className={sharedCss.redButt_s + " center"}>Join</Link>)

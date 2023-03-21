@@ -10,14 +10,14 @@ class Header extends React.Component {
     componentDidMount() {
     }
     getChatOpt() {
-        if (window.location.pathname == '/room')
+        if (window.location.pathname == '/browse')
             return (<Link className="hd_opt" href="/room/chat">Chat</Link>)
     }
     getRoomOpt() {
         var st = window.state.getState()
         if (!this.props.roomControls){
             if(st.room)
-            return (<Link className="hd_opt" id="hd_room_opt" href="/room">Room</Link>)
+            return (<Link className="hd_opt" id="hd_room_opt" href="/browse">Room</Link>)
             else
                 return(<a className="hd_opt" href="/joinRoom">Join room</a>)
         }
@@ -45,7 +45,7 @@ class Header extends React.Component {
     render() {
         return (<>
             <div id="header">
-                <Link id="hd_hero" href="/rooms"><img style={{ marginLeft: '0.6rem' }} id="hd_mrIcon" src="/static/icons/mr.png" /></Link>
+                <Link id="hd_hero" href="/browse"><img style={{ marginLeft: '0.6rem' }} id="hd_mrIcon" src="/static/icons/mr.png" /></Link>
                 {this.showOpts()}
             </div>
             <div id="hd_space"></div>

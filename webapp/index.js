@@ -47,7 +47,7 @@ var RoomRequired = (prams) => {
         return prams.children
     }
     else {
-        return (<Redirect to='/rooms' />)
+        return (<Redirect to='/browse' />)
     }
 }
 var RoomMembers = (prams) => {
@@ -102,7 +102,7 @@ root.render(<Provider store={window.state._store}>
     <AutoplayBanner/>
     <PlayerBar/>
     <Switch>
-        <Route path="/rooms"><Rooms /></Route>
+        <Route path="/browse"><Rooms /></Route>
         <Route path="/createRoom">
             <LoginRequired>
                 <AddTracks action="create-room" />
@@ -130,7 +130,7 @@ root.render(<Provider store={window.state._store}>
                 </RoomRequired>
             </LoginRequired>
         </Route>
-        <Route path="/room">
+        <Route path="/browse">
             <LoginRequired>
                 <RoomRequired>
                     <Room />

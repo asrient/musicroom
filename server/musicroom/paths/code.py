@@ -18,4 +18,4 @@ def main(request, code):
         except:
             return HttpResponse('Failed to join room')
         else:
-            return redirect(to="/room")
+            return redirect(to="/browse")

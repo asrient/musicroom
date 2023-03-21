@@ -100,13 +100,13 @@ class RoomPreview extends React.Component {
                 {this.state.error}
                 <br/>
                 <br/>
-                    <Link to="/rooms" className="center redButt">Close</Link>
+                    <Link to="/browse" className="center redButt">Close</Link>
                 <br/>
             </div>)
         }
         else {
             return (<div className="container" style={{ padding: '1rem 0.5rem' }}>
-                <div className="ink-white base-regular size-xxl">
+                <div className="ink-white base-regular size-xl">
                     Who's here?
                 </div>
                 <br />
@@ -118,7 +118,7 @@ class RoomPreview extends React.Component {
     }
     render() {
         if (this.state.done)
-            return (<Redirect to='/rooms' />)
+            return (<Redirect to='/browse' />)
         else
             return (this.main())
     }

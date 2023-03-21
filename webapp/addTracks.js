@@ -65,11 +65,11 @@ class AddTracks extends React.Component {
             else {
                 api.post('room/tracks/add', { track_ids: this.state.selected }, (status, data) => {
                     if (status == 201) {
-                        window.state.toast('Tracks added successfully','/room')
+                        window.state.toast('Tracks added successfully','/browse')
                         this.setState({ ...this.state, wait: false, done: true })
                     }
                     else {
-                        window.state.toast('Could not add tracks','/room')
+                        window.state.toast('Could not add tracks','/browse')
                         console.error(status, data)
                         if (status == 400) {
                             this.setState({ ...this.state, wait: false, selected: [] })
@@ -124,7 +124,7 @@ class AddTracks extends React.Component {
     }
     render() {
         if (this.state.done)
-            return (<Redirect to="/room" />)
+            return (<Redirect to="/browse" />)
         else
             return (<div className="container" style={{ padding: '1rem 0.5rem' }}>
                     <div className="center ink-white base-regular size-xl">

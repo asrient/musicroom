@@ -15,4 +15,4 @@ def main(request):
         return res
     else:
         # user is already logged in, redirect to root
-        return redirect("/rooms")
+        return redirect("/browse")
