@@ -1,7 +1,5 @@
-import $ from "jquery";
 import React, { Component } from "react";
 import css from "./chat.css";
-import Header from "./header.js";
 import ChatBar from "./chatBar.js";
 import { Link, Redirect } from "wouter";
 import { UserCircle } from "./user.js";
@@ -20,13 +18,13 @@ function formatTime(date) {
 class Chat extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { messages: null, typing: [], exit: false, isConnected: false, chatSyncing: false }
+        this.state = { messages: null, typing: [], isConnected: false, chatSyncing: false }
     }
     componentDidMount() {
         this.parseState(true);
-        window.setTimeout(() => {
-            window.scrollTo(0, document.body.scrollHeight);
-        }, 300)
+        // window.setTimeout(() => {
+        //     window.scrollTo(0, document.body.scrollHeight);
+        // }, 300)
         this.unsub = window.state.subscribe(() => {
             this.parseState();
         })
@@ -55,7 +53,7 @@ class Chat extends React.Component {
             this.setState({ ...this.state, messages: msgs, typing, isConnected: st.isConnected, chatSyncing: !st.isChatUpdated })
         }
         else
-            this.setState({ ...this.state, exit: true })
+            this.setState({ ...this.state, messages: null, typing: [], isConnected: false, chatSyncing: false  })
     }
     componentWillUnmount() {
         this.unsub();
@@ -64,7 +62,7 @@ class Chat extends React.Component {
         if (type == 'text')
             return (<div key={key} className={css.chat}>
                 <div className={css.avatarBox}>
-                    <UserCircle nopopup {...from} size='2.5rem' style={{ margin: '0px' }} />
+                    <UserCircle {...from} size='1.4rem' style={{ margin: '0px' }} />
                 </div>
                 <div className={css.text}>
                     <div className={css.chatTitle}>
@@ -129,15 +127,11 @@ class Chat extends React.Component {
         }}></div>)
     }
     render() {
-        if (this.state.exit)
-            return (<Redirect to='/browse' />)
-        else
-            return (<>
-                <Header roomControls />
-                {this.getToast()}
-                {this.chats()}
-                <ChatBar scrollBottom />
-            </>)
+        return (<div style={{minHeight:'100%', overflow: 'hidden'}}>
+            {this.getToast()}
+            {this.chats()}
+            <ChatBar scrollBottom />
+        </div>)
     }
 }
 

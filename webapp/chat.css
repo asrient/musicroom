@@ -15,18 +15,21 @@
   }
 }
 .text {
-  padding: 0.3rem 0.5rem;
   color: rgb(212, 212, 212);
   font-size: 0.85rem;
   font-weight: 200;
-  padding-top: 0px;
   padding-left: 0.6rem;
+  border-radius: 1rem;
+  padding: 0.3rem 1rem;
+  background-color: rgba(81, 81, 81, 0.997);
 }
 .chat {
   cursor: default;
-  display: grid;
-  grid-template-columns: 4rem auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
   text-align: left;
+  align-items: flex-end;
   width: fit-content;
   max-width: 23rem;
   animation-name: pop;
@@ -51,10 +54,10 @@
   justify-content: flex-start;
 }
 .chatTitle {
-  color: rgb(158, 0, 21);
-  font-size: 0.93rem;
-  font-weight: 500;
-  padding-bottom: 0.4rem;
+  color: rgb(211, 211, 211);
+  font-size: 0.7rem;
+  font-weight: 400;
+  padding-bottom: 0.2rem;
 }
 .chatTime {
   font-size: 0.7rem;
@@ -88,9 +91,9 @@
   -webkit-user-select: none;
 }
 #refButt {
-  position: fixed;
-  right: 2rem;
-  top: 6rem;
+  position: absolute;
+  left: 1.2rem;
+  top: 1.2rem;
   user-select: none;
   -webkit-user-select: none;
   cursor: pointer;
@@ -104,6 +107,7 @@
   padding: 0.4rem;
   height: 2.1rem;
   width: 2.1rem;
+  z-index: 2;
 }
 #refButt:hover {
   background-color: rgba(138, 138, 138, 0.712);

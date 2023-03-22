@@ -11,6 +11,7 @@ import RoomControlPannel from "./roomControl";
 import { UserCircleLink, UserCircle } from "../../user";
 import { IconButton, TextButton } from "../common/button";
 import { MusicControl, MusicScreen } from "./musicScreen";
+import Chat from "../../chat";
 
 
 function SongInfo({ image_url, title, artists, onClick, innerRef }) {
@@ -99,7 +100,7 @@ function Pannel({ children, content, desktopWidth, modal }) {
         <div className={css.pannel_close} onClick={close}>
         </div>
       </ForScreen>
-      <div style={{overflowY: 'auto', display: 'block', 'width': '100%'}}>
+      <div style={{overflow: 'hidden', overflowY: 'auto', display: 'block', 'width': '100%'}}>
       {content(close)}
       </div>
       </div>
@@ -116,6 +117,10 @@ function queuePannel(close) {
 
 function roomControlPannel(close) {
   return (<RoomControlPannel close={close}/>);
+}
+
+function chatPannel(close) {
+  return (<Chat close={close}/>);
 }
 
 function Bar() {
@@ -162,6 +167,10 @@ function Bar() {
     <SongInfo innerRef={ref} {...props} />
   ));
 
+  const ChatButton = React.forwardRef((props, ref) => (
+    <IconButton innerRef={ref} {...props} size="s" url="/static/icons/chat.svg" title="Chat" />
+  ));
+
   const roomEmoji = roomActive ? generateRoomEmoji(roomId) : '🎸';
 
   return (
@@ -193,7 +202,10 @@ function Bar() {
       <ForScreen desktop>
       <UsersDisplay />
       </ForScreen>
-        {roomActive && membersCount>1 && <IconButton size="s" url="/static/icons/chat.svg" title="Chat" />}
+        {roomActive && membersCount>1 
+        &&(<Pannel desktopWidth={'30rem'} content={chatPannel}>
+        <ChatButton />
+        </Pannel>)}
         <Pannel desktopWidth={'20rem'} content={roomControlPannel}>
           <RoomControlButton />
         </Pannel>

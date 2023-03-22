@@ -1,10 +1,10 @@
 .chat_bar {
-  position: fixed;
+  position: absolute;
   bottom: 0px;
   left: 0px;
   width: 100%;
   padding: 0.7rem 0.5rem;
-  background: linear-gradient(rgba(0, 0, 0, 0.185), black);
+  background: rgb(62, 62, 62);
   z-index: 3;
 }
 .chat_input {
