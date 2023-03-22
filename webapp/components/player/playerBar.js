@@ -90,7 +90,7 @@ const arrowStyle = { color: '#2B2B2B' }; // style for an svg element
 function Pannel({ children, content, desktopWidth }) {
   const style = {};
   if (currentScreenType() == 'desktop') {
-    style.width = desktopWidth || '22rem';
+    style.width = desktopWidth || '26rem';
   } else {
     style.width = '100%';
     style.height = '100%';
@@ -193,7 +193,7 @@ function Bar() {
       <UsersDisplay />
       </ForScreen>
         {roomActive && membersCount>1 && <IconButton size="s" url="/static/icons/chat.svg" title="Chat" />}
-        <Pannel desktopWidth={'18rem'} content={roomControlPannel}>
+        <Pannel desktopWidth={'20rem'} content={roomControlPannel}>
           <RoomControlButton />
         </Pannel>
         <div className={css.mobile_only}>

@@ -1,6 +1,6 @@
 from musicroom.settings import MUSIC_SERVICE
 from .jioMusic import search as jioSearch, get_stream_url as jioGetStreamUrl
-from .gaana1 import search as gaana1Search, get_stream_url as gaana1GetStreamUrl
+from .gaana1 import search as gaana1Search, get_stream_url as gaana1GetStreamUrl, explore as gaana1Explore
 from musicroom.models import Track
 
 
@@ -17,3 +17,7 @@ class Music:
             return jioGetStreamUrl(track)
         elif service == 'gaana1':
             return gaana1GetStreamUrl(track)
+
+    def explore(self):
+        if MUSIC_SERVICE == 'gaana1':
+            return gaana1Explore()

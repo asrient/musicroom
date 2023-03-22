@@ -11,8 +11,59 @@
     padding: 2rem 1rem;
 }
 
+.trackList{
+    display: grid;
+    grid-template-columns: 30rem 30rem 30rem;
+    padding: 0.5rem;
+    padding-top: 0px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+}
+
+.trackList > div {
+    width: 100%;
+    max-width: 30rem;
+}
+
+.secTitle {
+    width: 90rem;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media(max-width:95rem){
+    .secTitle {
+        width: 60rem;
+    }
+    .trackList{
+        grid-template-columns: 30rem 30rem;
+    }
+}
+
+@media(max-width:65rem){
+    .secTitle {
+        width: 30rem;
+    }
+    .trackList{
+        grid-template-columns: 30rem;
+    }
+}
+
+
 @media(max-width:900px){
     .item{
         padding: 1rem 0.5rem;
+    }
+    .secTitle {
+        max-width: 100%;
+        padding-left: 1rem;
+        font-size: 1.5rem;
+    }
+    .trackList{
+        display: flex;
+        flex-direction: column;
     }
 }

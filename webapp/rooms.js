@@ -1,8 +1,43 @@
 import $ from "jquery";
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import RoomCard from "./roomCard.js";
 import { Link, Route } from "wouter";
 import css from "./rooms.css";
+import { TrackListDefault } from "./track";
+
+
+function ExploreSections() {
+
+    const [sections, setSections] = useState(null);
+
+    useEffect(() => {
+        api.get('tracks/explore', null, (status, data) => {
+            if (status == 200) {
+                setSections(data.result);
+            }
+            else {
+                console.error(status, data);
+            }
+        })
+    }, []);
+
+    return (
+        <>
+            {sections && sections.map(section => {
+                return (
+                    <div key={section.title}>
+                    <h1 className={css.secTitle}>{section.title}</h1>
+                    <div className={css.trackList}>
+                    <TrackListDefault tracks={section.tracks} />
+                    </div>
+                    <br/>
+                    <br/>
+                    </div>
+                )
+            })}
+        </>
+    )
+}
 
 
 class Rooms extends React.Component {
@@ -44,6 +79,7 @@ class Rooms extends React.Component {
     render() {
         return (<>
             {this.showRooms()}
+            <ExploreSections/>
         </>)
     }
 }

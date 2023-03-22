@@ -7,21 +7,12 @@ from musicroom.common import apiRespond
 from musicroom.models import User, Track
 from musicroom.services.music import Music
 
-# demo: /static/media/track1/playlist.m3u8
 
 @require_http_methods(["GET"])
-def stream_url_api(request, track_id):
+def main(request):
     if request.user.is_authenticated:
-        track = Track.get_by_id(track_id)
-        if track is not None:
-            music = Music()
-            stream_url = music.get_stream_url(track)
-            if stream_url is not None:
-                return apiRespond(200, stream_url=stream_url)
-            else:
-                return apiRespond(400, msg='Error getting stream url')
-        else:
-            return apiRespond(404, msg='Track not found')
+        data = Music().explore()
+        return apiRespond(200, result=data)
     else:
         # user is already logged in, redirect to root
         return apiRespond(401, msg='User not logged in')
