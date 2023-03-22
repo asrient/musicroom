@@ -65,7 +65,7 @@ export function TrackList({ tracks, currentTrackId, onClick, playable, childrenM
 export function TrackListDefault({ tracks, currentTrackId }) {
 
     const onClick = (trackId) => {
-        window.state.addTrackToRoom(trackId, true);
+        window.state.playTrack(trackId);
     }
 
     const addToQueue = (trackId) => {

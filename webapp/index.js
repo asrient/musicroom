@@ -103,11 +103,6 @@ root.render(<Provider store={window.state._store}>
     <PlayerBar/>
     <Switch>
         <Route path="/browse"><Rooms /></Route>
-        <Route path="/createRoom">
-            <LoginRequired>
-                <AddTracks action="create-room" />
-            </LoginRequired>
-        </Route>
         <Route path="/account">
             <LoginRequired>
                 <Account />
@@ -123,11 +118,9 @@ root.render(<Provider store={window.state._store}>
                 <Friends />
             </LoginRequired>
         </Route>
-        <Route path="/room/addTracks">
+        <Route path="/search">
             <LoginRequired>
-                <RoomRequired>
-                    <AddTracks action="add-tracks" />
-                </RoomRequired>
+                <AddTracks action="add-tracks" />
             </LoginRequired>
         </Route>
         <Route path="/browse">
@@ -141,13 +134,6 @@ root.render(<Provider store={window.state._store}>
             <LoginRequired>
                 <RoomRequired>
                     <Chat />
-                </RoomRequired>
-            </LoginRequired>
-        </Route>
-        <Route path="/room/access">
-            <LoginRequired>
-                <RoomRequired>
-                    <RoomAccess />
                 </RoomRequired>
             </LoginRequired>
         </Route>

@@ -80,7 +80,7 @@ export default class Queue extends React.Component {
                 {this.list()}
                 <div className="center-col" style={{ padding: '1.3rem 0.3rem' }}>
                     <div style={{ paddingTop: '0.6rem' }} className="center">
-                        <Link href='/room/addTracks' onClick={() => {
+                        <Link href='/search' onClick={() => {
                             this.closePannel();
                         }} className={sharedCss.redButt_s + ' center'}>Add more</Link>
                     </div>
