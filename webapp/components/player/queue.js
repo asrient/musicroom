@@ -61,11 +61,13 @@ export default class Queue extends React.Component {
                 </TrackItem>)
             });
             return (<div>
-                <div style={{ paddingLeft: '2rem', paddingBottom: '0.6rem' }}
-                    className='container size-m ink-light base-semibold'>
+                {list.length ? (<>
+                <div style={{ paddingLeft: '0.6rem', paddingBottom: '0.6rem' }}
+                    className={'size-s ink-light base-regular '+css.upNext}>
                     Up next
                 </div>
-                {list.length ? list : <div className='center size-s ink-light base-light' style={{marginTop:'2rem'}}>No tracks</div>}
+                {list}
+                </>) : <div className='center size-s ink-light base-light' style={{marginTop:'2rem'}}>Queue is empty</div>}
             </div>)
         }
         else {

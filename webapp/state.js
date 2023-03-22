@@ -294,10 +294,18 @@ class Playback {
         this.state.can_play = canPlay
         this.hls = new Hls();
         this.player = window.player;
-        this.hls.attachMedia(this.player);
-        this.hls.on(Hls.Events.MANIFEST_PARSED, this._onPlaylistLoaded);
-        this.hls.on(Hls.Events.ERROR, this._onError);
-        this.hls.on(Hls.Events.MEDIA_ATTACHED, this.loadUrl)
+        if (iOSSafari) {
+            this.loadPlaybackData(() => {
+                this.player.src = this.state.url;
+                this._onPlaylistLoaded();
+            });
+        }
+        else {
+            this.hls.attachMedia(this.player);
+            this.hls.on(Hls.Events.MANIFEST_PARSED, this._onPlaylistLoaded);
+            this.hls.on(Hls.Events.ERROR, this._onError);
+            this.hls.on(Hls.Events.MEDIA_ATTACHED, this.loadUrl)
+        }
     }
     kill() {
         this.hls.destroy();
@@ -326,11 +334,12 @@ class Playback {
         this.state.is_playing = true
         var currTime = time()
         var timePassed = currTime - this.state.started_on;
-        console.log('curr sleek', this.state.sleek)
+        console.log('curr sleek', this.state.sleek, 'current player pos',  this.player.currentTime)
         this.player.currentTime = timePassed + this.state.sleek
         var promise = this.player.play();
         if (promise !== undefined) {
             promise.then(_ => {
+                console.log('playback started', this.player.currentTime)
                 if (iOSSafari && isFirstPlay) {
                     //cuz in ios it always starts from the begining
                     isFirstPlay = false
@@ -341,7 +350,7 @@ class Playback {
             }).catch(error => {
                 // Autoplay was prevented.
                 // Show a "Play" button so that user can start playback.
-                console.log('playback prevented', error)
+                console.warn('playback prevented', error)
                 this.state.is_playing = false
                 var st = state.getState()
                 st.showAutoplayBanner = true

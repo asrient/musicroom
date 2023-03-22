@@ -10,6 +10,7 @@ import ProgressBar from "./progressBar";
 import RoomControlPannel from "./roomControl";
 import { UserCircleLink, UserCircle } from "../../user";
 import { IconButton, TextButton } from "../common/button";
+import { MusicControl, MusicScreen } from "./musicScreen";
 
 
 function SongInfo({ image_url, title, artists, onClick, innerRef }) {
@@ -20,19 +21,6 @@ function SongInfo({ image_url, title, artists, onClick, innerRef }) {
         <div className={css.si_txt1}>{title || 'Not Playing'}</div>
         <div className={css.si_txt2}>{artists}</div>
       </div>
-    </div>
-  );
-}
-
-
-function MusicControl({ isPlaying, onClick, isDisabled }) {
-  return (
-    <div className={css.mc}>
-      <div className={css.desktop_only}>
-        <IconButton isDisabled={isDisabled} size="s" url="/static/icons/playPrevious.svg" title="Previous Song" noChroming={true} onClick={() => onClick('prev')} />
-      </div>
-      <IconButton isDisabled={isDisabled} size="s" url={isPlaying ? "/static/icons/pause.svg" : "/static/icons/play.svg"} title={isPlaying ? "Pause" : "Play"} onClick={() => onClick(isPlaying ? 'pause' : 'play')} />
-      <IconButton isDisabled={isDisabled} size="s" url="/static/icons/playNext.svg" title="Next Song" noChroming={true} onClick={() => onClick('next')} />
     </div>
   );
 }
@@ -86,8 +74,9 @@ function UsersDisplay() {
 }
 
 const arrowStyle = { color: '#2B2B2B' }; // style for an svg element
+const overlayStyle = { background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(3px)' };
 
-function Pannel({ children, content, desktopWidth }) {
+function Pannel({ children, content, desktopWidth, modal }) {
   const style = {};
   if (currentScreenType() == 'desktop') {
     style.width = desktopWidth || '26rem';
@@ -96,16 +85,16 @@ function Pannel({ children, content, desktopWidth }) {
     style.height = '100%';
   }
   return (<Popup trigger={children}
-    {...{arrowStyle}}
+    {...{arrowStyle, overlayStyle}}
     contentStyle={style}
-    modal={currentScreenType() == 'mobile'}
+    modal={currentScreenType() == 'mobile' || modal}
     position={['bottom center', 'bottom right', 'bottom left']}
     on={['click']}
     offsetY={6}
     closeOnDocumentClick
     lockScroll>
     {close => (
-      <div className={css.pannel} style={style}>
+      <div className={css.pannel+(modal ? ' ' + css.modal:'')}>
       <ForScreen mobile>
         <div className={css.pannel_close} onClick={close}>
         </div>
@@ -120,7 +109,6 @@ function Pannel({ children, content, desktopWidth }) {
 
 function queuePannel(close) {
   return (<>
-  <div style={{height:'1.5rem'}}></div>
     <Queue close={close}/>
   </>
   );
@@ -156,6 +144,10 @@ function Bar() {
     }
   }
 
+  const musicScreenPannel = (close) => {
+    return (<MusicScreen close={close} currentTrack={currentTrack} change={onMusicControlClick} isPlaying={!isPaused} />);
+  };
+
   const controlRoomColor = roomActive ? joinRequestsCount>0 ? '#c99915' : membersCount>1 ? '#4EB74C': null : null;
 
   const QueueButton = React.forwardRef((props, ref) => (
@@ -164,6 +156,10 @@ function Bar() {
 
   const RoomControlButton = React.forwardRef((props, ref) => (
     <IconButton innerRef={ref} {...props} color={controlRoomColor} size="s" url="/static/icons/roomControl.svg" title="Room Control" />
+  ));
+
+  const SongInfoWrapper = React.forwardRef((props, ref) => (
+    <SongInfo innerRef={ref} {...props} />
   ));
 
   const roomEmoji = roomActive ? generateRoomEmoji(roomId) : '🎸';
@@ -179,7 +175,12 @@ function Bar() {
         </div>
       </div>
       <div className={css.bar_d_sec2}>
-        <SongInfo {...currentTrack} />
+        <Pannel
+          modal
+          desktopWidth={'80%'}
+          content={musicScreenPannel}>
+          <SongInfoWrapper {...currentTrack} />
+        </Pannel>
         <div className={css.queue_container}>
           <Pannel
             content={queuePannel}>
@@ -197,7 +198,7 @@ function Bar() {
           <RoomControlButton />
         </Pannel>
         <div className={css.mobile_only}>
-          <MusicControl isDisabled={!roomActive} isPlaying={!isPaused} onClick={onMusicControlClick} />
+          <MusicControl isDisabled={!roomActive} canHide={true} isPlaying={!isPaused} onClick={onMusicControlClick} />
         </div>
       </div>
     </div>

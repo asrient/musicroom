@@ -75,7 +75,7 @@ class RoomPreview extends React.Component {
         if (!st.room || (st.room && st.room.room_id != this.props.room_id))
             return (<>
                 <div style={{ height: '6rem' }}></div>
-                <div id={css.buttContainer} className="center">
+                <div className="center">
                     <div className='redButt center' onClick={() => {
                         if (!this.state.wait) {
                             this.setState({ ...this.state, wait: true })
