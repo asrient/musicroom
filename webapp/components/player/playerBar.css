@@ -179,6 +179,7 @@
     margin-top: 1rem;
     margin-left: auto;
     margin-right: auto;
+    width: 20rem;
 }
 .ms_img{
     height: 20rem;
@@ -239,6 +240,9 @@
         height: 80vw;
         width: 80vw;
         object-fit: cover;
+    }
+    .playerFull_s1{
+        width: 80vw;
     }
     .pannel.modal{
         max-width: 100vw;
