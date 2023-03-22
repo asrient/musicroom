@@ -4,6 +4,7 @@ import { Link, Route } from "wouter";
 import css from "./track.css";
 import { durationFormat } from "./utils.js";
 import { IconButton, TextButton } from "./components/common/button";
+import { useSelector } from 'react-redux';
 
 
 export function TrackItem({ onClick, track_id, title, artists, duration, image_url, playing, playable, children }) {
@@ -64,16 +65,19 @@ export function TrackList({ tracks, currentTrackId, onClick, playable, childrenM
 
 export function TrackListDefault({ tracks, currentTrackId }) {
 
+    const roomActive = useSelector(state => !!state.room);
+
     const onClick = (trackId) => {
         window.state.playTrack(trackId);
     }
 
     const addToQueue = (trackId) => {
+        if(!roomActive) return;
         window.state.addTrackToRoom(trackId, false);
     }
 
     const childrenMap = (track) => {
-        return (<IconButton url='/static/icons/playlist-add.svg' size='s' title='Add to queue' onClick={() => addToQueue(track.track_id)} />)
+        return roomActive && (<IconButton url='/static/icons/playlist-add.svg' size='s' title='Add to queue' onClick={() => addToQueue(track.track_id)} />);
     };
 
     return (<TrackList tracks={tracks} currentTrackId={currentTrackId} playable onClick={onClick} childrenMap={childrenMap} />)

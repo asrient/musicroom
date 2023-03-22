@@ -18,8 +18,8 @@ function CardContent({ onClick, room }) {
             <div>
                 <div className={css.roomMembers}>
                     {users.map((user, index) => <UserCircle {...user} key={user.user_id} size="1.2rem" title={user.name} style={{marginRight: '0.2rem'}} />)}
-                    {othersCount == 0 && users.length === 1 ? (<span>{users[0].name}</span>) : ''}
-                    {othersCount > 0 && `+${othersCount} ${othersCount == 1 ? 'other' : 'others'}`}
+                    {users.length === 1 ? (<span>{users[0].name}</span>) : ''}
+                    {othersCount > 0 && (<>&nbsp;{`+${othersCount} ${othersCount == 1 ? 'other' : 'others'}`}</>)}
                     &nbsp;<span className="ink-grey">in Room</span>
                 </div>
                 <div className={css.ellipseText+' hstack'}>

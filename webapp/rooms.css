@@ -4,6 +4,7 @@
     overflow-x: auto;
     flex-wrap: nowrap;
     padding: 0.5rem;
+    padding-top: 0px;
     background-color: #2E2E2E;
 }
 .item{

@@ -1,0 +1,23 @@
+.bar{
+    padding: 0.7rem 1rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    background-color: #2E2E2E;
+}
+.bar > a{
+    padding: 0.4rem 1rem;
+    color: rgb(207, 207, 207);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 300;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    width: fit-content;
+}
+.activeLink {
+    border-radius: 1rem;
+    background-color: #3E3E3E;
+    color: white;
+}

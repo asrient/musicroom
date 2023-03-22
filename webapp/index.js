@@ -17,6 +17,7 @@ import css from "./styles.css";
 import state from "./state.js";
 import PlayerBar from "./components/player/playerBar";
 import { Provider } from 'react-redux';
+import NavBar from "./components/nav/navBar";
 
 
 window.api = new window.Api()
@@ -101,6 +102,7 @@ root.render(<Provider store={window.state._store}>
     <Toasts/>
     <AutoplayBanner/>
     <PlayerBar/>
+    <NavBar/>
     <Switch>
         <Route path="/browse"><Rooms /></Route>
         <Route path="/account">
