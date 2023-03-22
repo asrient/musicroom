@@ -7,7 +7,7 @@ function NavLink({ href, children}) {
     const [isActive] = useRoute(href);
 
     return (
-        <Link href={href} className={"hstack size-s base-regular size-m "+css.bar + (isActive ? ' '+css.activeLink : "")}>
+        <Link href={href} className={(isActive ? ' '+css.activeLink : "")}>
             {children}
         </Link>
     )
@@ -15,7 +15,7 @@ function NavLink({ href, children}) {
 
 export default function NavBar() {
     return (
-        <div className={"hstack size-s base-regular size-m "+css.bar}>
+        <div className={"hstack base-regular "+css.bar}>
             <NavLink href="/browse">Explore</NavLink>
             <NavLink href="/search">Search</NavLink>
         </div>
