@@ -23,6 +23,7 @@ function ExploreSections() {
 
     return (
         <>
+        <br/>
             {sections && sections.map(section => {
                 return (
                     <div key={section.title}>
