@@ -65,8 +65,8 @@
 .duration {
   padding-right: 0.9rem;
   color: var(--grey);
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 300;
 }
 .art {
   height: 3.6rem;

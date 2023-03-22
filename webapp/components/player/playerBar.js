@@ -9,6 +9,7 @@ import Queue from "./queue";
 import ProgressBar from "./progressBar";
 import RoomControlPannel from "./roomControl";
 import { UserCircleLink, UserCircle } from "../../user";
+import { IconButton, TextButton } from "../common/button";
 
 
 function SongInfo({ image_url, title, artists, onClick, innerRef }) {
@@ -23,32 +24,6 @@ function SongInfo({ image_url, title, artists, onClick, innerRef }) {
   );
 }
 
-function IconButton({ url, size, title, onClick, noChroming, isDisabled, innerRef, color }) {
-  const style = {};
-  if (isDisabled) {
-    style.opacity = 0.5;
-    style.cursor = 'not-allowed';
-  }
-  if (!!color && currentScreenType() === 'desktop') {
-    style.backgroundColor = color;
-  }
-  if (noChroming) {
-    style.background = 'none';
-  }
-  return (
-    <div ref={innerRef} className={css.ib} onClick={isDisabled ? null : onClick} style={style} title={title}>
-      <img className={css.ib_icon + ' size-' + size} src={url} />
-    </div>
-  );
-};
-
-function TextButton({ size, text, onClick }) {
-  return (
-    <div className={css.ib + ' size-' + size} onClick={onClick}>
-      {text}
-    </div>
-  );
-};
 
 function MusicControl({ isPlaying, onClick, isDisabled }) {
   return (

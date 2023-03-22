@@ -952,6 +952,33 @@ var state = {
             }
         })
     },
+    // creates a room if not present, or add track to existing room and play it
+    playTrack(track_id) {
+        if (!store.getState().room) {
+            return new Promise((resolve, reject) => {
+                this.createRoom([track_id], (res) => {
+                    resolve(res);
+                });
+            });
+        } else {
+            return this.addTrackToRoom(track_id, true);
+        }
+    },
+    addTrackToRoom(track_id, play = false) {
+        return new Promise((resolve, reject) => {
+            api.post('room/tracks/add', { track_ids: [track_id], play }, (status, data) => {
+                if (status == 201) {
+                    this.toast('Tracks added successfully','/browse');
+                    resolve(data);
+                }
+                else {
+                    this.toast('Could not add tracks','/browse');
+                    console.error(status, data);
+                    reject(status, data);
+                }
+            });
+        });
+    },
     play() {
         var st = store.getState();
         if (st.room) {

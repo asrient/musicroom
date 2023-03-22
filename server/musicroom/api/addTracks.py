@@ -4,18 +4,19 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate, login
 
 from musicroom.common import apiRespond
-from musicroom.models import User, Track
+from musicroom.models import User, Track, Room, RoomTrack
 
 
 @require_http_methods(["POST"])
 def main(request):
     if request.user.is_authenticated:
         if request.user.room != None:
-            room = request.user.room
+            room: Room = request.user.room
             if 'track_ids[]' in request.POST:
                 track_ids = request.POST.getlist('track_ids[]')
+                play: bool = 'play' in request.POST and request.POST['play'] == 'true'
                 if len(track_ids):
-                    roomtracks = []
+                    roomtracks: list[RoomTrack] = []
                     for track_id in track_ids:
                         try:
                             track = Track.get_by_id(track_id)
@@ -23,8 +24,10 @@ def main(request):
                             pass
                         else:
                             roomtrack = room.add_track(track, request.user)
-                            roomtracks.append(roomtrack.get_obj())
-                    return apiRespond(201, roomtracks=roomtracks)
+                            roomtracks.append(roomtrack)
+                        if play:
+                                room.skip_to(roomtrack=roomtracks[0], duration=None, action_user=request.user)
+                    return apiRespond(201, roomtracks=[rt.get_obj() for rt in roomtracks])
                 else:
                     return apiRespond(400, msg='track_ids format invalid')
             else:

@@ -3,6 +3,7 @@ import { TrackItem } from "../../track.js";
 import { Link, Redirect } from "wouter";
 import css from "../../room.css";
 import sharedCss from "../../common.css";
+import { IconButton } from "../common/button";
 
 
 export default class Queue extends React.Component {
@@ -56,11 +57,7 @@ export default class Queue extends React.Component {
                 list.push(<TrackItem onClick={() => {
                     window.state.skipTo(track.roomtrack_id)
                 }} playable key={track.roomtrack_id} {...track} >
-                    <div className={css.delButt + ' center'} onClick={() => {
-                        window.state.removeTrack(track.roomtrack_id)
-                    }}>
-                        <img className={"icon " + css.trashIcon} style={{ fontSize: '0.5rem' }} src="/static/icons/close.svg" />
-                    </div>
+                    <IconButton url='/static/icons/playlist-remove.svg' size='s' title='Remove' onClick={() => window.state.removeTrack(track.roomtrack_id)} />
                 </TrackItem>)
             });
             return (<div>

@@ -30,8 +30,10 @@ class Rooms extends React.Component {
     }
 
     showRooms() {
-        if (this.state.rooms != null) {
+        if (!!this.state.rooms && this.state.rooms.length > 0) {
             return (<div id={css.grid}>{this.roomCards()}</div>)
+        } else if(!!this.state.rooms) {
+            return null;
         }
         else {
             return (<div className="center size-m base-regular" style={{ height: '10rem' }}>
