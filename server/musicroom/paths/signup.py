@@ -11,7 +11,7 @@ def main(request):
         if "prefer_email" in request.session:
             prefer_email = request.session["prefer_email"].lower().strip()
         res = render(request, 'signup.html', {'header': {
-                     'is_loggedin': False, 'is_empty': True}, "prefer_email": prefer_email, 'next': next_link})
+                     'is_loggedin': False, 'is_empty': False}, "prefer_email": prefer_email, 'next': next_link})
         return res
     else:
         # user is already logged in, redirect to root

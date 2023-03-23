@@ -1,14 +1,14 @@
 <link rel="stylesheet" type="text/css" href="/static/styles/header.css" />
 {% if not blank %}
 <div id="header">
-    <a id="hd_hero" href="/"><img id="hd_mrIcon" src="/static/icons/mr.png"/></a>
+    <a id="hd_hero" href="/"><img id="hd_mrIcon" src="/static/icons/mr.png"/> &nbsp;&nbsp;&nbsp;Musicroom</a>
     {% if not header.is_empty %}
     <div id="hd_opts" class="hstack space-around">
         <a class="hd_opt" href="/joinRoom">Join room</a>
         {% if header.is_loggedin %}
         <a class="hd_opt" href="/account">Account</a>
         {% else %}
-        <a class="hd_opt red_opt" href="/login">LOG IN</a>
+        <a class="hd_opt red_opt" href="/login">Log In</a>
         {% endif %}
     </div>
     {% endif %}

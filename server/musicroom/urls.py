@@ -37,6 +37,7 @@ urlpatterns = [
     path('signup', signup, name='signup'),
     path('setName', setName, name='set_name'),
     path('setAvatar', setAvatar, name='set_avatar'),
+    path('joinRoom', joinRoom, name='join_room'),
     path('code/<str:code>', code, name='room_code'),
     path('api/', include('musicroom.api.urls')),
     path('admin/', admin.site.urls),

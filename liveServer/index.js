@@ -55,15 +55,15 @@ app.get('/', (req, res) => {
     res.send('<h1>Friendzone updates</h1>');
 });
 
-app.get('/cookie', (req, res) => {
-    if (req.query.mrsid) {
-        res.cookie('mrsid', req.query.mrsid)
-        res.send('mrsid: ' + req.query.mrsid);
-    }
-    else {
-        res.send('<h1>[DEBUG] Set mrsid</h1>');
-    }
-});
+// app.get('/cookie', (req, res) => {
+//     if (req.query.mrsid) {
+//         res.cookie('mrsid', req.query.mrsid)
+//         res.send('mrsid: ' + req.query.mrsid);
+//     }
+//     else {
+//         res.send('<h1>[DEBUG] Set mrsid</h1>');
+//     }
+// });
 
 app.get('/chats', (req, res) => {
     if (req.cookies.mrsid) {
@@ -175,7 +175,7 @@ class Peer {
 
 io.on('connection', function (socket) {
     console.log('a user connected');
-    var cookies = cookie.parse(socket.handshake.headers.cookie);
+    var cookies = cookie.parse(socket.handshake.headers.cookie || '');
     if (cookies.mrsid) {
         api.post("auth", { mrsid: cookies.mrsid }, (status, data) => {
             if (status == 200 && data != null && data.user_id != null) {

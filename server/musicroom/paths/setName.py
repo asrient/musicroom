@@ -7,5 +7,5 @@ from django.contrib.auth.decorators import login_required
 def main(request):
     name=request.user.name
     res = render(request, 'setName.html', {'header': {
-                     'is_loggedin': True, 'is_empty': True},'previousName':name})
+                     'is_loggedin': True, 'is_empty': False},'previousName':name})
     return res

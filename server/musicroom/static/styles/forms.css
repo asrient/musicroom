@@ -1,5 +1,7 @@
 #sec {
+  padding-top: 3rem;
   min-height: 15rem;
+  align-items: flex-start;
 }
 #formSubmit {
   opacity: 0;
@@ -21,6 +23,9 @@
 }
 #emailPreview:hover {
   color: var(--blue);
+}
+#greet{
+  padding-top: 3rem;
 }
 @media (min-width: 700px) {
   #sec {
