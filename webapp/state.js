@@ -46,7 +46,9 @@ function reducers(state = 0, action) {
                 latestEvent: null,
                 isConnected: false,
                 lastConnectedOn: cache.lastConnectedOn,
-                isChatUpdated: false
+                isChatUpdated: false,
+                library: [],
+                isLibraryComplete: false,
             }
             return st;
         }
@@ -990,7 +992,7 @@ var state = {
             api.post('library/add', { track_id }, (status, data) => {
                 if (status == 201) {
                     this.toast('Added to your library','/library');
-                    this.updateCurrentTrack(track_id, true);
+                    this.updateTrack(track_id, true, data.track);
                     resolve(data);
                 }
                 else {
@@ -1001,19 +1003,28 @@ var state = {
             });
         });
     },
-    updateCurrentTrack(track_id, liked) {
+    updateTrack(track_id, liked, track) {
         const st = store.getState();
         if(st.room && st.room.current_roomtrack && st.room.current_roomtrack.track_id == track_id) {
             st.room.current_roomtrack = {...st.room.current_roomtrack, liked: liked};
-            update(st);
+        } 
+        const currInd = st.library.findIndex(t => t.track_id == track_id);
+        if(!!track && liked && currInd == -1) {
+            st.library.splice(0, 0, track);
+            st.library = [...st.library];
         }
+        if(!liked && currInd != -1) {
+            st.library.splice(currInd, 1);
+            st.library = [...st.library];
+        }
+        update(st);
     },
     unlikeTrack(track_id) {
         return new Promise((resolve, reject) => {
             api.post('library/remove', { track_id }, (status, data) => {
                 if (status == 201) {
                     this.toast('Removed from your library','/library');
-                    this.updateCurrentTrack(track_id, false);
+                    this.updateTrack(track_id, false);
                     resolve(data);
                 }
                 else {
@@ -1042,7 +1053,7 @@ var state = {
         if(st.room && st.room.current_roomtrack && typeof st.room.current_roomtrack.liked != 'boolean') {
             const track_id = st.room.current_roomtrack.track_id;
             const result = await this.getTrackInfo(track_id);
-            this.updateCurrentTrack(track_id, result.track.liked);
+            this.updateTrack(track_id, result.track.liked);
         }
     },
     getLibraryTracks(offset = 0, limit = 20) {
@@ -1057,6 +1068,25 @@ var state = {
                 }
             });
         });
+    },
+    async loadLibraryTracks() {
+        const st = store.getState();
+        if(!st.isLibraryComplete) {
+            const tracks = await this.getLibraryTracks(st.library.length, 30);
+            st.library = [...st.library, ...tracks];
+            if(tracks.length < 30) {
+                st.isLibraryComplete = true;
+            }
+            update(st);
+            return true;
+        }
+        return false;
+    },
+    unloadLibraryTracks() {
+        const st = store.getState();
+        st.library = [];
+        st.isLibraryComplete = false;
+        update(st);
     },
     play() {
         var st = store.getState();

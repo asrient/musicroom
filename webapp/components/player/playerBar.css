@@ -7,8 +7,10 @@
     display: grid;
     grid-template-columns: calc(50% - 13rem) 26rem calc(50% - 13rem);
     align-items: center;
-    background-color: #292929;
-    border-bottom: solid thin #131313;
+    background-color: #22222287;
+    backdrop-filter: blur(20px);
+    --webkit-backdrop-filter: blur(20px);
+    border-bottom: solid thin #13131367;
     z-index: 5;
 }
 .bar_d_sec1 {
@@ -28,7 +30,7 @@
     align-items: center;
     height: 100%;
     position: relative;
-    background-color: #3D3D3D;
+    background-color: #4141418b;
     overflow-x: hidden;
 }
 .bar_d_sec3 {

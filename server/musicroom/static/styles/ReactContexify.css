@@ -11,7 +11,7 @@
   --contexify-itemContent-padding: 6px;
   --contexify-activeItem-radius: 4px;
 
-  --contexify-menu-bgColor: #474747;
+  --contexify-menu-bgColor: #35353590;
   --contexify-separator-color: #595959;
   --contexify-item-color: #e6e6e6;
   --contexify-activeItem-color: #ffffff;
@@ -44,6 +44,8 @@
   padding: var(--contexify-menu-padding);
   min-width: var(--contexify-menu-minWidth);
   z-index: var(--contexify-zIndex);
+  backdrop-filter: blur(15px);
+  --webkit-backdrop-filter: blur(15px);
 }
 .contexify_submenu-isOpen, .contexify_submenu-isOpen > .contexify_itemContent {
   color: var(--contexify-activeItem-color);

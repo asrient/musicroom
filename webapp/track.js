@@ -24,9 +24,9 @@ export function TrackItem({ onClick, track_id, title, artists, duration, image_u
         return (
         <>
         <ForScreen desktop><div className={css.duration}>{durationFormat(duration)}</div></ForScreen>
-        <ForScreen mobile>
+        {!!onMenu && (<ForScreen mobile>
         <IconButton url='/static/icons/more.svg' size='s' title='More options' onClick={onContextMenu} />
-        </ForScreen>
+        </ForScreen>)}
         </>)
     }
 
