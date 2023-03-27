@@ -29,7 +29,7 @@ function ExploreSections() {
                     <div key={section.title}>
                     <h1 className={css.secTitle}>{section.title}</h1>
                     <div className={css.trackList}>
-                    <TrackListDefault tracks={section.tracks} />
+                    <TrackListDefault tracks={section.tracks} uid={section.title} />
                     </div>
                     <br/>
                     <br/>

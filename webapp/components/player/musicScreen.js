@@ -4,6 +4,7 @@ import ForScreen from "../forScreen";
 import Queue from "./queue";
 import ProgressBar from "./progressBar";
 import { IconButton, TextButton } from "../common/button";
+import LikeButton from "./likeButton";
 
 
 export function MusicControl({ isPlaying, onClick, isDisabled, canHide, size }) {
@@ -30,9 +31,15 @@ export function MusicScreen({ close, currentTrack, change, isPlaying }) {
             <img  className={css.ms_img}
                     src={currentTrack?.image_url || "/static/icons/default-art.png"} />
             </div>
-                <div className={css.ms_txt+" ink-white size-s"}>
-                    <div className={css.si_txt1} style={{fontSize:'1.4rem',fontWeight:'400'}}>{currentTrack?.title || 'Not Playing'}</div>
-                    <div className={css.si_txt2} style={{fontSize:'1rem', paddingTop: '0.3rem'}}>{currentTrack?.artists}</div>
+                <div className="hstack space-between">
+                    <div className={css.ms_txt+" ink-white size-s"}>
+                        <div className={css.si_txt1} style={{fontSize:'1.4rem',fontWeight:'400'}}>{currentTrack?.title || 'Not Playing'}</div>
+                        <div className={css.si_txt2} style={{fontSize:'1rem', paddingTop: '0.3rem'}}>{currentTrack?.artists}</div>
+                    </div>
+                    <div className="hstack" style={{justifyContent:'flex-end'}}>
+                    <LikeButton isDisabled={!currentTrack} isLoading={!currentTrack || (typeof currentTrack.liked !== 'boolean')} 
+                    isLiked={ currentTrack?.liked } trackId={currentTrack?.track_id} />
+                    </div>
                 </div>
                 <div className={css.ms_progress}>
                 <ProgressBar/>

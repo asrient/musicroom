@@ -18,6 +18,7 @@ import state from "./state.js";
 import PlayerBar from "./components/player/playerBar";
 import { Provider } from 'react-redux';
 import NavBar from "./components/nav/navBar";
+import Library from "./components/library/library";
 
 
 window.api = new window.Api()
@@ -129,6 +130,13 @@ root.render(<Provider store={window.state._store}>
             <LoginRequired>
                 <RoomRequired>
                     <Room />
+                </RoomRequired>
+            </LoginRequired>
+        </Route>
+        <Route path="/library">
+            <LoginRequired>
+                <RoomRequired>
+                    <Library />
                 </RoomRequired>
             </LoginRequired>
         </Route>

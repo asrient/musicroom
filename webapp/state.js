@@ -713,6 +713,11 @@ var state = {
     },
     updatePlayback: function (roomState) {
         var st = store.getState();
+        const oldTrack = st.room.current_roomtrack;
+        // We dont want to fetch the liked status again if the track is same, case of play/pause but no change in track
+        if(!!oldTrack && !!roomState.current_roomtrack && oldTrack.roomtrack_id === roomState.current_roomtrack.roomtrack_id) {
+            roomState.current_roomtrack.liked = oldTrack.liked;
+        }
         var room = { ...st.room, ...roomState }
         st.room = room
         update(st)
@@ -974,6 +979,79 @@ var state = {
                 }
                 else {
                     this.toast('Could not add tracks','/browse');
+                    console.error(status, data);
+                    reject(status, data);
+                }
+            });
+        });
+    },
+    likeTrack(track_id) {
+        return new Promise((resolve, reject) => {
+            api.post('library/add', { track_id }, (status, data) => {
+                if (status == 201) {
+                    this.toast('Added to your library','/library');
+                    this.updateCurrentTrack(track_id, true);
+                    resolve(data);
+                }
+                else {
+                    this.toast('Could not add to your library','/library');
+                    console.error(status, data);
+                    reject(status, data);
+                }
+            });
+        });
+    },
+    updateCurrentTrack(track_id, liked) {
+        const st = store.getState();
+        if(st.room && st.room.current_roomtrack && st.room.current_roomtrack.track_id == track_id) {
+            st.room.current_roomtrack = {...st.room.current_roomtrack, liked: liked};
+            update(st);
+        }
+    },
+    unlikeTrack(track_id) {
+        return new Promise((resolve, reject) => {
+            api.post('library/remove', { track_id }, (status, data) => {
+                if (status == 201) {
+                    this.toast('Removed from your library','/library');
+                    this.updateCurrentTrack(track_id, false);
+                    resolve(data);
+                }
+                else {
+                    this.toast('Could not remove your library','/library');
+                    console.error(status, data);
+                    reject(status, data);
+                }
+            });
+        });
+    },
+    getTrackInfo(track_id) {
+        return new Promise((resolve, reject) => {
+            api.get('track/info', { track_id }, (status, data) => {
+                if (status == 200) {
+                    resolve(data);
+                }
+                else {
+                    console.error(status, data);
+                    reject(status, data);
+                }
+            });
+        });
+    },
+    async fetchCurrentTrackInfo() {
+        const st = store.getState();
+        if(st.room && st.room.current_roomtrack && typeof st.room.current_roomtrack.liked != 'boolean') {
+            const track_id = st.room.current_roomtrack.track_id;
+            const result = await this.getTrackInfo(track_id);
+            this.updateCurrentTrack(track_id, result.track.liked);
+        }
+    },
+    getLibraryTracks(offset = 0, limit = 20) {
+        return new Promise((resolve, reject) => {
+            api.get('library', { offset, limit}, (status, data) => {
+                if (status == 200) {
+                    resolve(data.tracks);
+                }
+                else {
                     console.error(status, data);
                     reject(status, data);
                 }

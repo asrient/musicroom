@@ -602,14 +602,18 @@ class Track(models.Model):
     image_path = models.CharField(max_length=255, default=None, null=True)
     artwork_colors = models.CharField(max_length=255, default=None, null=True)
 
-    def get_obj(self):
+    def get_obj(self, more_info = False, user = None):
         playback_url = STORAGE_URLS[self.storage_bucket]+self.playback_path
         image_url = self.get_img_url()
         obj = {'track_id': self.id, 'title': self.title, 'duration': dump_datetime(self.duration),
-               'artists': self.get_artists_str(), 'playback_url': playback_url, 'image_url': image_url,
-               'artist_objs': []}
-        for artist in self.get_artists():
-            obj['artist_objs'].append(artist.get_obj())
+               'artists': self.get_artists_str(), 'playback_url': playback_url, 'image_url': image_url}
+        if more_info:
+            obj['plays_count'] = self.plays_count
+            obj['artist_objs'] = []
+            for artist in self.get_artists():
+                obj['artist_objs'].append(artist.get_obj())
+        if user != None:
+            obj['liked'] = LibraryTrack.is_track_in_library(user, self)
         return obj
     
     def get_img_url(self):
@@ -640,8 +644,7 @@ class Track(models.Model):
         return artist
     
     def get_artists_str(self):
-        artists = self.get_artists()
-        if artists.count() == 0:
+        if self.artists and len(self.artists) > 0:
             return self.artists
         return ', '.join([artist.name for artist in self.get_artists()])
 
@@ -683,3 +686,34 @@ class TrackArtist(models.Model):
         return ta
     
 
+
+class LibraryTrack(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="library")
+    track = models.ForeignKey(
+        Track, on_delete=models.CASCADE, related_name="library")
+    date = models.DateTimeField(default=timezone.now)
+    
+    class Meta:
+        unique_together = [['user', 'track']]
+
+    @classmethod
+    def add_to_library(cls, user: User, track: Track):
+        # return true if new track was added else false
+        return cls.objects.get_or_create(user=user, track=track)[1]
+    
+    @classmethod
+    def remove_from_library(cls, user: User, track: Track):
+        return cls.objects.filter(user=user, track=track).delete()[0] > 0
+    
+    @classmethod
+    def get_library_tracks(cls, user: User, limit=10, offset=0):
+        return [lt.track for lt in cls.objects.filter(user=user).order_by('-date')[offset:offset+limit].all()]
+    
+    @classmethod
+    def get_library_tracks_count(cls, user: User):
+        return cls.objects.filter(user=user).count()
+    
+    @classmethod
+    def is_track_in_library(cls, user: User, track: Track):
+        return cls.objects.filter(user=user, track=track).exists()

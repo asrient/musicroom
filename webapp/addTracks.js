@@ -31,7 +31,7 @@ class AddTracks extends React.Component {
     }
     tracks() {
         if (this.state.tracks) {
-            return (<div><TrackListDefault tracks={this.state.tracks} /></div>)
+            return (<div><TrackListDefault tracks={this.state.tracks} uid='search' /></div>)
         }
         else {
             return (<div className="center ink-white size-m" style={{ padding: '2rem 1rem' }}>Loading..</div>)

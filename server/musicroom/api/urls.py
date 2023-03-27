@@ -38,6 +38,10 @@ from musicroom.api.streamUrl import stream_url_api
 from musicroom.api.requestJoinRoom import main as requestJoinRoom
 from musicroom.api.setUserPreference import main as setUserPreference
 from musicroom.api.getJoinRoomRequests import main as getJoinRoomRequests
+from musicroom.api.getLibrary import main as getLibrary
+from musicroom.api.addToLibrary import main as addLibrary
+from musicroom.api.removeFromLibrary import main as removeLibrary
+from musicroom.api.getTrackInfo import main as getTrackInfo
 
 
 urlpatterns = [
@@ -79,4 +83,8 @@ urlpatterns = [
     path('private/skipto', p_skipto),
     path('private/roomCheck', p_room_check),
     path('ping', ping),
+    path('library', getLibrary),
+    path('library/add', addLibrary),
+    path('library/remove', removeLibrary),
+    path('track/info', getTrackInfo),
 ]

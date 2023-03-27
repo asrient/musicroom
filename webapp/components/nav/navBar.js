@@ -18,6 +18,7 @@ export default function NavBar() {
         <div className={"hstack base-regular "+css.bar}>
             <NavLink href="/browse">Explore</NavLink>
             <NavLink href="/search">Search</NavLink>
+            <NavLink href="/library">Library</NavLink>
         </div>
     )
 }

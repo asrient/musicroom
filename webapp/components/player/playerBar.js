@@ -12,6 +12,7 @@ import { UserCircleLink, UserCircle } from "../../user";
 import { IconButton, TextButton } from "../common/button";
 import { MusicControl, MusicScreen } from "./musicScreen";
 import Chat from "../../chat";
+import LikeButton from "./likeButton";
 
 
 function SongInfo({ image_url, title, artists, onClick, innerRef }) {
@@ -131,6 +132,13 @@ function Bar() {
   const isPaused = useSelector(state => state.room ? state.room.is_paused : true);
   const joinRequestsCount = useSelector(state => state.room ? state.room.join_request_ids.length : 0);
 
+  useEffect(() => {
+    if(!currentTrack || isCurrentTrackRefreshed()) return;
+    window.state.fetchCurrentTrackInfo();
+  }, [currentTrack]);
+
+  const isCurrentTrackRefreshed = () => currentTrack && typeof currentTrack.liked === 'boolean';
+
   const onMusicControlClick = (e) => {
     console.log('music control', e);
     switch (e) {
@@ -158,6 +166,12 @@ function Bar() {
   const QueueButton = React.forwardRef((props, ref) => (
     <IconButton innerRef={ref} {...props} isDisabled={!roomActive} size="s" url="/static/icons/queue-music.svg" title="Songs queue" />
   ));
+
+  const likeButton = (
+    <ForScreen desktop>
+      <LikeButton isDisabled={!roomActive} isLoading={!isCurrentTrackRefreshed()} isLiked={ currentTrack?.liked } trackId={currentTrack?.track_id} />
+    </ForScreen>
+  );
 
   const RoomControlButton = React.forwardRef((props, ref) => (
     <IconButton innerRef={ref} {...props} color={controlRoomColor} size="s" url="/static/icons/roomControl.svg" title="Room Control" />
@@ -190,7 +204,8 @@ function Bar() {
           content={musicScreenPannel}>
           <SongInfoWrapper {...currentTrack} />
         </Pannel>
-        <div className={css.queue_container}>
+        <div className={css.queue_container + ' hstack'}>
+        {likeButton}
           <Pannel
             content={queuePannel}>
             <QueueButton />
