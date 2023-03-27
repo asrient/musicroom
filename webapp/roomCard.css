@@ -4,7 +4,8 @@
     width: 30rem;
     max-width: 80vw;
     border-radius: 1.6rem;
-    padding: 1.2rem 0.4rem;
+    padding: 0.8rem 0.3rem;
+    min-height: 7rem;
     margin: 0.3rem 0.4rem;
     background-color: #ffffff;
     overflow: hidden;
@@ -34,6 +35,17 @@
     font-size: 1rem;
     flex-wrap: nowrap;
     overflow: hidden;
+}
+.artists {
+    padding-bottom: 0.4rem;
+}
+.artists > div {
+    font-size: 0.7rem;
+    color: rgb(160, 160, 160);
+    padding: 0.3rem 0.6rem;
+    border-radius: 1rem;
+    margin-right: 0.2rem;
+    background-color: rgb(236, 236, 236);
 }
 
 @media(max-width:900px){

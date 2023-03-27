@@ -23,10 +23,7 @@ def main(request, word):
             lang = 'hindi'
     music = Music()
     tracks = music.search(txt, limit, lang=lang)
-    List = []
     if tracks is not None:
-        for track in tracks:
-            List.append(track.get_obj())
-        return apiRespond(200, tracks=List)
+        return apiRespond(200, tracks=tracks)
     else:
         return apiRespond(400, msg='error')

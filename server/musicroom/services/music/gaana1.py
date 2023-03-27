@@ -22,6 +22,8 @@ class Gaana1Track:
         self.duration = int(obj['duration'])
         self.title = obj['title']
         self.artists = obj['artists']
+        self.artist_ids = [str(id).strip() for id in obj['artist_seokeys'].split(',')]
+        self.language = obj['language']
         if 'stream_urls' in obj and 'urls' in obj['stream_urls'] and len(obj['stream_urls']['urls']) > 0:
             urls = obj['stream_urls']['urls']
             self.stream_url = None
@@ -40,8 +42,17 @@ class Gaana1Track:
 
     def make_track(self):
         mins, secs = divmod(self.duration, 60)
-        return Track.create(title=self.title, artists=self.artists, duration=datetime.time(
-            0, mins, secs), ref_id=self.ref_id, storage_bucket='gaana1', playback_path='', image_path=self.img_url)
+
+        track = Track.create(title=self.title, artists=self.artists, duration=datetime.time(
+            0, mins, secs), ref_id=self.ref_id, storage_bucket='gaana1', playback_path='', 
+            image_path=self.img_url, language=self.language,)
+        
+        artist_names = [name.strip() for name in self.artists.split(',')]
+        for ind, artist_id in enumerate(self.artist_ids):
+            if artist_id != '' and len(artist_names[ind])>0:
+                track.add_create_artist(name=artist_names[ind],ref_id='gaana1:'+artist_id)
+
+        return track
 
     def get_track(self):
         try:
@@ -64,23 +75,7 @@ def search(word, limit=10, lang=None):
     url = GAANA1_BASEURL + "songs/search?query="+word+"&limit="+str(limit)
     print('searching with gaana1', url)
 
-    content = http_get(url)
-    if content is None:
-        return None
-
-    data = json.loads(content)
-    if type(data) == list:
-        tracks = []
-        for song in data:
-            try:
-                gaana1Track = Gaana1Track(song)
-            except:
-                print('error extracting song', song)
-            else:
-                track = gaana1Track.get_track()
-                if track is not None:
-                    tracks.append(track)
-        return tracks
+    return extract_from_url(url)
 
 
 def get_stream_url(track: Track):
@@ -119,8 +114,8 @@ def extract_from_url(url):
         for song in data:
             try:
                 gaana1Track = Gaana1Track(song)
-            except:
-                print('error extracting song', song)
+            except Exception as e:
+                print('error extracting song', song, e)
             else:
                 track = gaana1Track.get_track()
                 if track is not None:

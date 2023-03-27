@@ -1,11 +1,11 @@
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Max, Count
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 import datetime
 import json
 from django.utils import timezone
-from musicroom.settings import STORAGE_URLS
+from musicroom.settings import STORAGE_URLS, MUSIC_SERVICE
 from musicroom.common import makecode, live_event, roomtask, usertask, dump_datetime, schedule
 from musicroom.services.imgUtils import DominantColors
 
@@ -289,6 +289,10 @@ class Room(models.Model):
     code = models.CharField(max_length=50, default=None, null=True)
     current_roomtrack = models.ForeignKey(
         "RoomTrack", on_delete=models.CASCADE, related_name="+")
+    
+    def get_top_artists(self):
+        return Artist.objects.filter(tracks__roomtracks__room=self).annotate(
+            count=Count('tracks__roomtracks', filter=Q(tracks__roomtracks__room=self))).distinct().order_by('-count')[:5]
 
     def check_state(self):
         curr_time = timezone.now()
@@ -339,7 +343,12 @@ class Room(models.Model):
                 friends_found.append(member.get_profile_min())
                 if len(friends_found) > 2:
                     break
-        return {'room_id': self.id, 'members_count': count, 'member_friends': friends_found, 'current_roomtrack': self.current_roomtrack.get_obj(),}
+        return {'room_id': self.id, 
+                'members_count': count, 
+                'member_friends': friends_found, 
+                'current_roomtrack': self.current_roomtrack.get_obj(),
+                'top_artists': [artist.get_obj() for artist in self.get_top_artists()],
+                }
 
     def get_roomtracks(self):
         rt = self.current_roomtrack
@@ -510,7 +519,7 @@ class RoomTrack(models.Model):
     room = models.ForeignKey(
         Room, on_delete=models.CASCADE, null=True, default=None, related_name="roomtracks")
     track = models.ForeignKey(
-        'Track', on_delete=models.PROTECT, related_name="+")
+        'Track', on_delete=models.PROTECT, related_name="roomtracks")
 
     def get_obj(self):
         obj = self.track.get_obj()
@@ -536,10 +545,55 @@ class RoomTrack(models.Model):
         return cls.objects.get(id=pk)
 
 
+class Artist(models.Model):
+    slug = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255, blank=False, null=False)
+    image_path = models.CharField(max_length=255, default=None, null=True)
+    ref_id = models.CharField(max_length=255, default=None, null=True, unique=True)
+
+    def get_img_url(self):
+        return f'{STORAGE_URLS[MUSIC_SERVICE]}{self.image_path}'
+
+    def get_obj(self):
+        obj = {
+            'type': 'artist',
+            'slug': self.slug,
+            'name': self.name,
+            'image_url': self.get_img_url(),
+            'ref_id': self.ref_id
+        }
+        return obj
+    
+    def get_top_tracks(self, limit=10):
+        return self.tracks.order_by('-plays_count')[:limit]
+
+    @classmethod
+    def get_by_name(cls, name):
+        return cls.objects.get(slug=Artist.convert_to_slug(name))
+
+    @classmethod
+    def get_by_ref_id(cls, ref_id):
+        return cls.objects.get(ref_id=ref_id)
+    
+    @classmethod
+    def get_or_create(cls, name, ref_id=None, image_path=None):
+        slug = Artist.convert_to_slug(name)
+        if len(slug) == 0:
+            raise ValueError('Slug cannot be empty, name: '+name)
+        return cls.objects.get_or_create(slug = slug, name=name, ref_id=ref_id, image_path=image_path)[0]
+    
+    @classmethod
+    def convert_to_slug(cls, name: str) -> str:
+        print('convert_to_slug', name)
+        return name.lower().strip().replace(' ', '-')
+
+
 class Track(models.Model):
     added_on = models.DateTimeField()
     title = models.CharField(max_length=255)
     artists = models.CharField(max_length=255)
+    artists_link = models.ManyToManyField("Artist", through="TrackArtist", related_name="tracks")
+    language = models.CharField(max_length=255, default=None, null=True)
     duration = models.TimeField()
     plays_count = models.IntegerField()
     ref_id = models.CharField(max_length=255, default=None, null=True)
@@ -552,7 +606,10 @@ class Track(models.Model):
         playback_url = STORAGE_URLS[self.storage_bucket]+self.playback_path
         image_url = self.get_img_url()
         obj = {'track_id': self.id, 'title': self.title, 'duration': dump_datetime(self.duration),
-               'artists': self.artists, 'playback_url': playback_url, 'image_url': image_url}
+               'artists': self.get_artists_str(), 'playback_url': playback_url, 'image_url': image_url,
+               'artist_objs': []}
+        for artist in self.get_artists():
+            obj['artist_objs'].append(artist.get_obj())
         return obj
     
     def get_img_url(self):
@@ -569,6 +626,24 @@ class Track(models.Model):
                 return colors
         else:
             return json.loads(self.artwork_colors)
+        
+    def add_artist(self, artist: Artist):
+        index = self.artists_link.count()
+        TrackArtist.create(self, artist, index)
+
+    def get_artists(self):
+        return self.artists_link.order_by('trackartist__index').all()
+    
+    def add_create_artist(self, name, ref_id=None, image_path=None):
+        artist = Artist.get_or_create(name=name, ref_id=ref_id, image_path=image_path)
+        self.add_artist(artist)
+        return artist
+    
+    def get_artists_str(self):
+        artists = self.get_artists()
+        if artists.count() == 0:
+            return self.artists
+        return ', '.join([artist.name for artist in self.get_artists()])
 
     @classmethod
     def get_by_id(cls, pk):
@@ -585,11 +660,26 @@ class Track(models.Model):
 
     @classmethod
     def create(cls, **values):
+        if 'language' not in values:
+            values['language'] = values['language'].lower().strip()
         track = cls(added_on=timezone.now(), **values)
         track.plays_count = 0
         track.save()
         return track
 
 
-class Artist(models.Model):
-    title = models.CharField(max_length=255)
+class TrackArtist(models.Model):
+    track = models.ForeignKey(Track, on_delete=models.CASCADE)
+    artist = models.ForeignKey("Artist", on_delete=models.CASCADE)
+    index = models.IntegerField()
+
+    class Meta:
+        unique_together = [('track', 'artist'), ('track', 'index')]
+
+    @classmethod
+    def create(cls, track, artist, index):
+        ta = cls(track=track, artist=artist, index=index)
+        ta.save()
+        return ta
+    
+

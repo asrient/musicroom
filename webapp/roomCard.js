@@ -12,15 +12,20 @@ function CardContent({ onClick, room }) {
     let users = room.member_friends || [];
     users = users.slice(0, 5);
     const othersCount = room.members_count - users.length;
+    const artists = room.top_artists.slice(0, 3);
+
     return (
         <div onClick={onClick} className={"center ink-dark base-semilight size-xs " + css.roomCard}>
             <div className="size-xl">{roomEmoji}</div>
             <div>
+                <div className={"size-xs hstack "+css.ellipseText+' '+css.artists}>
+                {artists.map(artist => (<div key={artist.slug}>{artist.name}</div>))}
+                </div>
                 <div className={css.roomMembers}>
                     {users.map((user, index) => <UserCircle {...user} key={user.user_id} size="1.2rem" title={user.name} style={{marginRight: '0.2rem'}} />)}
                     {users.length === 1 ? (<span>{users[0].name}</span>) : ''}
-                    {othersCount > 0 && (<>&nbsp;{`+${othersCount} ${othersCount == 1 ? 'other' : 'others'}`}</>)}
-                    &nbsp;<span className="ink-grey">in Room</span>
+                    {othersCount > 0 && (<>&nbsp;{`+${othersCount} more`}</>)}
+                    &nbsp;<span className="ink-grey">in room</span>
                 </div>
                 <div className={css.ellipseText+' hstack'}>
                 <img src="/static/icons/play-dark.svg" style={{height:'1rem', marginRight: '0.2rem'}}/>
