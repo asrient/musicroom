@@ -32,6 +32,15 @@ tunnel.on("pmessage", function (pattern, channel, message) {
         Message.deleteMany({ room_id: data.room_id }, (err) => {
             console.log('removed chats from room id: ' + data.room_id, err)
         });
+    } 
+    else if (channel == 'schedule:callback.api.post') {
+        console.log('callback.api.post Task', data, timeout);
+        const { url, body } = data;
+        setTimeout(() => {
+            api.post(url, body, (status, data) => {
+                console.log('result of scheduled callback.api.post', status, data)
+            })
+        }, timeout)
     }
 });
 

@@ -1,5 +1,5 @@
 import $ from "jquery";
-import React, { Component } from "react";
+import React, { useEffect, useRef } from "react";
 import * as ReactDOMClient from 'react-dom/client';
 import Toasts from "./toasts.js";
 import Rooms from "./rooms.js";
@@ -16,7 +16,7 @@ import { Switch, Route, Redirect } from "wouter";
 import css from "./styles.css";
 import state from "./state.js";
 import PlayerBar from "./components/player/playerBar";
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import NavBar from "./components/nav/navBar";
 import Library from "./components/library/library";
 
@@ -96,11 +96,42 @@ class AutoplayBanner extends React.Component {
     }
 }
 
+function PlaybackPingManager(){
+    const roomId = useSelector(state => state.room?.room_id);
+    const playCount = useSelector(state => state.room?.play_count);
+    const timerRef = useRef(null);
+    const playCountRef = useRef(null);
+
+    const clearTimer = () => {
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+    }
+
+    useEffect(() => {
+        clearTimer();
+        console.log('playback ping update', roomId, playCount);
+        if (!!roomId && playCountRef.current !== playCount) {
+            playCountRef.current = playCount;
+            
+            timerRef.current = setTimeout(() => {
+                window.state.pingPlayback();
+                timerRef.current = null;
+            }, 6050);
+        }
+        return clearTimer;
+    }, [roomId, playCount]);
+
+    return '';
+}
+
 const root = ReactDOMClient.createRoot(document.getElementById('root'));
 
 root.render(<Provider store={window.state._store}>
     <div>
     <Toasts/>
+    <PlaybackPingManager/>
     <AutoplayBanner/>
     <PlayerBar/>
     <NavBar/>

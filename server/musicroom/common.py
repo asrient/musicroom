@@ -62,3 +62,8 @@ def roomtask(task, room_id, **data):
 
 def schedule(task, timeout, **data):
     push_to_tunnel('schedule:'+task, timeout=timeout, data=data)
+
+
+def schedule_api_call(timeout, url, body = None):
+    push_to_tunnel('schedule:callback.api.post', timeout=timeout, data={'url': url, 'body': body})
+

@@ -8,6 +8,7 @@ from django.utils import timezone
 from musicroom.settings import STORAGE_URLS, MUSIC_SERVICE
 from musicroom.common import makecode, live_event, roomtask, usertask, dump_datetime, schedule
 from musicroom.services.imgUtils import DominantColors
+import uuid
 
 
 class UserManager(BaseUserManager):
@@ -229,12 +230,22 @@ class User(AbstractUser):
             change = True
         self.save()
         return change
+    
+    def add_history(self):
+        if not self.room:
+            raise ValueError('User not in a room')
+        play_id = f'{self.room.id}-{self.room.play_count}'
+        latest = PlaybackHistory.user_last_record(self)
+        if latest and (timezone.now() - latest.date < timezone.timedelta(seconds=6)):
+            raise ValueError('Too soon')
+        track = self.room.current_roomtrack.track
+        return PlaybackHistory.add(play_id = play_id, user=self, track=track)
 
     def __str__(self):
         return self.email
 
     @classmethod
-    def get_by_id(cls, pk):
+    def get_by_id(cls, pk) -> 'User':
         return cls.objects.get(id=pk)
 
 
@@ -285,6 +296,7 @@ class Room(models.Model):
     paused_on = models.DateTimeField(null=True, default=None)
     duration_to_complete = models.TimeField()
     play_start_time = models.DateTimeField()
+    play_count = models.IntegerField(default=0)
     no_tracks = models.IntegerField(default=0)
     code = models.CharField(max_length=50, default=None, null=True)
     current_roomtrack = models.ForeignKey(
@@ -329,7 +341,8 @@ class Room(models.Model):
             'play_start_time': dump_datetime(self.play_start_time),
             'duration_to_complete': dump_datetime(self.duration_to_complete),
             'join_request_ids': self.get_join_request_ids(),
-            'room_code': self.code
+            'room_code': self.code,
+            'play_count': self.play_count
         }
         return state
 
@@ -414,14 +427,17 @@ class Room(models.Model):
         print('skiping to next', next_rt.id)
         self.skip_to(next_rt)
 
-    def skip_to(self, roomtrack, duration=None, action_user=None):
+    def skip_to(self, roomtrack: 'RoomTrack', duration=None, action_user=None):
         rt = roomtrack
         prev_rt = self.current_roomtrack
         self.current_roomtrack = rt
+
         if rt != prev_rt:
+            # change of track
             track = rt.track
             track.plays_count += 1
             track.save()
+
         self.is_paused = False
         self.paused_on = None
         self.play_start_time = timezone.now()
@@ -429,6 +445,10 @@ class Room(models.Model):
             self.duration_to_complete = duration
         else:
             self.duration_to_complete = rt.track.duration
+
+        if rt != prev_rt or duration == None or duration == rt.track.duration:
+            self.play_count += 1
+
         self.save()
         # schedule next skip_to
         # timeout in ms
@@ -717,3 +737,35 @@ class LibraryTrack(models.Model):
     @classmethod
     def is_track_in_library(cls, user: User, track: Track):
         return cls.objects.filter(user=user, track=track).exists()
+
+
+class PlaybackHistory(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="playback_history")
+    track = models.ForeignKey(
+        Track, on_delete=models.CASCADE, related_name="playback_history")
+    date = models.DateTimeField(default=timezone.now)
+    play_id = models.CharField(max_length=255, default=uuid.uuid4)
+
+    class Meta:
+        unique_together = [['user', 'play_id']]
+
+    @classmethod
+    def add(cls, play_id, user: User, track: Track, date: datetime = None):
+        if cls.objects.filter(user=user).count() >= 200:
+            cls.objects.filter(user=user).first().delete()
+        return cls.objects.create(play_id = play_id, user=user, track=track, date=date or timezone.now())
+    
+    @classmethod
+    def user_last_record(cls, user: User):
+        return cls.objects.filter(user=user).order_by('-date').first()
+    
+    @classmethod
+    def get_top_user_tracks(cls, user: User):
+        return Track.objects.filter(playback_history__user=user).annotate(count=Count('playback_history__track')).order_by('-count')
+    
+    @classmethod
+    def get_recent_user_tracks(cls, user: User):
+        return Track.objects.filter(playback_history__user=user).order_by('-playback_history__date')
+    
+    

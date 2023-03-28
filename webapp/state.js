@@ -681,9 +681,9 @@ var state = {
             this.popToast(key)
         }, TOAST_DURATION)
     },
-    syncPlayback: function () {
+    syncPlayback: function (st) {
         if (PLAYBACK_SUPPORT) {
-            var st = store.getState();
+            st = st || store.getState();
             console.log('Syncing playback..')
             if (st.room) {
                 var roomtrack = st.room.current_roomtrack
@@ -723,7 +723,7 @@ var state = {
         var room = { ...st.room, ...roomState }
         st.room = room
         update(st)
-        this.syncPlayback()
+        this.syncPlayback(st)
     },
     addRoomtrack: function (track) {
         var st = store.getState();
@@ -871,7 +871,7 @@ var state = {
         if (clearCacheMsgs) {
             this.clearCacheMessages()
         }
-        this.syncPlayback()
+        this.syncPlayback(st)
         if(!!room){
             this.updateRoomMembers();
             this.updateRoomTracks();
@@ -1067,6 +1067,13 @@ var state = {
                     reject(status, data);
                 }
             });
+        });
+    },
+    pingPlayback() {
+        api.get('playback/ping', null, (status, data) => {
+            if (status !== 201) {
+                console.error('Playback ping failed:', status, data);
+            }
         });
     },
     async loadLibraryTracks() {
