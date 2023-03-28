@@ -127,7 +127,7 @@ export function TrackListDefault({ tracks, currentTrackId, stretch, uid }) {
     }
 
     return (<>
-        <Menu key='context-menu' style={{'width': 'max-content'}} id={uid}>
+        <Menu key='context-menu' style={{'width': 'max-content', fontSize: '0.8rem'}} id={uid}>
         <Item onClick={() => onClick(selectedTrack.track_id)}>
           Play
         </Item>

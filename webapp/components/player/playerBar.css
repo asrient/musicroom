@@ -7,9 +7,9 @@
     display: grid;
     grid-template-columns: calc(50% - 13rem) 26rem calc(50% - 13rem);
     align-items: center;
-    background-color: #22222287;
+    background-color: #222222c3;
     backdrop-filter: blur(20px);
-    --webkit-backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: solid thin #13131367;
     z-index: 5;
 }

@@ -2,7 +2,7 @@
   --contexify-zIndex: 666;
   --contexify-menu-minWidth: 220px;
   --contexify-menu-padding: 6px;
-  --contexify-menu-radius: 6px;
+  --contexify-menu-radius: 10px;
   --contexify-menu-shadow: 1px 2px 2px rgba(0, 0, 0, 0.1),
   2px 4px 4px rgba(0, 0, 0, 0.1),
   3px 6px 6px rgba(0, 0, 0, 0.1);
@@ -12,7 +12,7 @@
   --contexify-activeItem-radius: 4px;
 
   --contexify-menu-bgColor: #35353590;
-  --contexify-separator-color: #595959;
+  --contexify-separator-color: #6e6e6e94;
   --contexify-item-color: #e6e6e6;
   --contexify-activeItem-color: #ffffff;
   --contexify-activeItem-bgColor: #3374db;
@@ -45,7 +45,8 @@
   min-width: var(--contexify-menu-minWidth);
   z-index: var(--contexify-zIndex);
   backdrop-filter: blur(15px);
-  --webkit-backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: solid 1px var(--contexify-separator-color);
 }
 .contexify_submenu-isOpen, .contexify_submenu-isOpen > .contexify_itemContent {
   color: var(--contexify-activeItem-color);
@@ -168,12 +169,12 @@
 }
 .contexify_willEnter-scale {
   transform-origin: top left;
-  animation: contexify_scaleIn 0.3s;
+  animation: contexify_scaleIn 0.2s;
 }
 
 .contexify_willLeave-scale {
   transform-origin: top left;
-  animation: contexify_scaleOut 0.3s;
+  animation: contexify_scaleOut 0.2s;
 }
 
 @keyframes contexify_fadeIn {
@@ -197,11 +198,11 @@
   }
 }
 .contexify_willEnter-fade {
-  animation: contexify_fadeIn 0.3s ease;
+  animation: contexify_fadeIn 0.2s ease;
 }
 
 .contexify_willLeave-fade {
-  animation: contexify_fadeOut 0.3s ease;
+  animation: contexify_fadeOut 0.2s ease;
 }
 
 @keyframes contexify_flipInX {
@@ -225,12 +226,12 @@
   -webkit-backface-visibility: visible !important;
           backface-visibility: visible !important;
   transform-origin: top center;
-  animation: contexify_flipInX 0.3s;
+  animation: contexify_flipInX 0.2s;
 }
 
 .contexify_willLeave-flip {
   transform-origin: top center;
-  animation: contexify_flipOutX 0.3s;
+  animation: contexify_flipOutX 0.2s;
   -webkit-backface-visibility: visible !important;
           backface-visibility: visible !important;
 }
@@ -255,12 +256,12 @@
 }
 .contexify_willEnter-slide {
   transform-origin: top center;
-  animation: contexify_slideIn 0.3s;
+  animation: contexify_slideIn 0.2s;
 }
 
 .contexify_willLeave-slide {
   transform-origin: top center;
-  animation: contexify_slideOut 0.3s;
+  animation: contexify_slideOut 0.2s;
 }
 
 /*# sourceMappingURL=ReactContexify.css.map */
