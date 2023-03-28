@@ -135,9 +135,7 @@ root.render(<Provider store={window.state._store}>
         </Route>
         <Route path="/library">
             <LoginRequired>
-                <RoomRequired>
-                    <Library />
-                </RoomRequired>
+                <Library />
             </LoginRequired>
         </Route>
         <Route path="/room/chat">

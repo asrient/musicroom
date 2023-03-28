@@ -291,8 +291,8 @@ class Room(models.Model):
         "RoomTrack", on_delete=models.CASCADE, related_name="+")
     
     def get_top_artists(self):
-        return Artist.objects.filter(tracks__roomtracks__room=self).annotate(
-            count=Count('tracks__roomtracks', filter=Q(tracks__roomtracks__room=self))).distinct().order_by('-count')[:5]
+        artists = TrackArtist.objects.filter(track__roomtracks__room=self).values_list('artist__name', flat=True).annotate(count=Count('artist__name')).order_by('-count')
+        return list(artists)[:5]
 
     def check_state(self):
         curr_time = timezone.now()
@@ -347,7 +347,7 @@ class Room(models.Model):
                 'members_count': count, 
                 'member_friends': friends_found, 
                 'current_roomtrack': self.current_roomtrack.get_obj(),
-                'top_artists': [artist.get_obj() for artist in self.get_top_artists()],
+                'top_artists': self.get_top_artists(),
                 }
 
     def get_roomtracks(self):
@@ -634,18 +634,18 @@ class Track(models.Model):
     def add_artist(self, artist: Artist):
         index = self.artists_link.count()
         TrackArtist.create(self, artist, index)
+        self.save()
 
     def get_artists(self):
         return self.artists_link.order_by('trackartist__index').all()
     
     def add_create_artist(self, name, ref_id=None, image_path=None):
         artist = Artist.get_or_create(name=name, ref_id=ref_id, image_path=image_path)
+        #print('add_create_artist', artist, name, ref_id, image_path)
         self.add_artist(artist)
         return artist
     
     def get_artists_str(self):
-        if self.artists and len(self.artists) > 0:
-            return self.artists
         return ', '.join([artist.name for artist in self.get_artists()])
 
     @classmethod

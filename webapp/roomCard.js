@@ -19,7 +19,7 @@ function CardContent({ onClick, room }) {
             <div className="size-xl">{roomEmoji}</div>
             <div>
                 <div className={"size-xs hstack "+css.ellipseText+' '+css.artists}>
-                {artists.map(artist => (<div key={artist.slug}>{artist.name}</div>))}
+                {artists.map(artist => (<div key={artist}>{artist}</div>))}
                 </div>
                 <div className={css.roomMembers}>
                     {users.map((user, index) => <UserCircle {...user} key={user.user_id} size="1.2rem" title={user.name} style={{marginRight: '0.2rem'}} />)}
