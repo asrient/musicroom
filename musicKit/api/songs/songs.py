@@ -1,7 +1,7 @@
 import asyncio
 
 class Songs():
-    async def search_songs(self, search_query: str, limit: int) -> list:
+    async def search_songs(self, search_query: str, limit: int, fast: bool = False) -> list:
         aiohttp = self.aiohttp
         endpoints = self.api_endpoints
         errors = self.errors
@@ -18,22 +18,26 @@ class Songs():
             'sec-gpc': '1',
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
         }
-        response = await aiohttp.get(endpoints.search_songs_url + search_query+"&content_filter=2&include=allItems&isRegSrch=0&webVersion=mix&rType=web&usrLang=Hindi,English,Punjabi&isChrome=1", headers=headers)
+        response = await aiohttp.get(endpoints.search_songs_url + search_query+"&content_filter=2&include=allItems&isRegSrch=0&webVersion=mix&rType=web&usrLang=Hindi,English,Bengali&isChrome=1", headers=headers)
         result = await response.json()
+        tracks_raw = []
         track_ids = set()
         for grp in result['gr']:
            for item in grp['gd']:
               try:
-                if item['ty'] == 'Track':
+                if item['ty'] == 'Track' and item['seo'] not in track_ids:
+                  tracks_raw.append(item)
                   track_ids.add(item['seo'])
                   limit-=1
                   if limit <= 0:
                     break
               except (IndexError, TypeError, KeyError):
                 pass
-        if len(track_ids) == 0:
+        if len(tracks_raw) == 0:
           return await errors.no_results()
-        track_info = await self.get_track_info(list(track_ids))
+        if fast:
+          return [self.format_search_result(i) for i in tracks_raw]
+        track_info = await self.get_track_info([i['seo'] for i in tracks_raw])
         return track_info
 
     async def get_track_info(self, track_id: list) -> list:
@@ -49,6 +53,17 @@ class Songs():
             print('error getting track info', i, e)
             pass
         return track_info
+
+    def format_search_result(self, result: dict) -> dict:
+        data = {}
+        data['seokey'] = result['seo']
+        data['title'] = result['ti']
+        data['artists'] = ', '.join(result['sti'].split(','))
+        data['language'] = result['language']
+        data['song_url'] = f"https://gaana.com/song/{data['seokey']}"
+        data['images'] = {'urls': {}}
+        data['images']['urls']['medium_artwork'] = result['aw']
+        return data
 
     async def format_json_songs(self, results: dict) -> dict:
         functions = self.functions

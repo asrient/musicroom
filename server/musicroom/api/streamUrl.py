@@ -12,7 +12,7 @@ from musicroom.services.music import Music
 @require_http_methods(["GET"])
 def stream_url_api(request, track_id):
     if request.user.is_authenticated:
-        track = Track.get_by_id(track_id)
+        track = Music.get_by_id(track_id)
         if track is not None:
             music = Music()
             stream_url = music.get_stream_url(track)

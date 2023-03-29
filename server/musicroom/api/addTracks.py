@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login
 
 from musicroom.common import apiRespond
 from musicroom.models import User, Track, Room, RoomTrack
+from musicroom.services.music import Music
 
 
 @require_http_methods(["POST"])
@@ -19,7 +20,7 @@ def main(request):
                     roomtracks: list[RoomTrack] = []
                     for track_id in track_ids:
                         try:
-                            track = Track.get_by_id(track_id)
+                            track = Music.get_by_id(track_id)
                         except:
                             pass
                         else:

@@ -12,10 +12,10 @@ async def home():
 
 @app.get("/songs/search/")
 async def songs_search(query: str = Query(description="Name of the song to search for."), 
-limit: Optional[int] = None):
+limit: Optional[int] = None, fast: Optional[str] = 'false'):
     if limit == None:
         limit = 10
-    result = await gaanapy.search_songs(query, limit)
+    result = await gaanapy.search_songs(query, limit, fast=='true')
     return result
 
 @app.get("/songs/info/")

@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('DJ_SECRET_KEY', 'bhyr/@5h56yBhgr$t6uj*RF!0')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DJ_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']
 
@@ -165,6 +165,9 @@ SESSION_COOKIE_NAME = 'mrsid'
 
 SESSION_COOKIE_DOMAIN = '.'+DOMAIN_NAME
 
+SPOTIFY_CLIENT_ID = os.environ.get('SPOTIFY_CLIENT_ID', 'xxx-xxx-xxx')
+SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET', 'xxx-xxx-xxx')
+
 try:
     from musicroom.settings_dev import *
 except ImportError:
@@ -175,6 +178,7 @@ except ImportError:
 '''
 ENV VARS REQUIRED:
 
+DJ_DEBUG
 DJ_SECRET_KEY
 BASE_URL
 DOMAIN_NAME
@@ -183,4 +187,6 @@ REDIS_URL
 DATABASE_URL
 LIVE_ACCESS_KEY
 LIVE_URL
+SPOTIFY_CLIENT_ID
+SPOTIFY_CLIENT_SECRET
 '''

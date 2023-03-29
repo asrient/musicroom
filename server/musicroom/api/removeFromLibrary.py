@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login
 
 from musicroom.common import apiRespond
 from musicroom.models import User, Track, LibraryTrack
+from musicroom.services.music import Music
 
 
 @require_http_methods(["POST"])
@@ -14,7 +15,7 @@ def main(request):
             track_id = request.POST['track_id']
             track = None
             try:
-                track = Track.get_by_id(track_id)
+                track = Music.get_by_id(track_id)
             except:
                 return apiRespond(400, msg='track_id invalid')
             else:

@@ -6,7 +6,7 @@ from musicroom.settings import GAANA1_BASEURL
 import tempfile
 import time
 import json
-from .musicUtils import http_get
+from .musicUtils import http_get, sterilize_artists, sterilize_name, is_name_match
 
 """
     Gaana API
@@ -19,10 +19,10 @@ class Gaana1Track:
     def __init__(self, obj):
         self.seo_key = obj['seokey']
         self.ref_id = 'gaana1:'+self.seo_key
-        self.duration = int(obj['duration'])
+        self.duration = int(obj['duration']) if 'duration' in obj else None
         self.title = obj['title']
         self.artists = obj['artists']
-        self.artist_ids = [str(id).strip() for id in obj['artist_seokeys'].split(',')]
+        self.artist_ids = [str(id).strip() for id in obj['artist_seokeys'].split(',')] if 'artist_seokeys' in obj else []
         self.language = obj['language']
         if 'stream_urls' in obj and 'urls' in obj['stream_urls'] and len(obj['stream_urls']['urls']) > 0:
             urls = obj['stream_urls']['urls']
@@ -35,12 +35,19 @@ class Gaana1Track:
                 self.stream_url = urls['low_quality']
         self.img_url = None
         try:
-            self.img_url = obj['images']['urls']['small_artwork']
             self.img_url = obj['images']['urls']['medium_artwork']
         except:
             pass
-
+        if self.img_url is None:
+            try:
+                self.img_url = obj['images']['urls']['small_artwork']
+            except:
+                pass
+        
     def make_track(self):
+        if self.duration is None:
+            raise Exception('Track data is not complete, cannot create track')
+        
         mins, secs = divmod(self.duration, 60)
 
         track = Track.create(title=self.title, artists=self.artists, duration=datetime.time(
@@ -69,13 +76,42 @@ class Gaana1Track:
             return False
         else:
             return True
+    
+    def get_obj(self):
+        return {'track_id': 'unsaved:gaana1:'+self.seo_key, 
+                'title': self.title, 
+                'duration': 123,
+                'artists': self.artists, 
+                'playback_url': '', 
+                'image_url': self.img_url,
+                'gaana_id': self.seo_key,
+               }
 
 
-def search(word, limit=10, lang=None):
-    url = GAANA1_BASEURL + "songs/search?query="+word+"&limit="+str(limit)
+def search(word, limit=10, lang=None, fast=False):
+    url = GAANA1_BASEURL + "songs/search?query="+word+"&limit="+str(limit)+"&fast="+str(fast).lower()
     print('searching with gaana1', url)
+    return extract_from_url(url, make_track = not fast)
 
-    return extract_from_url(url)
+
+def find_track(name: str, artists: str, make_track=True):
+    artists = sterilize_artists(artists)
+    name = sterilize_name(name)
+
+    q = (name+' '+artists[0]).replace(" ", "+")
+    tracks = search(q, limit=12, fast=True)
+    if tracks is None:
+        return None
+
+    for track in tracks:
+        #print('track from gaana1', track)
+        track_artists = sterilize_artists(track['artists'])
+        track_name = sterilize_name(track['title'])
+        if is_name_match(track_name, name) and (artists[0] in track_artists):
+            if make_track:
+                return save_track(track['gaana_id'])
+            return track
+    return None
 
 
 def get_stream_url(track: Track):
@@ -103,23 +139,27 @@ explore_urls = [{'url': "trending?language=English&limit=10", 'name': 'Trending 
                 {'url': "playlists/info/?seokey=gaana-dj-hip-hop-top-30", 'name': 'Hip Hop - Top 30'}
                 ]
 
-def extract_from_url(url):
+
+def extract_from_url(url, make_track=True):
     content = http_get(url)
     if content is None:
         return None
 
     data = json.loads(content)
     if type(data) == list:
-        tracks = []
+        tracks: list[Track] = []
         for song in data:
             try:
                 gaana1Track = Gaana1Track(song)
             except Exception as e:
                 print('error extracting song', song, e)
             else:
-                track = gaana1Track.get_track()
-                if track is not None:
-                    tracks.append(track.get_obj())
+                if make_track:
+                    track = gaana1Track.get_track()
+                    if track is not None:
+                        tracks.append(track.get_obj())
+                else:
+                    tracks.append(gaana1Track.get_obj())
         return tracks
 
 
@@ -170,3 +210,17 @@ def explore():
             result.append({'title': playlist['name'], 'tracks': tracks})
     set_cache(cache_key, json.dumps(result))
     return result
+
+
+def save_track(seo_key):
+    try:
+        track = Track.get_by_ref_id('gaana1:'+seo_key)
+    except:
+        pass
+    else:
+        return track
+    url = GAANA1_BASEURL + "songs/info/?seokey="+seo_key
+    tracks = extract_from_url(url, make_track=True)
+    if tracks is not None:
+        return Track.get_by_id(tracks[0]['track_id'])
+    return None

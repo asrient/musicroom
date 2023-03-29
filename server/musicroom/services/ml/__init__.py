@@ -1,4 +1,5 @@
-from musicroom.models import User, PlaybackHistory, Artist, Room
+from musicroom.models import User, PlaybackHistory, Artist, Room, Track
+from musicroom.services.music.spotify import Spotify
 
 '''
 Derived recommendations ideas:
@@ -29,3 +30,12 @@ def get_current_artist_tracks(user: User):
     tracks = [track.get_obj() for track in  artist.get_top_tracks(6)]
     return __return_result(f'More from {artist.name}', tracks)
 
+
+def get_similar_tracks(track: Track):
+    spotify = Spotify()
+    spotify_id = spotify.get_spotify_id(track)
+    if spotify_id is None:
+        print('No spotify id found for track', track.id)
+        return None
+    tracks = [track.get_obj() for track in spotify.get_similar_tracks_from_spotify_id(spotify_id, 10)]
+    return __return_result(f'Similar to {track.title}', tracks)

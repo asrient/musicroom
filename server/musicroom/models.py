@@ -505,6 +505,9 @@ class Room(models.Model):
         for i in range(index):
             rt = rt.next_roomtrack
         return rt
+    
+    def current_track(self):
+        return self.current_roomtrack.track
 
     @classmethod
     def get_by_id(cls, pk):
@@ -617,6 +620,7 @@ class Track(models.Model):
     duration = models.TimeField()
     plays_count = models.IntegerField()
     ref_id = models.CharField(max_length=255, default=None, null=True)
+    spotify_id = models.CharField(max_length=255, default=None, null=True)
     storage_bucket = models.CharField(max_length=255)
     playback_path = models.CharField(max_length=255)
     image_path = models.CharField(max_length=255, default=None, null=True)
@@ -675,6 +679,10 @@ class Track(models.Model):
     @classmethod
     def get_by_ref_id(cls, ref_id):
         return cls.objects.get(ref_id=ref_id)
+
+    @classmethod
+    def get_by_spotify_id(cls, spotify_id):
+        return cls.objects.get(spotify_id=spotify_id)
 
     @classmethod
     def browse(cls):
@@ -765,7 +773,7 @@ class PlaybackHistory(models.Model):
         return Track.objects.filter(playback_history__user=user).annotate(count=Count('playback_history__track')).order_by('-count')
     
     @classmethod
-    def get_recent_user_tracks(cls, user: User):
-        return Track.objects.filter(playback_history__user=user).order_by('-playback_history__date')
+    def get_recent_user_tracks(cls, user: User, limit=5, offset=0):
+        return Track.objects.filter(playback_history__user=user).order_by('-playback_history__date')[offset:offset+limit].all()
     
     

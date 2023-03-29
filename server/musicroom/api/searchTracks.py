@@ -12,17 +12,17 @@ from musicroom.services.music import Music
 def main(request, word):
     txt = word.split(':')[0]
     lang = None
-    limit = 5
+    limit = 15
     if len(word.split(':')) > 1:
         opts = word.split(':')[1:]
         if 'all' in opts:
-            limit = 20
+            limit = 50
         if 'english' in opts:
             lang = 'english'
         elif 'hindi' in opts:
             lang = 'hindi'
     music = Music()
-    tracks = music.search(txt, limit, lang=lang)
+    tracks = music.search(txt, limit, lang=lang, fast=True)
     if tracks is not None:
         return apiRespond(200, tracks=tracks)
     else:
