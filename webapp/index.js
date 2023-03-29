@@ -2,7 +2,8 @@ import $ from "jquery";
 import React, { useEffect, useRef } from "react";
 import * as ReactDOMClient from 'react-dom/client';
 import Toasts from "./toasts.js";
-import Rooms from "./rooms.js";
+import ExplorePage from "./browse.js";
+import ForYouPage from "./components/browse/forYouPage";
 import Room from "./room.js";
 import Chat from "./chat.js";
 import Account from "./account.js";
@@ -136,7 +137,7 @@ root.render(<Provider store={window.state._store}>
     <PlayerBar/>
     <NavBar/>
     <Switch>
-        <Route path="/browse"><Rooms /></Route>
+        <Route path="/browse"><ExplorePage /></Route>
         <Route path="/account">
             <LoginRequired>
                 <Account />
@@ -157,11 +158,9 @@ root.render(<Provider store={window.state._store}>
                 <AddTracks action="add-tracks" />
             </LoginRequired>
         </Route>
-        <Route path="/browse">
+        <Route path="/feed">
             <LoginRequired>
-                <RoomRequired>
-                    <Room />
-                </RoomRequired>
+                <ForYouPage />
             </LoginRequired>
         </Route>
         <Route path="/library">

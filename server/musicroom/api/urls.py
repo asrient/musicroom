@@ -43,6 +43,7 @@ from musicroom.api.addToLibrary import main as addLibrary
 from musicroom.api.removeFromLibrary import main as removeLibrary
 from musicroom.api.getTrackInfo import main as getTrackInfo
 from musicroom.api.addHistory import addHistory
+from musicroom.api.recommendations import get_recommendations
 
 
 urlpatterns = [
@@ -88,5 +89,6 @@ urlpatterns = [
     path('library/add', addLibrary),
     path('library/remove', removeLibrary),
     path('track/info', getTrackInfo),
-    path('playback/ping', addHistory)
+    path('playback/ping', addHistory),
+    path('recommendations', get_recommendations)
 ]

@@ -6,12 +6,12 @@ import css from "./rooms.css";
 import { TrackListDefault } from "./track";
 
 
-function ExploreSections() {
+export function ExploreSections({ apiUrl }) {
 
     const [sections, setSections] = useState(null);
 
     useEffect(() => {
-        api.get('tracks/explore', null, (status, data) => {
+        api.get(apiUrl, null, (status, data) => {
             if (status == 200) {
                 setSections(data.result);
             }
@@ -41,7 +41,7 @@ function ExploreSections() {
 }
 
 
-class Rooms extends React.Component {
+export class Rooms extends React.Component {
     constructor(props) {
         super(props);
         this.state = { rooms: null }
@@ -65,7 +65,7 @@ class Rooms extends React.Component {
         return list
     }
 
-    showRooms() {
+    render() {
         if (!!this.state.rooms && this.state.rooms.length > 0) {
             return (<div id={css.grid}>{this.roomCards()}</div>)
         } else if(!!this.state.rooms) {
@@ -77,12 +77,11 @@ class Rooms extends React.Component {
             </div>)
         }
     }
-    render() {
-        return (<>
-            {this.showRooms()}
-            <ExploreSections/>
-        </>)
-    }
 }
 
-export default Rooms;
+export default function ExplorePage() {
+    return (<>
+        <Rooms/>
+        <ExploreSections apiUrl='tracks/explore' />
+    </>);
+}

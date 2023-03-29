@@ -302,9 +302,9 @@ class Room(models.Model):
     current_roomtrack = models.ForeignKey(
         "RoomTrack", on_delete=models.CASCADE, related_name="+")
     
-    def get_top_artists(self):
+    def get_top_artists(self, limit = 5):
         artists = TrackArtist.objects.filter(track__roomtracks__room=self).values_list('artist__name', flat=True).annotate(count=Count('artist__name')).order_by('-count')
-        return list(artists)[:5]
+        return list(artists)[:limit]
 
     def check_state(self):
         curr_time = timezone.now()
@@ -693,7 +693,7 @@ class Track(models.Model):
 
 class TrackArtist(models.Model):
     track = models.ForeignKey(Track, on_delete=models.CASCADE)
-    artist = models.ForeignKey("Artist", on_delete=models.CASCADE)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     index = models.IntegerField()
 
     class Meta:
