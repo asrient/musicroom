@@ -47,20 +47,15 @@ class Spotify:
             return track.spotify_id
         return None
 
-    def get_similar_tracks_from_spotify_id(self, spotify_id: str, limit: int = 20) -> list[Track]:
-        result = self.sp.recommendations(seed_tracks=[spotify_id], limit=limit)
+    def get_similar_tracks_from_spotify_ids(self, spotify_ids: list[str], limit: int = 20) -> list[dict]:
+        result = self.sp.recommendations(seed_tracks=spotify_ids, limit=limit)
         tracks = []
-        print('recommendations from spotify for', spotify_id, [ t['name'] + ' - ' + t['artists'][0]['name'] for t in result['tracks']])
+        print('recommendations from spotify for', spotify_ids, [ t['name'] + ' - ' + t['artists'][0]['name'] for t in result['tracks']])
         for sp_track in result['tracks']:
             #print(sp_track['name'], sp_track['artists'][0]['name'])
             #print('spotify_id', sp_track['id'])
-            track: Track = self.musicService.find_track(sp_track['name'], sp_track['artists'][0]['name'], make_track=True)
+            track: dict = self.musicService.find_track(sp_track['name'], sp_track['artists'][0]['name'], make_track=False)
             #print('music service track', track)
             if track is not None:
-                if track.spotify_id is not None and track.spotify_id != sp_track['id']:
-                    print('WARNING: spotify_id mismatch', track.spotify_id, sp_track['id'])
-                else:
-                    track.spotify_id = sp_track['id']
-                    track.save()
                 tracks.append(track)
         return tracks

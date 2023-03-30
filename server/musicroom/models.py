@@ -370,10 +370,16 @@ class Room(models.Model):
             rt = rt.next_roomtrack
             List.append(rt)
         return List
+    
+    def get_tracks(self) -> list['Track']:
+        return [rt.track for rt in self.get_roomtracks()]
 
     def get_members(self) -> list[User]:
         members = self.members.all()
         return members
+    
+    def get_members_count(self) -> int:
+        return self.members.all().count()
     
     def get_join_requests(self) -> list[User]:
         return self.join_requests.all()

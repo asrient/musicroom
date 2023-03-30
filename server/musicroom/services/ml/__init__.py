@@ -31,11 +31,13 @@ def get_current_artist_tracks(user: User):
     return __return_result(f'More from {artist.name}', tracks)
 
 
-def get_similar_tracks(track: Track):
+def get_similar_tracks(tracks: list[Track], title: str = None):
     spotify = Spotify()
-    spotify_id = spotify.get_spotify_id(track)
-    if spotify_id is None:
-        print('No spotify id found for track', track.id)
+    spotify_ids = [spotify.get_spotify_id(track) for track in tracks if track is not None]
+    if len(spotify_ids) < 0:
+        print('No spotify ids found for tracks', tracks)
         return None
-    tracks = [track.get_obj() for track in spotify.get_similar_tracks_from_spotify_id(spotify_id, 10)]
-    return __return_result(f'Similar to {track.title}', tracks)
+    tracks = spotify.get_similar_tracks_from_spotify_ids(spotify_ids, 12)
+    if title is None:
+        title = 'Similar tracks'
+    return __return_result(title, tracks)
