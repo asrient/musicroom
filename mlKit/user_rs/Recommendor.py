@@ -103,7 +103,7 @@ class ALSRecommendor:
                                     .select('new_userid', 'user_id').limit(limit).collect()
 
     def get_new_user_id(self, original_user_id):
-        return self.total_df.filter(f'user_id = "{original_user_id}"').select('new_userid').withColumn("new_userid", self.total_df["new_userid"].cast(IntegerType())).collect()[0][0].cast(IntegerType())
+        return self.total_df.filter(f'user_id = "{original_user_id}"').select('new_userid').withColumn("new_userid", self.total_df["new_userid"].cast(IntegerType())).collect()[0][0]
 
     def recommend(self, original_user_id, new_user_id = None, limit=20):
         if self.model is None:

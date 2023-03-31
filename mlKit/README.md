@@ -1,5 +1,8 @@
 # Song Recommendation Systems
 
+Provides scripts and jobs to generate ML recommendations for musicroom.
+Currently supports:
+- User based Colaborative Filtering Technique - for recommending tracks for each user based on their activity.
 
 ## File structure
 

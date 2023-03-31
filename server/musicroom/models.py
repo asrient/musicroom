@@ -766,7 +766,7 @@ class PlaybackHistory(models.Model):
 
     @classmethod
     def add(cls, play_id, user: User, track: Track, date: datetime = None):
-        if cls.objects.filter(user=user).count() >= 200:
+        if cls.objects.filter(user=user).count() >= 400:
             cls.objects.filter(user=user).first().delete()
         return cls.objects.create(play_id = play_id, user=user, track=track, date=date or timezone.now())
     
