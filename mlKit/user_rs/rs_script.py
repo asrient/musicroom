@@ -1,4 +1,4 @@
-from Recommendor import ALSRecommendor
+from Recommendor2 import ALSRecommendor
 import pandas as pd
 import sys
 

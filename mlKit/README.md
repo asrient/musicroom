@@ -4,6 +4,22 @@ Provides scripts and jobs to generate ML recommendations for musicroom.
 Currently supports:
 - User based Colaborative Filtering Technique - for recommending tracks for each user based on their activity.
 
+## Usage
+
+```
+bash mlKit/user_rs.sh
+```
+
+Note: These files must exist before running the script:
+- mlKit/data/input/listening_history.csv
+- mlKit/data/input/target_users.csv
+
+Use mr server's `export_rs_data` command to generate those. It will place those files in the correct locations.
+
+```
+python manage.py export_rs_data
+```
+
 ## File structure
 
 - `user_rs/`
