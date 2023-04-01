@@ -96,7 +96,6 @@ def recommendations_for_room(room: Room, refresh = False):
 ###
 def recommendations_for_you(user: User, refresh = False):
     tracks = []
-    extend(tracks, get_recommendations_for_tracks(PlaybackHistory.get_recent_user_tracks(user, 3)))
     if not refresh:
         extend(tracks, get_recommendations_for_users([user]))
         extend(tracks, get_recommendations_for_tracks(LibraryTrack.get_library_tracks(user, 5)))

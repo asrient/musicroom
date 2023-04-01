@@ -46,7 +46,7 @@ export function ExploreSections({ apiUrl }) {
     return (
         <>
         <br/>
-            {sections && sections.map(section => {
+            {!!sections ? sections.map(section => {
                 return (
                     <div key={section.title}>
                     <div className={css.secTitle}>
@@ -64,7 +64,10 @@ export function ExploreSections({ apiUrl }) {
                     <br/>
                     </div>
                 )
-            })}
+            }):
+            <div className="center size-m base-semilight" style={{ height: '20rem' }}>
+            🐶 Hold'on! Getting feed for you..
+            </div>}
         </>
     )
 }
