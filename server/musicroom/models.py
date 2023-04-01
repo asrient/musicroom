@@ -782,4 +782,63 @@ class PlaybackHistory(models.Model):
     def get_recent_user_tracks(cls, user: User, limit=5, offset=0):
         return Track.objects.filter(playback_history__user=user).order_by('-playback_history__date')[offset:offset+limit].all()
     
+
+class UserTrackRecommendation(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_track_recommendation")
+    track = models.ForeignKey(
+        Track, on_delete=models.CASCADE, related_name="+")
+    date = models.DateTimeField(default=timezone.now)
     
+    class Meta:
+        unique_together = [['user', 'track']]
+    
+    @classmethod
+    def add(cls, user: User, track: Track):
+        if cls.get_recommendations_count(user) >= 30:
+            cls.objects.filter(user=user).first().delete()
+        if cls.objects.filter(user=user, track=track).exists():
+            obj = cls.objects.get(user=user, track=track)
+            obj.date = timezone.now()
+            obj.save()
+            return obj
+        return cls.objects.create(user=user, track=track)
+    
+    @classmethod
+    def get_recommendations(cls, user: User, limit=10, offset=0):
+        return [obj.track for obj in cls.objects.filter(user=user).order_by('-date')[offset:offset+limit].all()]
+    
+    @classmethod
+    def get_recommendations_count(cls, user: User):
+        return cls.objects.filter(user=user).count()
+
+
+class TrackTrackRecommendation(models.Model):
+    track = models.ForeignKey(
+        Track, on_delete=models.CASCADE, related_name="track_track_recommendation")
+    recommended_track = models.ForeignKey(
+        Track, on_delete=models.CASCADE, related_name="+")
+    date = models.DateTimeField(default=timezone.now)
+    
+    class Meta:
+        unique_together = [['track', 'recommended_track']]
+    
+    @classmethod
+    def add(cls, track: Track, recommended_track: Track):
+        if cls.get_recommendations_count(track) >= 20:
+            cls.objects.filter(track=track).first().delete()
+        if cls.objects.filter(track=track, recommended_track=recommended_track).exists():
+            obj = cls.objects.get(track=track, recommended_track=recommended_track)
+            obj.date = timezone.now()
+            obj.save()
+            return obj
+        return cls.objects.create(track=track, recommended_track=recommended_track)
+    
+    @classmethod
+    def get_recommendations(cls, track: Track, limit=10, offset=0):
+        return [obj.recommended_track  for obj in cls.objects.filter(track=track).order_by('-date')[offset:offset+limit].all()]
+    
+    @classmethod
+    def get_recommendations_count(cls, track: Track):
+        return cls.objects.filter(track=track).count()
+

@@ -221,6 +221,6 @@ def save_track(seo_key):
         return track
     url = GAANA1_BASEURL + "songs/info/?seokey="+seo_key
     tracks = extract_from_url(url, make_track=True)
-    if tracks is not None:
+    if tracks is not None and len(tracks) > 0:
         return Track.get_by_id(tracks[0]['track_id'])
     return None

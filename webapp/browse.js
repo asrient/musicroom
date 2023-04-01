@@ -9,6 +9,7 @@ import { TrackListDefault } from "./track";
 export function ExploreSections({ apiUrl }) {
 
     const [sections, setSections] = useState(null);
+    const [refreshing, setRefreshing] = useState(null);
 
     useEffect(() => {
         api.get(apiUrl, null, (status, data) => {
@@ -21,13 +22,41 @@ export function ExploreSections({ apiUrl }) {
         })
     }, []);
 
+    const onRefresh = (secTitle, url) => {
+        if(refreshing == secTitle) return;
+        console.log('refreshing..', secTitle, url);
+        setRefreshing(secTitle);
+        api.get(url, null, (status, data) => {
+            if (status == 200) {
+                const newSections = sections.map(section => {
+                    if (section.title == secTitle) {
+                        return data.result[0];
+                    }
+                    return section;
+                })
+                setSections(newSections);
+            }
+            else {
+                console.error(status, data);
+            }
+            setRefreshing(null);
+        });
+    };
+
     return (
         <>
         <br/>
             {sections && sections.map(section => {
                 return (
                     <div key={section.title}>
-                    <h1 className={css.secTitle}>{section.title}</h1>
+                    <div className={css.secTitle}>
+                        <h1>{section.title}</h1>
+                        {
+                        section.refresh_url && <button className="button ink-grey size-xs bg base-light" onClick={() => onRefresh(section.title, section.refresh_url)}>
+                        { refreshing === section.title ? 'Refreshing..': 'REFRESH'}
+                        </button>
+                    }
+                    </div>
                     <div className={css.trackList}>
                     <TrackListDefault tracks={section.tracks} uid={section.title} />
                     </div>

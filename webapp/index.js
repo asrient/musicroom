@@ -119,7 +119,7 @@ function PlaybackPingManager(){
             timerRef.current = setTimeout(() => {
                 window.state.pingPlayback();
                 timerRef.current = null;
-            }, 6050);
+            }, 9050);
         }
         return clearTimer;
     }, [roomId, playCount]);

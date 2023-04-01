@@ -467,47 +467,38 @@ button {
 
 .button.white {
   background: var(--white);
-  font-weight: 500;
 }
 
 .button.light {
   background: var(--light);
-  font-weight: 500;
 }
 
 .button.grey {
   background: var(--grey);
-  font-weight: 500;
 }
 
 .button.dark {
   background: var(--dark);
-  font-weight: 500;
 }
 
 .button.black {
   background: var(--black);
-  font-weight: 500;
 }
 
 .button.primary {
   background: var(--primary);
-  font-weight: 500;
 }
 
 .button.secondary {
   background: var(--secondary);
-  font-weight: 500;
 }
 
 .button.tertiary {
   background: var(--tertiary);
-  font-weight: 500;
 }
 
 .button.bg {
   background: var(--bg);
-  font-weight: 500;
 }
 
 .button.bordered {

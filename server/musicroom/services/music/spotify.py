@@ -48,13 +48,21 @@ class Spotify:
         return None
 
     def get_similar_tracks_from_spotify_ids(self, spotify_ids: list[str], limit: int = 20) -> list[dict]:
+        print('get_similar_tracks_from_spotify_ids', spotify_ids)
         result = self.sp.recommendations(seed_tracks=spotify_ids, limit=limit)
         tracks = []
         print('recommendations from spotify for', spotify_ids, [ t['name'] + ' - ' + t['artists'][0]['name'] for t in result['tracks']])
         for sp_track in result['tracks']:
             #print(sp_track['name'], sp_track['artists'][0]['name'])
             #print('spotify_id', sp_track['id'])
-            track: dict = self.musicService.find_track(sp_track['name'], sp_track['artists'][0]['name'], make_track=False)
+            track: Track = None
+            try:
+                track = Track.get_by_spotify_id(sp_track['id'])
+            except:
+                track = self.musicService.find_track(sp_track['name'], sp_track['artists'][0]['name'], make_track=True)
+                if track is not None:
+                    track.spotify_id = sp_track['id']
+                    track.save()
             #print('music service track', track)
             if track is not None:
                 tracks.append(track)
