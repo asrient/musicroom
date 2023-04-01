@@ -24,7 +24,7 @@ incremental==17.5.0
 iso8601==0.1.12
 m3u8==0.7.1
 msgpack==1.0.0
-psycopg2-binary==2.9.5
+psycopg2-binary==2.8.6
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycodestyle==2.6.0
