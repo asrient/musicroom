@@ -14,6 +14,10 @@ class ALSRecommendor:
         self.spark = spark
         self.model = None
         self.total_df = None
+        # evaluation metric - RMSE
+        self.eval_metric = RegressionEvaluator(predictionCol="prediction",
+                                labelCol="frequency",
+                                metricName="rmse")
 
     def load_data_from_csv(self, file_path):
         df = pd.read_csv(file_path)
@@ -64,6 +68,9 @@ class ALSRecommendor:
 
         train_df = train_df.cache()
         test_df = test_df.cache()
+        self.train_df = train_df
+        self.test_df = test_df
+        
         print('all data prepared!')
         als = ALS(coldStartStrategy = 'nan').setMaxIter(5)\
             .setItemCol("new_trackid")\
@@ -80,17 +87,12 @@ class ALSRecommendor:
         print('Training done. Analyzing rmse..')
         predict_df = self.model.transform(test_df)
 
-        # evaluation metric - RMSE
-        eval_metric = RegressionEvaluator(predictionCol="prediction",
-                                labelCol="frequency",
-                                metricName="rmse")
-
         # Remove nan
         predicted_test_df = predict_df.filter(predict_df.prediction != float('nan'))
         # round to int
         predicted_test_df = predicted_test_df.withColumn("prediction", F.abs(F.round(predicted_test_df["prediction"],0)))
         try:
-          test_RMSE = eval_metric.evaluate(predicted_test_df)
+          test_RMSE = self.eval_metric.evaluate(predicted_test_df)
           print('The final RMSE on the test set is {0}'.format(test_RMSE))
           return test_RMSE
         except Exception as e:
