@@ -1,6 +1,6 @@
 # Musicroom Documentation
 
-Brief guide to how to start working on the project.
+Brief guide on how to start working on the project.
 
 ## About the codebase 📁
 
