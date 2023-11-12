@@ -1,7 +1,5 @@
 # MusicRoom
 
-![logo](img/mr.jpg)
-
 Listen to music with friends, together! Colaborate and maintain a playlist with friends real time. Create a room and let friends join you. Built using: React, Django, NodeJs, Socket.io
 
 ## Try it yourself
